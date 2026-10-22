@@ -18,6 +18,12 @@ make_fixture() { # NAME COMMAND…  (runs the command, records the fixture resul
     fi
 }
 
+# sips can write AVIF only on newer macOS (not on the macOS 15 CI runners); fall back to ffmpeg's SVT-AV1.
+make_avif() {
+    sips -s format avif "$1" --out "$2" && [[ -s "$2" ]] && return 0
+    "$FFMPEG" -nostdin -hide_banner -loglevel error -y -i "$1" -c:v libsvtav1 -pix_fmt yuv420p -frames:v 1 "$2"
+}
+
 gen_images() {
     make_fixture oriented.jpg "$FIXTOOL" orient-jpg "$FIX/oriented.jpg"
     make_fixture alpha.png    "$FIXTOOL" alpha-png "$FIX/alpha.png"
@@ -27,7 +33,7 @@ gen_images() {
     make_fixture photo.heic   sips -s format heic "$FIX/subject.png" --out "$FIX/photo.heic"
     make_fixture photo.tiff   sips -s format tiff "$FIX/subject.png" --out "$FIX/photo.tiff"
     make_fixture photo.bmp    sips -s format bmp "$FIX/subject.png" --out "$FIX/photo.bmp"
-    make_fixture photo.avif   sips -s format avif "$FIX/subject.png" --out "$FIX/photo.avif"
+    make_fixture photo.avif   make_avif "$FIX/subject.png" "$FIX/photo.avif"
     if [[ -n "$CWEBP" ]]; then
         make_fixture alpha.webp "$CWEBP" -quiet -lossless -metadata none "$FIX/alpha.png" -o "$FIX/alpha.webp"
     else
