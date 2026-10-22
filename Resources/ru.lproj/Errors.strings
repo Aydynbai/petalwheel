@@ -1,0 +1,18 @@
+/* Kumquat — сообщения об ошибках */
+
+"error.cancelled" = "Отменено";
+"error.noAudio" = "В этом файле нет звуковой дорожки";
+"error.noVideo" = "В этом файле нет видеодорожки";
+"error.damaged.format" = "Файл повреждён или это не %@";
+"error.damaged" = "Файл повреждён или его тип не поддерживается";
+"error.diskFull" = "Недостаточно места на диске";
+"error.permission.folder" = "Нет доступа: нельзя записать в %@";
+"error.permission.read" = "Нет доступа: файл нельзя прочитать";
+"error.passwordProtected" = "PDF защищён паролем";
+"error.unsupportedCodec" = "Неподдерживаемый кодек %@";
+"error.unsupportedCodec.unknown" = "Неподдерживаемый кодек";
+"error.missingFile" = "Файла больше нет";
+"error.missingTool" = "%@ не установлен";
+"error.toolFailed" = "%@ не смог обработать этот файл";
+"hud.details" = "Подробнее";
+"hud.copy" = "Скопировать";

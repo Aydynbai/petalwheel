@@ -1,0 +1,18 @@
+/* Kumquat — error messages (English) */
+
+"error.cancelled" = "Cancelled";
+"error.noAudio" = "This file has no audio track";
+"error.noVideo" = "This file has no video track";
+"error.damaged.format" = "The file is damaged or not a valid %@";
+"error.damaged" = "The file is damaged or isn't a supported type";
+"error.diskFull" = "Not enough disk space";
+"error.permission.folder" = "Permission denied: can't write to %@";
+"error.permission.read" = "Permission denied: can't read this file";
+"error.passwordProtected" = "Password-protected PDF";
+"error.unsupportedCodec" = "Unsupported codec %@";
+"error.unsupportedCodec.unknown" = "Unsupported codec";
+"error.missingFile" = "The file no longer exists";
+"error.missingTool" = "%@ isn't installed";
+"error.toolFailed" = "%@ couldn't process this file";
+"hud.details" = "Details";
+"hud.copy" = "Copy";

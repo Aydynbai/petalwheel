@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ffmpeg and webp for development builds
+        run: brew install ffmpeg webp
+
+      - name: Build
+        run: swift build
+
+      - name: Localization check
+        run: python3 scripts/check-l10n.py
+
+      - name: Quick test suite
+        run: ./scripts/test-suite.sh --binary .build/debug/Kumquat --quick
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/test-report.*

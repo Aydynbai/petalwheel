@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Hardened-runtime entitlements used by scripts/release.sh for Kumquat.app and the bundled
+  ffmpeg / ffprobe / cwebp executables in Contents/Resources/Tools.
+  No JIT / unsigned-executable-memory entitlements are needed.
+  disable-library-validation lets the tools load the bundled Homebrew dylibs (Tools/lib) even if
+  one of them ends up signed differently from the executable (e.g. a re-signed or replaced dylib).
+  When every Mach-O is signed with the same Developer ID it is not strictly required; remove it
+  to tighten the runtime once you have verified notarized builds launch ffmpeg correctly.
+-->
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <true/>
+</dict>
+</plist>
