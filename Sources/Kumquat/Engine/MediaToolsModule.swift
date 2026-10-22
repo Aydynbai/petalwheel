@@ -180,12 +180,12 @@ struct MediaToolsModule: ToolModule {
         let outSize = MediaOutput.fileSize(out)
         if inputSize > 0, outSize >= inputSize {
             try? FileManager.default.removeItem(at: out)
-            result.messages.append("“\(job.name)” is already well compressed — the result wasn’t smaller, so it was discarded.")
+            result.messages.append("“\(job.name)” is already well compressed – the result wasn’t smaller, so it was discarded.")
             return result
         }
         result.outputs = [out]
         if let kb = options.targetSizeKB, kb > 0, Double(outSize) > Double(kb) * 1024 * 1.1 {
-            result.messages.append("“\(out.lastPathComponent)” is \(outSize / 1024) KB — the closest possible to \(kb) KB.")
+            result.messages.append("“\(out.lastPathComponent)” is \(outSize / 1024) KB – the closest possible to \(kb) KB.")
         }
         return result
     }
@@ -518,7 +518,7 @@ struct MediaToolsModule: ToolModule {
             end = min(info.duration, last.start + 0.15)
         }
         if let only = silences.first, silences.count == 1, only.start <= 0.05, only.end >= info.duration - 0.05 {
-            throw KumquatError(l: "“%@” is silent below %@ dB — nothing would be left.", job.name, db)
+            throw KumquatError(l: "“%@” is silent below %@ dB – nothing would be left.", job.name, db)
         }
         let target = job.sameFormat
         var spec = job.spec(target)
@@ -540,7 +540,7 @@ struct MediaToolsModule: ToolModule {
             return ToolResult(messages: [L("No silence at the start or end of “%@”.", job.name)])
         }
         guard end - start > 0.1 else {
-            throw KumquatError(l: "“%@” is silent below %@ dB — nothing would be left.", job.name, db)
+            throw KumquatError(l: "“%@” is silent below %@ dB – nothing would be left.", job.name, db)
         }
         let out = try await encode(job, spec: spec, to: job.output(target, suffix: "trimmed"),
                                    inputOptions: ["-ss", Self.seconds(start), "-t", Self.seconds(end - start)],

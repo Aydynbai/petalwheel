@@ -428,7 +428,7 @@ final class OrganizePDFSession {
     init(model: OrganizePDFModel, completion: @escaping EditorCompletion) {
         self.model = model
         let first = model.inputs.first?.lastPathComponent ?? "PDF"
-        host = EditorWindowHost(title: model.inputs.count > 1 ? Lp("Organize %d PDFs", model.inputs.count) : L("Organize — %@", first),
+        host = EditorWindowHost(title: model.inputs.count > 1 ? Lp("Organize %d PDFs", model.inputs.count) : L("Organize – %@", first),
                                 minSize: NSSize(width: 760, height: 520), completion: completion)
         host.hasUnsavedChanges = { model.hasUnsavedChanges }
         host.canSave = { !model.pages.isEmpty }

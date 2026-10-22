@@ -52,7 +52,7 @@ final class HistoryMenuBuilder: NSObject {
     static func entryTitle(_ entry: HistoryEntry) -> String {
         let first = entry.inputs.first?.lastPathComponent ?? ""
         let more = entry.inputs.count > 1 ? " +\(entry.inputs.count - 1)" : ""
-        return first.isEmpty ? entry.title : "\(entry.title) — \(first)\(more)"
+        return first.isEmpty ? entry.title : "\(entry.title) – \(first)\(more)"
     }
 
     private func makeEntryItem(_ entry: HistoryEntry) -> NSMenuItem {

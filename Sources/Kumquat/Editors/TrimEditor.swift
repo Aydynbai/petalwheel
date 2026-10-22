@@ -9,7 +9,7 @@ enum TrimEditor {
     /// Opens the editor window for `inputs`. Calls `completion` exactly once (nil = cancelled).
     static func present(inputs: [URL], completion: @escaping EditorCompletion) {
         guard let url = inputs.first else { completion(nil); return }
-        let host = EditorWindowHost(title: L("Trim — %@", url.lastPathComponent),
+        let host = EditorWindowHost(title: L("Trim – %@", url.lastPathComponent),
                                     minSize: NSSize(width: 720, height: 460), completion: completion)
         let controller = TimelineEditorController<TrimDocument>(url: url, host: host)
         host.show(TrimRootView(controller: controller, host: host).tint(KQTheme.accent))

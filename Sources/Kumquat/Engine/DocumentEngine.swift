@@ -104,14 +104,21 @@ struct DocumentEngine: ConversionEngine {
 
     private func runTextutil(input: URL, format: FileFormat, target: FileFormat, output: URL, baseURL: URL?) async throws {
         var args = ["-convert", target.rawValue]
+        var source = input
+        var strippedDir: URL?
+        defer { if let strippedDir { try? FileManager.default.removeItem(at: strippedDir) } }
         if format == .txt { args += ["-inputencoding", "UTF-8"] }
         if target == .txt || target == .html { args += ["-encoding", "UTF-8"] }
         if format == .html {
-            // Local images resolve against the base URL; remote ones get a bounded wait.
+            // Never touch the network: remote images, stylesheets and fonts are removed first.
+            // Local images still resolve against the base URL.
+            let dir = try OutputNaming.tempDirectory()
+            strippedDir = dir
+            source = HTMLRemoteStripper.strippedCopy(of: input, in: dir)
             args += ["-timeout", "8"]
             if let baseURL { args += ["-baseurl", baseURL.absoluteString] }
         }
-        args += ["-output", output.path, input.path]
+        args += ["-output", output.path, source.path]
         do {
             try await ProcessRunner.run(Self.textutil, args)
         } catch let e as ProcessError {

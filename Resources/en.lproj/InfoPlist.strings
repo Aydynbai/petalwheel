@@ -1,4 +1,4 @@
-/* Kumquat — Info.plist (English) */
+/* Kumquat – Info.plist (English) */
 
 "NSAppleEventsUsageDescription" = "Kumquat reads the files selected in Finder when you press its global shortcut, so it can open the conversion wheel for them.";
 "NSHumanReadableCopyright" = "© 2026 kipperstudio";

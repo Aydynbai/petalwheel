@@ -28,7 +28,7 @@ done
 
 APP_NAME="Kumquat"
 BUNDLE_ID="studio.kipper.Kumquat"
-VERSION="1.0.0"
+VERSION="1.0.1"
 BUILD_NUMBER="$(date +%Y%m%d%H%M)"
 APP="$ROOT/build/$APP_NAME.app"
 

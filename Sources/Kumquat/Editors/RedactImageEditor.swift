@@ -37,7 +37,7 @@ final class RedactImageSession {
     init(model: RedactImageModel, completion: @escaping EditorCompletion) {
         self.model = model
         canvas = RedactImageCanvasView(model: model)
-        host = EditorWindowHost(title: L("Redact — %@", model.sourceURL.lastPathComponent),
+        host = EditorWindowHost(title: L("Redact – %@", model.sourceURL.lastPathComponent),
                                 minSize: NSSize(width: 760, height: 520), completion: completion)
         host.hasUnsavedChanges = { [weak model] in model?.hasUnsavedChanges ?? false }
         host.makeExport = { [weak model] in model?.makeExport() }

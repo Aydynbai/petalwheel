@@ -1,4 +1,4 @@
-/* Kumquat — English. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
+/* Kumquat – English. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
 
 "AirDrop isn't available on this Mac right now." = "AirDrop isn't available on this Mac right now.";
 "Copied %@" = "Copied %@";
@@ -61,7 +61,7 @@
 "Couldn't move %@" = "Couldn't move %@";
 "Could not read %@." = "Could not read %@.";
 "%d of %d · settings apply to all" = "%d of %d · settings apply to all";
-"Adjust — %@" = "Adjust — %@";
+"Adjust – %@" = "Adjust – %@";
 "Original" = "Original";
 "Reset All" = "Reset All";
 "Hold \\ to compare" = "Hold \\ to compare";
@@ -108,7 +108,7 @@
 "Delete" = "Delete";
 "Choose an image to place as a sticker" = "Choose an image to place as a sticker";
 "Can't annotate %@" = "Can't annotate %@";
-"Annotate — %@" = "Annotate — %@";
+"Annotate – %@" = "Annotate – %@";
 "Next: %d" = "Next: %d";
 "Size" = "Size";
 "Width" = "Width";
@@ -137,7 +137,7 @@
 "Mono" = "Mono";
 "Could not allocate an image of %d×%d." = "Could not allocate an image of %d×%d.";
 "Could not render the annotated image." = "Could not render the annotated image.";
-"Bleep — %@" = "Bleep — %@";
+"Bleep – %@" = "Bleep – %@";
 "“%@” has no audio track to bleep." = "“%@” has no audio track to bleep.";
 "1 kHz tone" = "1 kHz tone";
 "Silence" = "Silence";
@@ -180,7 +180,7 @@
 "p%d" = "p%d";
 "Page %d of %d" = "Page %d of %d";
 "p%d of %@" = "p%d of %@";
-"Organize — %@" = "Organize — %@";
+"Organize – %@" = "Organize – %@";
 "Select All" = "Select All";
 "Drag to reorder · drop PDFs or images to insert · double-click to zoom" = "Drag to reorder · drop PDFs or images to insert · double-click to zoom";
 "Make all pages the same width" = "Make all pages the same width";
@@ -209,7 +209,7 @@
 "Text detection failed: %@" = "Text detection failed: %@";
 "Could not render the redacted image." = "Could not render the redacted image.";
 "Can't redact %@" = "Can't redact %@";
-"Redact — %@" = "Redact — %@";
+"Redact – %@" = "Redact – %@";
 "Drag over sensitive areas to hide them" = "Drag over sensitive areas to hide them";
 "Detect Faces" = "Detect Faces";
 "Detect Text" = "Detect Text";
@@ -220,7 +220,7 @@
 "Use this style for every region" = "Use this style for every region";
 "Save a redacted copy next to the original (⌘S)" = "Save a redacted copy next to the original (⌘S)";
 "Loading video…" = "Loading video…";
-"Redact Video — %@" = "Redact Video — %@";
+"Redact Video – %@" = "Redact Video – %@";
 "Detecting…" = "Detecting…";
 "Detect faces in this frame" = "Detect faces in this frame";
 "Layer %d" = "Layer %d";
@@ -252,7 +252,7 @@
 "Close" = "Close";
 "Zoom (pinch or ⌘-scroll on the timeline)" = "Zoom (pinch or ⌘-scroll on the timeline)";
 "Preview unavailable, you can still scrub and export" = "Preview unavailable, you can still scrub and export";
-"Trim — %@" = "Trim — %@";
+"Trim – %@" = "Trim – %@";
 "Nothing is left to export: every part was removed." = "Nothing is left to export: every part was removed.";
 "“%@” has no audio or video to trim." = "“%@” has no audio or video to trim.";
 "Result %@" = "Result %@";
@@ -348,7 +348,7 @@
 "“%@” is too short to split into %d parts." = "“%@” is too short to split into %d parts.";
 "Choose a speed other than 1×." = "Choose a speed other than 1×.";
 "Choose at least two videos to join." = "Choose at least two videos to join.";
-"“%@” is silent below %@ dB — nothing would be left." = "“%@” is silent below %@ dB — nothing would be left.";
+"“%@” is silent below %@ dB – nothing would be left." = "“%@” is silent below %@ dB – nothing would be left.";
 "Quick Look found no slides in “%@”." = "Quick Look found no slides in “%@”.";
 "Nothing was rendered." = "Nothing was rendered.";
 "Couldn't read “%@” as a Word document." = "Couldn't read “%@” as a Word document.";
@@ -641,10 +641,10 @@
 "%d parts#other" = "%d parts";
 "%d files at once#one" = "%d file at once";
 "%d files at once#other" = "%d files at once";
-"Done — %d files created#one" = "Done — %d file created";
-"Done — %d files created#other" = "Done — %d files created";
-"Cancelled — %d files created#one" = "Cancelled — %d file created";
-"Cancelled — %d files created#other" = "Cancelled — %d files created";
+"Done – %d files created#one" = "Done – %d file created";
+"Done – %d files created#other" = "Done – %d files created";
+"Cancelled – %d files created#one" = "Cancelled – %d file created";
+"Cancelled – %d files created#other" = "Cancelled – %d files created";
 "%d problems#one" = "%d problem";
 "%d problems#other" = "%d problems";
 "Runs up to %d files at a time.#one" = "Runs up to %d file at a time.";

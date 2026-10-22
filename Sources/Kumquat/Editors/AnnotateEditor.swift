@@ -37,7 +37,7 @@ final class AnnotateSession {
     init(model: AnnotateModel, completion: @escaping EditorCompletion) {
         self.model = model
         canvas = AnnotateCanvasView(model: model)
-        host = EditorWindowHost(title: L("Annotate — %@", model.sourceURL.lastPathComponent),
+        host = EditorWindowHost(title: L("Annotate – %@", model.sourceURL.lastPathComponent),
                                 minSize: NSSize(width: 760, height: 520), completion: completion)
         let canvas = self.canvas
         host.hasUnsavedChanges = { [weak model] in model?.hasUnsavedChanges ?? false }

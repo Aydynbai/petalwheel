@@ -23,7 +23,7 @@ final class RedactVideoSession {
     init(url: URL, completion: @escaping EditorCompletion) {
         let model = RedactVideoModel(url: url)
         self.model = model
-        host = EditorWindowHost(title: L("Redact Video — %@", url.lastPathComponent),
+        host = EditorWindowHost(title: L("Redact Video – %@", url.lastPathComponent),
                                 minSize: NSSize(width: 820, height: 560), completion: completion)
         host.hasUnsavedChanges = { model.hasUnsavedChanges }
         host.canSave = { model.isLoaded && !model.regions.isEmpty }

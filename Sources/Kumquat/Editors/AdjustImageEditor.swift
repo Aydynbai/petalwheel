@@ -388,7 +388,7 @@ final class AdjustEditorSession {
 
     init(inputs: [URL], completion: @escaping EditorCompletion) {
         model = AdjustEditorModel(inputs: inputs)
-        host = EditorWindowHost(title: inputs.count > 1 ? Lp("Adjust %d Images", inputs.count) : L("Adjust — %@", inputs[0].lastPathComponent),
+        host = EditorWindowHost(title: inputs.count > 1 ? Lp("Adjust %d Images", inputs.count) : L("Adjust – %@", inputs[0].lastPathComponent),
                                 minSize: NSSize(width: 840, height: 560), completion: completion)
         let model = self.model
         host.hasUnsavedChanges = { model.hasUnsavedChanges }

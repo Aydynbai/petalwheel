@@ -1,4 +1,4 @@
-/* Kumquat — Русский. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
+/* Kumquat – Русский. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
 
 "AirDrop isn't available on this Mac right now." = "AirDrop сейчас недоступен на этом Mac.";
 "Copied %@" = "Скопировано: %@";
@@ -61,14 +61,14 @@
 "Couldn't move %@" = "Не удалось переместить %@";
 "Could not read %@." = "Не удалось прочитать %@.";
 "%d of %d · settings apply to all" = "%d из %d · настройки для всех";
-"Adjust — %@" = "Коррекция — %@";
+"Adjust – %@" = "Коррекция – %@";
 "Original" = "Оригинал";
 "Reset All" = "Сбросить всё";
 "Hold \\ to compare" = "Удерживайте \\ для сравнения";
 "Compare" = "Сравнить";
 "Presets" = "Пресеты";
 "Hold to show the original" = "Удерживайте, чтобы увидеть оригинал";
-"Double-click to reset" = "Двойной клик — сброс";
+"Double-click to reset" = "Двойной клик – сброс";
 "Undo (⌘Z)" = "Отменить (⌘Z)";
 "Redo (⇧⌘Z)" = "Повторить (⇧⌘Z)";
 "Light" = "Свет";
@@ -108,7 +108,7 @@
 "Delete" = "Удалить";
 "Choose an image to place as a sticker" = "Выберите изображение для наклейки";
 "Can't annotate %@" = "Не удалось открыть %@ для разметки";
-"Annotate — %@" = "Разметка — %@";
+"Annotate – %@" = "Разметка – %@";
 "Next: %d" = "Следующий: %d";
 "Size" = "Размер";
 "Width" = "Толщина";
@@ -117,7 +117,7 @@
 "Clear All" = "Очистить всё";
 "Zoom" = "Увеличение";
 "Paste" = "Вставить";
-"Drag corners to resize (⇧ for free aspect)" = "Тяните углы, чтобы изменить размер (⇧ — без пропорций)";
+"Drag corners to resize (⇧ for free aspect)" = "Тяните углы, чтобы изменить размер (⇧ – без пропорций)";
 "Image Sticker: choose a file or paste (⌘V)" = "Наклейка: выберите файл или вставьте (⌘V)";
 "Delete Selection (⌫)" = "Удалить выбранное (⌫)";
 "Save a flattened copy next to the original (⌘S)" = "Сохранить копию рядом с оригиналом (⌘S)";
@@ -130,14 +130,14 @@
 "Text (T)" = "Текст (T)";
 "Numbered Step (N)" = "Нумерованный шаг (N)";
 "Magnifier (M)" = "Лупа (M)";
-"Image Sticker (⌘V to paste)" = "Наклейка (⌘V — вставить)";
+"Image Sticker (⌘V to paste)" = "Наклейка (⌘V – вставить)";
 "System" = "Системный";
 "Rounded" = "Округлый";
 "Serif" = "С засечками";
 "Mono" = "Моно";
 "Could not allocate an image of %d×%d." = "Не хватает памяти для изображения %d×%d.";
 "Could not render the annotated image." = "Не удалось отрисовать размеченное изображение.";
-"Bleep — %@" = "Запикать — %@";
+"Bleep – %@" = "Запикать – %@";
 "“%@” has no audio track to bleep." = "В «%@» нет звуковой дорожки.";
 "1 kHz tone" = "Тон 1 кГц";
 "Silence" = "Тишина";
@@ -180,9 +180,9 @@
 "p%d" = "с. %d";
 "Page %d of %d" = "Страница %d из %d";
 "p%d of %@" = "с. %d из %@";
-"Organize — %@" = "Страницы PDF — %@";
+"Organize – %@" = "Страницы PDF – %@";
 "Select All" = "Выбрать все";
-"Drag to reorder · drop PDFs or images to insert · double-click to zoom" = "Перетаскивайте для порядка · бросьте PDF или изображения для вставки · двойной клик — увеличить";
+"Drag to reorder · drop PDFs or images to insert · double-click to zoom" = "Перетаскивайте для порядка · бросьте PDF или изображения для вставки · двойной клик – увеличить";
 "Make all pages the same width" = "Выровнять ширину страниц";
 "Done" = "Готово";
 "Scales every page to the most common page width when saving" = "При сохранении приводит все страницы к самой частой ширине";
@@ -209,7 +209,7 @@
 "Text detection failed: %@" = "Не удалось найти текст: %@";
 "Could not render the redacted image." = "Не удалось отрисовать закрашенное изображение.";
 "Can't redact %@" = "Не удалось открыть %@";
-"Redact — %@" = "Закрасить — %@";
+"Redact – %@" = "Закрасить – %@";
 "Drag over sensitive areas to hide them" = "Выделите области, которые нужно скрыть";
 "Detect Faces" = "Найти лица";
 "Detect Text" = "Найти текст";
@@ -220,13 +220,13 @@
 "Use this style for every region" = "Применить этот стиль ко всем областям";
 "Save a redacted copy next to the original (⌘S)" = "Сохранить закрашенную копию рядом с оригиналом (⌘S)";
 "Loading video…" = "Загрузка видео…";
-"Redact Video — %@" = "Закрасить видео — %@";
+"Redact Video – %@" = "Закрасить видео – %@";
 "Detecting…" = "Поиск…";
 "Detect faces in this frame" = "Найти лица в кадре";
 "Layer %d" = "Слой %d";
 "Preview via ffmpeg frames" = "Просмотр по кадрам ffmpeg";
 "Drag on the video to add a rectangle" = "Выделите область на видео";
-"Space play · ⌫ delete · ⌘Z undo · ←/→ step" = "Пробел — пуск · ⌫ — удалить · ⌘Z — отменить · ←/→ — шаг";
+"Space play · ⌫ delete · ⌘Z undo · ←/→ step" = "Пробел – пуск · ⌫ – удалить · ⌘Z – отменить · ←/→ – шаг";
 "Redact Video" = "Закрасить видео";
 "Select a rectangle on the video or a bar in the timeline to change its style and time range." = "Выберите область на видео или полосу на шкале, чтобы изменить её стиль и время.";
 "Colour" = "Цвет";
@@ -252,7 +252,7 @@
 "Close" = "Закрыть";
 "Zoom (pinch or ⌘-scroll on the timeline)" = "Масштаб (щипок или ⌘ + прокрутка на шкале)";
 "Preview unavailable, you can still scrub and export" = "Просмотр недоступен, но можно перематывать и экспортировать";
-"Trim — %@" = "Обрезать — %@";
+"Trim – %@" = "Обрезать – %@";
 "Nothing is left to export: every part was removed." = "Экспортировать нечего: все фрагменты удалены.";
 "“%@” has no audio or video to trim." = "В «%@» нет звука или видео для обрезки.";
 "Result %@" = "Итог %@";
@@ -279,13 +279,13 @@
 "Couldn't create %@: %@" = "Не удалось создать %@: %@";
 "“%@” contains an unsafe path (%@). Extraction was stopped." = "В «%@» есть небезопасный путь (%@). Распаковка остановлена.";
 "Couldn't extract “%@”: %@" = "Не удалось распаковать «%@»: %@";
-"%@ isn't an archive format." = "%@ — не формат архива.";
-"“%@” isn't a valid zip archive." = "«%@» — повреждённый ZIP-архив.";
-"“%@” isn't a valid %@ archive." = "«%@» — повреждённый архив %@.";
+"%@ isn't an archive format." = "%@ – не формат архива.";
+"“%@” isn't a valid zip archive." = "«%@» – повреждённый ZIP-архив.";
+"“%@” isn't a valid %@ archive." = "«%@» – повреждённый архив %@.";
 "The archive is empty." = "Архив пуст.";
 "Nothing to process." = "Нечего обрабатывать.";
 "%@ isn't an archive tool." = "«%@» не работает с архивами.";
-"“%@” isn't a supported archive." = "«%@» — неподдерживаемый архив.";
+"“%@” isn't a supported archive." = "«%@» – неподдерживаемый архив.";
 "“%@” is empty." = "«%@» пуст.";
 "“%@” no longer exists." = "«%@» больше не существует.";
 "Couldn't create the zip: %@" = "Не удалось создать ZIP: %@";
@@ -299,9 +299,9 @@
 "“%@” has no text layer (it looks like a scanned document). Use the “Extract Text” tool to recognize its text with OCR." = "В «%@» нет текстового слоя (похоже на скан). Распознайте текст инструментом «Извлечь текст».";
 "Couldn't create “%@”." = "Не удалось создать «%@».";
 "Couldn't read “%@”." = "Не удалось прочитать «%@».";
-"“%@” isn't a valid EPUB (it can't be unzipped)." = "«%@» — повреждённый EPUB (не распаковывается).";
-"“%@” isn't a valid EPUB (META-INF/container.xml is missing)." = "«%@» — повреждённый EPUB (нет META-INF/container.xml).";
-"“%@” isn't a valid EPUB (the package document is missing)." = "«%@» — повреждённый EPUB (нет файла пакета).";
+"“%@” isn't a valid EPUB (it can't be unzipped)." = "«%@» – повреждённый EPUB (не распаковывается).";
+"“%@” isn't a valid EPUB (META-INF/container.xml is missing)." = "«%@» – повреждённый EPUB (нет META-INF/container.xml).";
+"“%@” isn't a valid EPUB (the package document is missing)." = "«%@» – повреждённый EPUB (нет файла пакета).";
 "“%@” has no readable chapters." = "В «%@» нет читаемых глав.";
 "Couldn't read the document's HTML: %@" = "Не удалось прочитать HTML документа: %@";
 "The document has no content." = "Документ пуст.";
@@ -342,13 +342,13 @@
 "No silence at the start or end of “%@”." = "В начале и в конце «%@» нет тишины.";
 "No files to process." = "Нет файлов для обработки.";
 "%@ isn’t available for “%@”." = "«%@» недоступно для «%@».";
-"%d KB is too small for “%@”. Try at least %d KB." = "%d КБ — слишком мало для «%@». Нужно хотя бы %d КБ.";
-"%d KB is too small for the %d-second video “%@”. Try at least %d KB." = "%1$d КБ — слишком мало для видео «%3$@» (%2$d с). Нужно хотя бы %4$d КБ.";
+"%d KB is too small for “%@”. Try at least %d KB." = "%d КБ – слишком мало для «%@». Нужно хотя бы %d КБ.";
+"%d KB is too small for the %d-second video “%@”. Try at least %d KB." = "%1$d КБ – слишком мало для видео «%3$@» (%2$d с). Нужно хотя бы %4$d КБ.";
 "The trim range is empty for “%@” (%@s – %@s)." = "Пустой интервал обрезки для «%@» (%@ с – %@ с).";
 "“%@” is too short to split into %d parts." = "«%@» слишком короткий, чтобы разделить его на %d частей.";
 "Choose a speed other than 1×." = "Выберите скорость, отличную от 1×.";
 "Choose at least two videos to join." = "Выберите хотя бы два видео для склейки.";
-"“%@” is silent below %@ dB — nothing would be left." = "«%@» целиком тише %@ дБ — ничего не останется.";
+"“%@” is silent below %@ dB – nothing would be left." = "«%@» целиком тише %@ дБ – ничего не останется.";
 "Quick Look found no slides in “%@”." = "Quick Look не нашёл слайдов в «%@».";
 "Nothing was rendered." = "Ничего не отрисовано.";
 "Couldn't read “%@” as a Word document." = "Не удалось прочитать «%@» как документ Word.";
@@ -369,8 +369,8 @@
 "%@ has no pages." = "В %@ нет страниц.";
 "%@ has only one page." = "В %@ всего одна страница.";
 "%@ is not installed. Install it with: brew install %@" = "%@ не установлен. Установите: brew install %@";
-"%@ isn't a spreadsheet format." = "%@ — не формат таблиц.";
-"“%@” isn't a valid xlsx file (couldn't unzip it)." = "«%@» — повреждённый файл xlsx (не распаковывается).";
+"%@ isn't a spreadsheet format." = "%@ – не формат таблиц.";
+"“%@” isn't a valid xlsx file (couldn't unzip it)." = "«%@» – повреждённый файл xlsx (не распаковывается).";
 "“%@” has no workbook (xl/workbook.xml). Is it really an xlsx file?" = "В «%@» нет книги (xl/workbook.xml). Это точно файл xlsx?";
 "“%@” contains no worksheets." = "В «%@» нет листов.";
 "No subtitles found in “%@”." = "В «%@» не найдены субтитры.";
@@ -438,7 +438,7 @@
 "Drop files here" = "Бросьте файлы сюда";
 "Keep them handy, then drag them out\nwherever you need them." = "Пусть полежат под рукой, а потом\nперетащите их куда нужно.";
 "Remove" = "Убрать";
-"Drag items out · ⌘-click to select several" = "Перетащите наружу · ⌘-клик — выбрать несколько";
+"Drag items out · ⌘-click to select several" = "Перетащите наружу · ⌘-клик – выбрать несколько";
 "Clear" = "Очистить";
 "Close shelf" = "Закрыть полку";
 "Remove from shelf" = "Убрать с полки";
@@ -453,7 +453,7 @@
 "Parallel jobs" = "Одновременно";
 "Automatic" = "Авто";
 "Keep a history of recent operations" = "Хранить историю операций";
-"Recent results appear in the menu bar under Recent." = "Недавние результаты — в строке меню, пункт «Недавние».";
+"Recent results appear in the menu bar under Recent." = "Недавние результаты – в строке меню, пункт «Недавние».";
 "Right-click files in Finder › Quick Actions or Services. If an item is missing, turn it on under Keyboard › Keyboard Shortcuts › Services › Files and Folders." = "Правый клик по файлам в Finder › Быстрые действия или Службы. Если пункта нет, включите его: Клавиатура › Сочетания клавиш › Службы › Файлы и папки.";
 "Services are available when running the bundled Kumquat.app." = "Службы доступны в собранном Kumquat.app.";
 "Not registered" = "Не зарегистрировано";
@@ -481,7 +481,7 @@
 "Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Kumquat's own outputs are ignored." = "Обрабатываются только файлы, добавленные после начала отслеживания, когда они не меняются 2 секунды. Результаты сохраняются рядом с исходными, собственные файлы Kumquat пропускаются.";
 "Action" = "Действие";
 "Originals" = "Исходные";
-"Click, then press a key with ⌘, ⌥ or ⌃. Escape cancels." = "Нажмите, затем клавишу с ⌘, ⌥ или ⌃. Escape — отмена.";
+"Click, then press a key with ⌘, ⌥ or ⌃. Escape cancels." = "Нажмите, затем клавишу с ⌘, ⌥ или ⌃. Escape – отмена.";
 "Stop watching" = "Перестать отслеживать";
 "Give the preset a name." = "Дайте пресету название.";
 "Enter a target size greater than zero." = "Укажите размер больше нуля.";
@@ -545,7 +545,7 @@
 "OK" = "OK";
 "Made by" = "Сделано";
 "credits.and" = "и";
-"Claude by Anthropic" = "Claude — ИИ от Anthropic";
+"Claude by Anthropic" = "Claude – ИИ от Anthropic";
 "General" = "Основные";
 "Conversion" = "Конвертация";
 "Integrations" = "Интеграции";
@@ -599,7 +599,7 @@
 "Pick one file or a whole selection and begin a drag." = "Возьмите один файл или сразу несколько.";
 "Tap the key while dragging, pick a category" = "Нажмите клавишу и выберите категорию";
 "Drop onto a petal" = "Бросьте на лепесток";
-"Hover a category to open it, hover the centre to go back. Results are saved next to the originals." = "Наведите на категорию, чтобы открыть её, на центр — чтобы вернуться. Результаты сохраняются рядом с исходными.";
+"Hover a category to open it, hover the centre to go back. Results are saved next to the originals." = "Наведите на категорию, чтобы открыть её, на центр – чтобы вернуться. Результаты сохраняются рядом с исходными.";
 "opens the wheel" = "открывает колесо";
 "Convert files without leaving Finder." = "Конвертируйте файлы, не выходя из Finder.";
 "Get Started" = "Начать";
@@ -660,12 +660,12 @@
 "%d files at once#one" = "%d файл одновременно";
 "%d files at once#few" = "%d файла одновременно";
 "%d files at once#many" = "%d файлов одновременно";
-"Done — %d files created#one" = "Готово — создан %d файл";
-"Done — %d files created#few" = "Готово — создано %d файла";
-"Done — %d files created#many" = "Готово — создано %d файлов";
-"Cancelled — %d files created#one" = "Отменено — создан %d файл";
-"Cancelled — %d files created#few" = "Отменено — создано %d файла";
-"Cancelled — %d files created#many" = "Отменено — создано %d файлов";
+"Done – %d files created#one" = "Готово – создан %d файл";
+"Done – %d files created#few" = "Готово – создано %d файла";
+"Done – %d files created#many" = "Готово – создано %d файлов";
+"Cancelled – %d files created#one" = "Отменено – создан %d файл";
+"Cancelled – %d files created#few" = "Отменено – создано %d файла";
+"Cancelled – %d files created#many" = "Отменено – создано %d файлов";
 "%d problems#one" = "%d ошибка";
 "%d problems#few" = "%d ошибки";
 "%d problems#many" = "%d ошибок";

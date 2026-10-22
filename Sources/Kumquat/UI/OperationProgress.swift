@@ -447,10 +447,10 @@ struct OperationCardView: View {
             return card.itemName.isEmpty ? L("Preparing…") : card.itemName
         case .succeeded:
             let n = card.outputs.count
-            return n == 0 ? L("Done") : Lp("Done — %d files created", n)
+            return n == 0 ? L("Done") : Lp("Done – %d files created", n)
         case .cancelled:
             let n = card.outputs.count
-            return n == 0 ? L("Cancelled") : Lp("Cancelled — %d files created", n)
+            return n == 0 ? L("Cancelled") : Lp("Cancelled – %d files created", n)
         case .failed:
             let n = max(card.problems.count, card.failures.count)
             return Lp("%d problems", n) + (card.outputs.isEmpty ? "" : ", " + L("%d created", card.outputs.count))

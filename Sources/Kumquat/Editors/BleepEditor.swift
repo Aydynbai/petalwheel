@@ -8,7 +8,7 @@ enum BleepEditor {
     /// Opens the editor window for `inputs`. Calls `completion` exactly once (nil = cancelled).
     static func present(inputs: [URL], completion: @escaping EditorCompletion) {
         guard let url = inputs.first else { completion(nil); return }
-        let host = EditorWindowHost(title: L("Bleep — %@", url.lastPathComponent),
+        let host = EditorWindowHost(title: L("Bleep – %@", url.lastPathComponent),
                                     minSize: NSSize(width: 720, height: 440), completion: completion)
         let controller = TimelineEditorController<BleepDocument>(url: url, host: host)
         host.show(BleepRootView(controller: controller, host: host).tint(KQTheme.accent))

@@ -1,4 +1,4 @@
-/* Kumquat — Info.plist (Русский) */
+/* Kumquat – Info.plist (Русский) */
 
 "NSAppleEventsUsageDescription" = "Kumquat читает выбранные в Finder файлы, когда вы нажимаете его сочетание клавиш, чтобы открыть для них колесо конвертации.";
 "NSHumanReadableCopyright" = "© 2026 kipperstudio";

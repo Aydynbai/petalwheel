@@ -79,7 +79,12 @@ brew install --cask thealexray/tap/kumquat
 ```
 
 or build it yourself (below). Builds are ad-hoc
-signed until a Developer ID is set up, so on first launch right-click the app and choose **Open**.
+signed until a Developer ID is set up, so macOS blocks the first launch:
+
+- **macOS 15 and later:** open Kumquat once, then go to **System Settings › Privacy & Security**,
+  scroll down and click **Open Anyway**.
+- **macOS 14:** right-click Kumquat in Applications, choose **Open**, then **Open** again.
+- Or, once in Terminal: `xattr -dr com.apple.quarantine /Applications/Kumquat.app`
 
 ## Build
 
