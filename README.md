@@ -127,7 +127,7 @@ See [docs/TESTING.md](docs/TESTING.md).
 Made by **kipperstudio** and **Claude** (an AI model by Anthropic).
 
 Bundled third-party software: FFmpeg (LGPL 2.1+), libwebp, LAME, Opus, libvpx, dav1d, SVT-AV1,
-libpng, libjpeg-turbo, xz. Their licenses ship inside the app at `Contents/Resources/Tools/licenses`
+libpng, libjpeg-turbo, xz. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md); the licenses ship inside the app at `Contents/Resources/Tools/licenses`
 and are listed in **Settings › About › Licenses…**.
 
 ## License
