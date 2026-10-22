@@ -72,7 +72,13 @@ All editors share the same shortcuts (⌘S, Esc, ⌘Z/⇧⌘Z, Space) and ask be
 
 ## Install
 
-Download the DMG from [Releases](../../releases), or build it yourself (below). Builds are ad-hoc
+Download the DMG from [Releases](../../releases), install with Homebrew:
+
+```bash
+brew install --cask thealexray/tap/kumquat
+```
+
+or build it yourself (below). Builds are ad-hoc
 signed until a Developer ID is set up, so on first launch right-click the app and choose **Open**.
 
 ## Build
