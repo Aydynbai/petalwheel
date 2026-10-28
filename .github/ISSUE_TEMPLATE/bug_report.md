@@ -15,8 +15,8 @@ labels: bug
 **Files involved** (format, size; attach a sample if you can)
 
 **Environment**
-- Kumquat version (Settings › About):
+- Petalwheel version (Settings › About):
 - macOS version:
 - Mac model:
 
-**Logs** (optional): `log stream --predicate 'subsystem == "studio.kipper.Kumquat"' --level debug`
+**Logs** (optional): `log stream --predicate 'subsystem == "studio.kipper.Petalwheel"' --level debug`

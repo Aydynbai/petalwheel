@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: A format, tool or workflow you'd like Kumquat to support
+about: A format, tool or workflow you'd like Petalwheel to support
 labels: enhancement
 ---
 

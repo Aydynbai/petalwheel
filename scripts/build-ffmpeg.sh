@@ -96,7 +96,7 @@ CONFIGURE_FLAGS=(
     --extra-cflags="-I$DEPS/include -mmacosx-version-min=$MINOS"
     --extra-ldflags="-L$DEPS/lib -mmacosx-version-min=$MINOS"
     --extra-libs=-liconv
-    --extra-version=kumquat-lgpl
+    --extra-version=petalwheel-lgpl
 )
 
 echo "==> Configuring ffmpeg $FFMPEG_VERSION"

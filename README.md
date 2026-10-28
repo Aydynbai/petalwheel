@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="Resources/AppIcon-1024.png" width="128" alt="Kumquat icon">
+  <img src="Resources/AppIcon-1024.png" width="128" alt="Petalwheel icon">
 </p>
 
-<h1 align="center">Kumquat</h1>
+<h1 align="center">Petalwheel</h1>
 
 <p align="center">
   A menu-bar file converter for macOS: drag files, tap <kbd>⇧ Shift</kbd>, drop on a petal.<br>
@@ -19,6 +19,9 @@
   <img src="docs/screens/palette-fan-convert.png" width="300" alt="Convert category">
 </p>
 
+> **Formerly Kumquat.** The app was renamed to Petalwheel in 1.1.0 to avoid confusion with an unrelated
+> project of the same name. Settings, history and presets carry over automatically.
+
 ## How it works
 
 1. Start dragging files in Finder (or any app).
@@ -27,7 +30,7 @@
 4. Drop the files on a petal. Results are saved next to the originals, which are never modified.
 
 The wheel only shows categories and actions that apply to every dragged file. No Accessibility
-permission is needed: Kumquat polls the mouse, modifier keys and the system drag pasteboard.
+permission is needed: Petalwheel polls the mouse, modifier keys and the system drag pasteboard.
 
 Other ways in: the menu-bar item (**Open Files in Wheel…**), right-click › **Services** in Finder,
 the global hotkey <kbd>⌃⌥K</kbd> for the current Finder selection, watch folders, and a CLI.
@@ -75,16 +78,16 @@ All editors share the same shortcuts (⌘S, Esc, ⌘Z/⇧⌘Z, Space) and ask be
 Download the DMG from [Releases](../../releases), install with Homebrew:
 
 ```bash
-brew install --cask thealexray/tap/kumquat
+brew install --cask thealexray/tap/petalwheel
 ```
 
 or build it yourself (below). Builds are ad-hoc
 signed until a Developer ID is set up, so macOS blocks the first launch:
 
-- **macOS 15 and later:** open Kumquat once, then go to **System Settings › Privacy & Security**,
+- **macOS 15 and later:** open Petalwheel once, then go to **System Settings › Privacy & Security**,
   scroll down and click **Open Anyway**.
-- **macOS 14:** right-click Kumquat in Applications, choose **Open**, then **Open** again.
-- Or, once in Terminal: `xattr -dr com.apple.quarantine /Applications/Kumquat.app`
+- **macOS 14:** right-click Petalwheel in Applications, choose **Open**, then **Open** again.
+- Or, once in Terminal: `xattr -dr com.apple.quarantine /Applications/Petalwheel.app`
 
 ## Build
 
@@ -93,22 +96,22 @@ Requires the Xcode Command Line Tools (Xcode itself is not needed) and Homebrew 
 ```bash
 brew install meson ninja cmake pkgconf
 ./scripts/build-ffmpeg.sh          # LGPL ffmpeg + codecs from official sources (first run takes a while)
-./scripts/build-app.sh --install   # builds build/Kumquat.app and copies it to ~/Applications
+./scripts/build-app.sh --install   # builds build/Petalwheel.app and copies it to ~/Applications
 ```
 
 For quick development without the bundled toolchain, `brew install ffmpeg webp`, then
-`swift build && .build/debug/Kumquat`. See [docs/RELEASE.md](docs/RELEASE.md) for the DMG,
+`swift build && .build/debug/Petalwheel`. See [docs/RELEASE.md](docs/RELEASE.md) for the DMG,
 signing and notarization.
 
 ## Command line
 
 ```bash
-Kumquat --convert webp photo.png scan.heic
-Kumquat --tool compress video.mov
-Kumquat --list
+Petalwheel --convert webp photo.png scan.heic
+Petalwheel --tool compress video.mov
+Petalwheel --list
 ```
 
-The binary is `Kumquat.app/Contents/MacOS/Kumquat`. CLI output is always in English.
+The binary is `Petalwheel.app/Contents/MacOS/Petalwheel`. CLI output is always in English.
 
 ## Tests
 
@@ -124,12 +127,12 @@ See [docs/TESTING.md](docs/TESTING.md).
 
 | Folder | Contents |
 |---|---|
-| `Sources/Kumquat/Model` | Formats, conversion matrix, tool catalog, settings, presets, shared contracts |
-| `Sources/Kumquat/App` | Drag gesture monitor, job coordinator, actions, menu bar, history, Finder services, hotkey, watch folders, CLI |
-| `Sources/Kumquat/Fan` | The radial wheel |
-| `Sources/Kumquat/Engine` | Image, media (ffmpeg), document, EPUB, Office/iWork, spreadsheet, subtitle and archive engines, tool modules |
-| `Sources/Kumquat/Editors` | The seven interactive editors and their shared window, canvas and timeline code |
-| `Sources/Kumquat/UI` | Theme, HUD, tool options, settings, welcome, float shelf |
+| `Sources/Petalwheel/Model` | Formats, conversion matrix, tool catalog, settings, presets, shared contracts |
+| `Sources/Petalwheel/App` | Drag gesture monitor, job coordinator, actions, menu bar, history, Finder services, hotkey, watch folders, CLI |
+| `Sources/Petalwheel/Fan` | The radial wheel |
+| `Sources/Petalwheel/Engine` | Image, media (ffmpeg), document, EPUB, Office/iWork, spreadsheet, subtitle and archive engines, tool modules |
+| `Sources/Petalwheel/Editors` | The seven interactive editors and their shared window, canvas and timeline code |
+| `Sources/Petalwheel/UI` | Theme, HUD, tool options, settings, welcome, float shelf |
 | `Resources` | App icon, `en.lproj` and `ru.lproj` strings |
 | `scripts` | Build, toolchain, release, test and localization scripts |
 
@@ -143,4 +146,4 @@ and are listed in **Settings › About › Licenses…**.
 
 ## License
 
-Kumquat's source code is released under the [MIT License](LICENSE). © 2026 kipperstudio.
+Petalwheel's source code is released under the [MIT License](LICENSE). © 2026 kipperstudio.

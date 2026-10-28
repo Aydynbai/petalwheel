@@ -1,6 +1,6 @@
-/* Kumquat – Finder Services menu titles (NSMenuItem default → title) */
+/* Petalwheel – Finder Services menu titles (NSMenuItem default → title) */
 
-"Kumquat: Open in Wheel" = "Kumquat: Open in Wheel";
-"Kumquat: Convert to JPG" = "Kumquat: Convert to JPG";
-"Kumquat: Compress" = "Kumquat: Compress";
-"Kumquat: Convert to MP4" = "Kumquat: Convert to MP4";
+"Petalwheel: Open in Wheel" = "Petalwheel: Open in Wheel";
+"Petalwheel: Convert to JPG" = "Petalwheel: Convert to JPG";
+"Petalwheel: Compress" = "Petalwheel: Compress";
+"Petalwheel: Convert to MP4" = "Petalwheel: Convert to MP4";

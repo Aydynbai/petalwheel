@@ -1,8 +1,8 @@
 #!/bin/bash
-# Builds Kumquat and packages it as build/Kumquat-<version>.dmg (app + /Applications symlink, UDZO).
+# Builds Petalwheel and packages it as build/Petalwheel-<version>.dmg (app + /Applications symlink, UDZO).
 #
 # Usage: scripts/release.sh [--skip-build] [--no-verify]
-#   --skip-build  package the existing build/Kumquat.app instead of running build-app.sh
+#   --skip-build  package the existing build/Petalwheel.app instead of running build-app.sh
 #   --no-verify   don't mount the finished DMG to verify the app signature inside it
 #
 # Environment (both required for a distributable build, see docs/RELEASE.md):
@@ -14,9 +14,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
-APP_NAME="Kumquat"
+APP_NAME="Petalwheel"
 APP="$ROOT/build/$APP_NAME.app"
-ENTITLEMENTS="$ROOT/scripts/Kumquat.entitlements"
+ENTITLEMENTS="$ROOT/scripts/Petalwheel.entitlements"
 
 BUILD=1; VERIFY=1
 for arg in "$@"; do
@@ -95,7 +95,7 @@ fi
 
 # --- DMG -----------------------------------------------------------------------------------------
 step "Creating $DMG"
-STAGE="$(mktemp -d "${TMPDIR:-/tmp}/kumquat-dmg.XXXXXX")"
+STAGE="$(mktemp -d "${TMPDIR:-/tmp}/petalwheel-dmg.XXXXXX")"
 MOUNT=""
 cleanup() {
     [[ -n "$MOUNT" ]] && hdiutil detach "$MOUNT" -quiet -force 2>/dev/null || true
@@ -134,7 +134,7 @@ fi
 # --- verify --------------------------------------------------------------------------------------
 if [[ $VERIFY -eq 1 ]]; then
     step "Verifying the DMG contents"
-    MOUNT="$(mktemp -d "${TMPDIR:-/tmp}/kumquat-mnt.XXXXXX")"
+    MOUNT="$(mktemp -d "${TMPDIR:-/tmp}/petalwheel-mnt.XXXXXX")"
     hdiutil attach "$DMG" -nobrowse -readonly -noautoopen -mountpoint "$MOUNT" -quiet
     [[ -L "$MOUNT/Applications" ]] || die "Applications symlink missing in the DMG"
     codesign --verify --deep --strict --verbose=1 "$MOUNT/$APP_NAME.app"

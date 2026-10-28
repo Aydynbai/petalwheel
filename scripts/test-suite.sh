@@ -1,16 +1,16 @@
 #!/bin/bash
-# End-to-end test suite for Kumquat's headless CLI.
+# End-to-end test suite for Petalwheel's headless CLI.
 #
 # Usage: scripts/test-suite.sh [--binary PATH] [--quick] [--keep] [--filter REGEX] [--timeout SECS]
-#   --binary PATH   Kumquat executable (default: build/Kumquat.app/Contents/MacOS/Kumquat,
-#                   falling back to .build/debug/Kumquat)
+#   --binary PATH   Petalwheel executable (default: build/Petalwheel.app/Contents/MacOS/Petalwheel,
+#                   falling back to .build/debug/Petalwheel)
 #   --quick         one representative conversion/tool per group (~1 minute)
 #   --keep          keep the temp work dir (fixtures + outputs) for inspection
 #   --filter REGEX  only run cases whose name matches (extended regex)
 #   --timeout SECS  per-case timeout (default 300)
 #
 # Generates fixtures deterministically in a temp dir, runs every conversion pair the app offers
-# (mirrors Sources/Kumquat/Model/ConversionCatalog.swift) and every non-interactive tool, validates
+# (mirrors Sources/Petalwheel/Model/ConversionCatalog.swift) and every non-interactive tool, validates
 # the produced files (dimensions, codecs, durations, page counts, text content), prints a PASS/FAIL
 # table and writes build/test-report.md + build/test-report.xml. Exits 1 on any failure.
 set -u   # no pipefail: validators use `cmd | grep -q`, which SIGPIPEs the producer
@@ -36,11 +36,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$BIN" ]]; then
-    for c in "$ROOT/build/Kumquat.app/Contents/MacOS/Kumquat" "$ROOT/.build/debug/Kumquat"; do
+    for c in "$ROOT/build/Petalwheel.app/Contents/MacOS/Petalwheel" "$ROOT/.build/debug/Petalwheel"; do
         [[ -x "$c" ]] && { BIN="$c"; break; }
     done
 fi
-[[ -n "$BIN" && -x "$BIN" ]] || { echo "No Kumquat binary found; build first or pass --binary" >&2; exit 2; }
+[[ -n "$BIN" && -x "$BIN" ]] || { echo "No Petalwheel binary found; build first or pass --binary" >&2; exit 2; }
 BIN="$(cd "$(dirname "$BIN")" && pwd)/$(basename "$BIN")"
 ORIG_BIN="$BIN"
 
@@ -51,21 +51,21 @@ FFMPEG="$(pick_tool ffmpeg)"; FFPROBE="$(pick_tool ffprobe)"; CWEBP="$(pick_tool
 [[ -n "$FFMPEG" && -n "$FFPROBE" ]] || { echo "ffmpeg/ffprobe not found (brew install ffmpeg)" >&2; exit 2; }
 HAS_WEBP=0; [[ -n "$CWEBP" ]] && HAS_WEBP=1
 
-QR_TEXT="https://kumquat.example/qr?id=42&lang=ru"
-OCR_WORD="KUMQUAT"
+QR_TEXT="https://petalwheel.example/qr?id=42&lang=ru"
+OCR_WORD="PETALWHEEL"
 
-WORK="$(mktemp -d "${TMPDIR:-/tmp}/kumquat-tests.XXXXXX")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/petalwheel-tests.XXXXXX")"
 FIX="$WORK/fixtures"; RUNS="$WORK/runs"; mkdir -p "$FIX" "$RUNS"
-# Snapshot the app bundle so a concurrent build-app.sh (which deletes build/Kumquat.app) can't break the run.
+# Snapshot the app bundle so a concurrent build-app.sh (which deletes build/Petalwheel.app) can't break the run.
 if [[ "$BIN" == *.app/Contents/MacOS/* ]]; then
     APP_SRC="${BIN%/Contents/MacOS/*}"
     ditto "$APP_SRC" "$WORK/$(basename "$APP_SRC")"
-    # Renamed executable: `killall Kumquat` / `pkill -x Kumquat` (e.g. relaunching the menu-bar app) won't hit tests.
+    # Renamed executable: `killall Petalwheel` / `pkill -x Petalwheel` (e.g. relaunching the menu-bar app) won't hit tests.
     mv "$WORK/$(basename "$APP_SRC")/Contents/MacOS/$(basename "$BIN")" "$WORK/$(basename "$APP_SRC")/Contents/MacOS/kq-under-test"
     BIN="$WORK/$(basename "$APP_SRC")/Contents/MacOS/kq-under-test"
     echo "Testing a snapshot of $APP_SRC"
 else
-    cp "$BIN" "$WORK/kumquat-bin"; BIN="$WORK/kumquat-bin"
+    cp "$BIN" "$WORK/petalwheel-bin"; BIN="$WORK/petalwheel-bin"
 fi
 TOOLS_DIR="$(dirname "$BIN")/../Resources/Tools"
 FFMPEG="$(pick_tool ffmpeg)"; FFPROBE="$(pick_tool ffprobe)"; CWEBP="$(pick_tool cwebp)"
@@ -496,7 +496,7 @@ v_remove_metadata() {
     local o="${OUTS[0]}"
     case "$o" in
         *.jpg|*.png|*.heic|*.tiff)
-            ! grep -qa "KumquatTestCam" "$o" || { fail_v "EXIF Make still present"; return 1; }
+            ! grep -qa "PetalwheelTestCam" "$o" || { fail_v "EXIF Make still present"; return 1; }
             local gps; gps=$(sips -g all "$o" 2>/dev/null | grep -ci gps || true)
             [[ $gps -eq 0 ]] || { fail_v "GPS metadata still present"; return 1; }
             # Orientation must survive as pixels (or tag): displayed portrait 300x400.
@@ -619,7 +619,7 @@ v_audio_to_video() { need_outputs 1 1 || return 1; local o="${OUTS[0]}"
 v_extract() { need_outputs 1 1 || return 1; local o="${OUTS[0]}"
     [[ -d "$o" ]] || { fail_v "output isn't a folder"; return 1; }
     local hello; hello=$(find "$o" -name hello.txt | head -1)
-    [[ -n "$hello" ]] && grep -q "hello from kumquat" "$hello" || { fail_v "hello.txt missing or wrong"; return 1; }
+    [[ -n "$hello" ]] && grep -q "hello from petalwheel" "$hello" || { fail_v "hello.txt missing or wrong"; return 1; }
     [[ -n "$(find "$o" -name 'привет.txt')" ]] || { fail_v "Cyrillic file name lost"; return 1; }
     NOTE="$(find "$o" -type f | wc -l | tr -d ' ') files"; }
 
@@ -720,7 +720,7 @@ write_reports() {
     done
     local secs; secs=$(awk -v m=$(( $(now_ms) - SUITE_START )) 'BEGIN{printf "%.1f", m/1000}')
     {
-        echo "# Kumquat test report"
+        echo "# Petalwheel test report"
         echo
         echo "- Binary: \`$ORIG_BIN\`"
         echo "- ffmpeg: \`$FFMPEG\`"
@@ -750,7 +750,7 @@ write_reports() {
     xml_escape() { sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g'; }
     {
         echo '<?xml version="1.0" encoding="UTF-8"?>'
-        echo "<testsuite name=\"kumquat\" tests=\"$total\" failures=\"$fail\" skipped=\"$skip\" time=\"$secs\">"
+        echo "<testsuite name=\"petalwheel\" tests=\"$total\" failures=\"$fail\" skipped=\"$skip\" time=\"$secs\">"
         for ((i = 0; i < total; i++)); do
             printf '  <testcase classname="%s" name="%s" time="%s">' "${R_GROUP[$i]}" \
                 "$(printf '%s' "${R_NAME[$i]}" | xml_escape)" "$(awk -v m="${R_MS[$i]}" 'BEGIN{printf "%.3f", m/1000}')"
@@ -777,7 +777,7 @@ write_reports() {
 
 # --- main -----------------------------------------------------------------------------------
 
-echo "${C_B}Kumquat test suite${C_0} — $([[ $QUICK -eq 1 ]] && echo quick || echo full) — $ORIG_BIN"
+echo "${C_B}Petalwheel test suite${C_0} — $([[ $QUICK -eq 1 ]] && echo quick || echo full) — $ORIG_BIN"
 echo "Work dir: $WORK"
 FIXTOOL="$WORK/fixtures-tool"
 swiftc -O "$HERE/fixtures.swift" -o "$FIXTOOL" 2>"$WORK/swiftc.log" \

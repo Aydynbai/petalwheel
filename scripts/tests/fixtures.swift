@@ -69,7 +69,7 @@ case "orient-jpg":
     write(ctx.makeImage()!, to: path, type: .jpeg, properties: [
         kCGImagePropertyOrientation: 6,
         kCGImageDestinationLossyCompressionQuality: 0.9,
-        kCGImagePropertyTIFFDictionary: [kCGImagePropertyTIFFOrientation: 6, kCGImagePropertyTIFFMake: "KumquatTestCam", kCGImagePropertyTIFFModel: "KQ-1"],
+        kCGImagePropertyTIFFDictionary: [kCGImagePropertyTIFFOrientation: 6, kCGImagePropertyTIFFMake: "PetalwheelTestCam", kCGImagePropertyTIFFModel: "KQ-1"],
         kCGImagePropertyGPSDictionary: [kCGImagePropertyGPSLatitude: 55.75, kCGImagePropertyGPSLatitudeRef: "N",
                                         kCGImagePropertyGPSLongitude: 37.62, kCGImagePropertyGPSLongitudeRef: "E"],
     ])
@@ -126,7 +126,7 @@ case "pdf":
     let pages = Int(args.count >= 4 ? args[3] : "3") ?? 3
     var box = CGRect(x: 0, y: 0, width: 595, height: 842)
     guard let ctx = CGContext(URL(fileURLWithPath: path) as CFURL, mediaBox: &box,
-                              [kCGPDFContextCreator: "Kumquat tests", kCGPDFContextTitle: "Fixture"] as CFDictionary) else { fail("pdf") }
+                              [kCGPDFContextCreator: "Petalwheel tests", kCGPDFContextTitle: "Fixture"] as CFDictionary) else { fail("pdf") }
     for i in 1...pages {
         ctx.beginPDFPage(nil)
         drawText("Page \(i)", in: ctx, rect: CGRect(x: 40, y: 600, width: 515, height: 120), size: 48)

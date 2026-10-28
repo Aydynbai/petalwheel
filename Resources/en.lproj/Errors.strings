@@ -1,4 +1,4 @@
-/* Kumquat – error messages (English) */
+/* Petalwheel – error messages (English) */
 
 "error.cancelled" = "Cancelled";
 "error.noAudio" = "This file has no audio track";

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  Hardened-runtime entitlements used by scripts/release.sh for Kumquat.app and the bundled
+  Hardened-runtime entitlements used by scripts/release.sh for Petalwheel.app and the bundled
   ffmpeg / ffprobe / cwebp executables in Contents/Resources/Tools.
   No JIT / unsigned-executable-memory entitlements are needed.
   disable-library-validation lets the tools load the bundled Homebrew dylibs (Tools/lib) even if

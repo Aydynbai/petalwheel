@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "Kumquat",
+    name: "Petalwheel",
     platforms: [.macOS(.v14)],
     targets: [
         .executableTarget(
-            name: "Kumquat",
-            path: "Sources/Kumquat",
+            name: "Petalwheel",
+            path: "Sources/Petalwheel",
             linkerSettings: [.linkedFramework("Vision"), .linkedFramework("PDFKit"), .linkedFramework("QuickLookThumbnailing")]
         ),
     ]

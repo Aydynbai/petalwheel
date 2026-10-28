@@ -1,11 +1,11 @@
-# Releasing Kumquat
+# Releasing Petalwheel
 
-`scripts/release.sh` builds the app, packages it into `build/Kumquat-<version>.dmg` and, when
+`scripts/release.sh` builds the app, packages it into `build/Petalwheel-<version>.dmg` and, when
 credentials are available, signs it with a Developer ID and notarizes it.
 
 ```bash
 ./scripts/release.sh                 # build + DMG (ad-hoc unless the env vars below are set)
-./scripts/release.sh --skip-build    # package the existing build/Kumquat.app
+./scripts/release.sh --skip-build    # package the existing build/Petalwheel.app
 ./scripts/release.sh --no-verify     # skip mounting the DMG to check it
 ```
 
@@ -22,13 +22,13 @@ The version comes from `CFBundleShortVersionString` in the built `Info.plist` (s
    - **Developer ID**: when both `DEVELOPER_ID` and `NOTARY_PROFILE` are set. It re-signs every
      Mach-O from the inside out: the dylibs in `Tools/lib`, then the `ffmpeg`, `ffprobe` and `cwebp`
      executables, then the app. Every signature uses `--options runtime --timestamp`. The
-     executables and the app get `scripts/Kumquat.entitlements`, which contains only
+     executables and the app get `scripts/Petalwheel.entitlements`, which contains only
      `com.apple.security.cs.disable-library-validation`. No JIT entitlements are needed. The
      script then checks that every nested Mach-O carries the hardened-runtime flag.
    - **Ad-hoc**: otherwise. The script keeps the ad-hoc signature from `build-app.sh` and prints
      which variables are missing.
-3. Stages `Kumquat.app` (copied with `ditto`) plus an `Applications` symlink and the app icon as
-   the volume icon. It then runs `hdiutil create -volname Kumquat -format UDZO` and
+3. Stages `Petalwheel.app` (copied with `ditto`) plus an `Applications` symlink and the app icon as
+   the volume icon. It then runs `hdiutil create -volname Petalwheel -format UDZO` and
    `hdiutil verify`.
 4. In Developer ID mode it signs the DMG and runs
    `xcrun notarytool submit --wait --keychain-profile "$NOTARY_PROFILE"`. If the upload is
@@ -37,7 +37,7 @@ The version comes from `CFBundleShortVersionString` in the built `Info.plist` (s
    `build/notarytool-<version>.json`.
 5. Verification: mounts the DMG with `hdiutil attach -nobrowse -readonly` and checks the
    `Applications` symlink. It runs `codesign --verify --deep --strict` on the app inside the DMG,
-   runs `Kumquat --list` from the mounted image, and in Developer ID mode also runs
+   runs `Petalwheel --list` from the mounted image, and in Developer ID mode also runs
    `spctl --assess`. Then it detaches the image and prints the SHA-256 of the DMG.
 
 ## Getting a Developer ID certificate
@@ -69,17 +69,17 @@ any more, because Apple retired altool notarization in Nov 2023.
    API key (`--key`, `--key-id`, `--issuer`).
 2. Store the credentials in the keychain under a profile name:
    ```bash
-   xcrun notarytool store-credentials kumquat-notary \
+   xcrun notarytool store-credentials petalwheel-notary \
        --apple-id you@example.com --team-id TEAMID1234
    # prompts for the app-specific password; it is stored in the keychain, not on disk
    ```
-3. Check it: `xcrun notarytool history --keychain-profile kumquat-notary`.
+3. Check it: `xcrun notarytool history --keychain-profile petalwheel-notary`.
 
 ## Running a signed, notarized release
 
 ```bash
 export DEVELOPER_ID="Developer ID Application: Jane Doe (TEAMID1234)"
-export NOTARY_PROFILE="kumquat-notary"
+export NOTARY_PROFILE="petalwheel-notary"
 ./scripts/release.sh
 ```
 

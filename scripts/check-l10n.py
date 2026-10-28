@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Localization completeness check for Kumquat.
+"""Localization completeness check for Petalwheel.
 
 Extracts the English keys used in Sources/ (SwiftUI literals in Text/Button/Label/Toggle/…, the L()/Lp()
-helpers, KumquatError(l:), the Errors table in ErrorStrings and the app's own components that localize a
+helpers, PetalwheelError(l:), the Errors table in ErrorStrings and the app's own components that localize a
 String parameter) and compares them with Resources/{en,ru}.lproj/*.strings.
 
 Reports keys missing from each language, unused keys, plural forms that are missing, and SwiftUI literals
@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCES = ROOT / "Sources" / "Kumquat"
+SOURCES = ROOT / "Sources" / "Petalwheel"
 RESOURCES = ROOT / "Resources"
 LANGS = ["en", "ru"]
 PLURAL_FORMS = {"en": ["one", "other"], "ru": ["one", "few", "many"]}
@@ -28,12 +28,12 @@ LIT = r'"((?:[^"\\\n]|\\.)*)"'
 # Plain lookups: the first literal argument is the key.
 PLAIN_PATTERNS = [
     r'\bL\(\s*' + LIT,
-    r'KumquatError\(l:\s*' + LIT,
+    r'PetalwheelError\(l:\s*' + LIT,
     # SwiftUI views whose literal argument is a LocalizedStringKey.
     r'\b(?:Text|Button|Label|Toggle|Picker|Section|Menu|TextField|SecureField|ColorPicker|Stepper|GroupBox|LabeledContent|Link)\(\s*' + LIT,
     r'\.help\(\s*' + LIT,
     r'\.navigationTitle\(\s*' + LIT,
-    # Kumquat components that run their String parameter through L().
+    # Petalwheel components that run their String parameter through L().
     r'\bOptionRow\(\s*' + LIT,
     r'\bSliderRow\(title:\s*' + LIT,
     r'\bhelp:\s*' + LIT,

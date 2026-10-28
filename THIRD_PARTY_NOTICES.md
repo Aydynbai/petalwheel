@@ -1,8 +1,8 @@
 # Third-party notices
 
-Kumquat's own source code is MIT-licensed (see [LICENSE](LICENSE)).
+Petalwheel's own source code is MIT-licensed (see [LICENSE](LICENSE)).
 
-`Kumquat.app` bundles third-party software that `scripts/build-ffmpeg.sh` and
+`Petalwheel.app` bundles third-party software that `scripts/build-ffmpeg.sh` and
 `scripts/build-deps.sh` build from official source releases (versions and SHA-256
 checksums are pinned in those scripts):
 

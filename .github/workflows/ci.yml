@@ -21,7 +21,7 @@ jobs:
         run: python3 scripts/check-l10n.py
 
       - name: Quick test suite
-        run: ./scripts/test-suite.sh --binary .build/debug/Kumquat --quick
+        run: ./scripts/test-suite.sh --binary .build/debug/Petalwheel --quick
 
       - name: Upload test report
         if: always()

@@ -1,4 +1,4 @@
-/* Kumquat – English. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
+/* Petalwheel – English. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
 
 "AirDrop isn't available on this Mac right now." = "AirDrop isn't available on this Mac right now.";
 "Copied %@" = "Copied %@";
@@ -12,20 +12,20 @@
 "Show Float" = "Show Float";
 "How It Works" = "How It Works";
 "Settings…" = "Settings…";
-"Quit Kumquat" = "Quit Kumquat";
+"Quit Petalwheel" = "Quit Petalwheel";
 "Choose" = "Choose";
 "A helper" = "A helper";
 "this folder" = "this folder";
-"Kumquat: Open in Wheel" = "Kumquat: Open in Wheel";
-"Kumquat: Convert to JPG" = "Kumquat: Convert to JPG";
-"Kumquat: Compress" = "Kumquat: Compress";
-"Kumquat: Convert to MP4" = "Kumquat: Convert to MP4";
-"Kumquat: no files were passed to the service." = "Kumquat: no files were passed to the service.";
+"Petalwheel: Open in Wheel" = "Petalwheel: Open in Wheel";
+"Petalwheel: Convert to JPG" = "Petalwheel: Convert to JPG";
+"Petalwheel: Compress" = "Petalwheel: Compress";
+"Petalwheel: Convert to MP4" = "Petalwheel: Convert to MP4";
+"Petalwheel: no files were passed to the service." = "Petalwheel: no files were passed to the service.";
 "Space" = "Space";
 "%@ is already used by another app. Pick another shortcut." = "%@ is already used by another app. Pick another shortcut.";
 "Couldn't register %@ (error %d)." = "Couldn't register %@ (error %d).";
-"Kumquat can't read the Finder selection" = "Kumquat can't read the Finder selection";
-"To open the wheel for files selected in Finder, allow Kumquat to control Finder in System Settings › Privacy & Security › Automation › Kumquat › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services." = "To open the wheel for files selected in Finder, allow Kumquat to control Finder in System Settings › Privacy & Security › Automation › Kumquat › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services.";
+"Petalwheel can't read the Finder selection" = "Petalwheel can't read the Finder selection";
+"To open the wheel for files selected in Finder, allow Petalwheel to control Finder in System Settings › Privacy & Security › Automation › Petalwheel › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services." = "To open the wheel for files selected in Finder, allow Petalwheel to control Finder in System Settings › Privacy & Security › Automation › Petalwheel › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services.";
 "Open Automation Settings" = "Open Automation Settings";
 "Not Now" = "Not Now";
 "Recent" = "Recent";
@@ -355,7 +355,7 @@
 "“%@” has no data." = "“%@” has no data.";
 "Quick Look took too long to render “%@”." = "Quick Look took too long to render “%@”.";
 "Quick Look couldn't render “%@”: %@" = "Quick Look couldn't render “%@”: %@";
-"macOS can't preview “%@”, so Kumquat can't convert it." = "macOS can't preview “%@”, so Kumquat can't convert it.";
+"macOS can't preview “%@”, so Petalwheel can't convert it." = "macOS can't preview “%@”, so Petalwheel can't convert it.";
 "Nothing to render: the document has no pages." = "Nothing to render: the document has no pages.";
 "Couldn't read the rendered slides." = "Couldn't read the rendered slides.";
 "Rendering “%@” timed out." = "Rendering “%@” timed out.";
@@ -455,7 +455,7 @@
 "Keep a history of recent operations" = "Keep a history of recent operations";
 "Recent results appear in the menu bar under Recent." = "Recent results appear in the menu bar under Recent.";
 "Right-click files in Finder › Quick Actions or Services. If an item is missing, turn it on under Keyboard › Keyboard Shortcuts › Services › Files and Folders." = "Right-click files in Finder › Quick Actions or Services. If an item is missing, turn it on under Keyboard › Keyboard Shortcuts › Services › Files and Folders.";
-"Services are available when running the bundled Kumquat.app." = "Services are available when running the bundled Kumquat.app.";
+"Services are available when running the bundled Petalwheel.app." = "Services are available when running the bundled Petalwheel.app.";
 "Not registered" = "Not registered";
 "Off in System Settings" = "Off in System Settings";
 "On" = "On";
@@ -474,11 +474,11 @@
 "Shortcut" = "Shortcut";
 "Open Automation Settings…" = "Open Automation Settings…";
 "Global Shortcut" = "Global Shortcut";
-"Select files in Finder and press the shortcut. The first time, macOS asks to let Kumquat control Finder." = "Select files in Finder and press the shortcut. The first time, macOS asks to let Kumquat control Finder.";
+"Select files in Finder and press the shortcut. The first time, macOS asks to let Petalwheel control Finder." = "Select files in Finder and press the shortcut. The first time, macOS asks to let Petalwheel control Finder.";
 "No watch folders yet. New files dropped into a watched folder are converted automatically." = "No watch folders yet. New files dropped into a watched folder are converted automatically.";
 "Add Folder…" = "Add Folder…";
 "Watch Folders" = "Watch Folders";
-"Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Kumquat's own outputs are ignored." = "Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Kumquat's own outputs are ignored.";
+"Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Petalwheel's own outputs are ignored." = "Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Petalwheel's own outputs are ignored.";
 "Action" = "Action";
 "Originals" = "Originals";
 "Click, then press a key with ⌘, ⌥ or ⌃. Escape cancels." = "Click, then press a key with ⌘, ⌥ or ⌃. Escape cancels.";
@@ -519,17 +519,17 @@
 "Spacing" = "Spacing";
 "Loudness" = "Loudness";
 "Silence below" = "Silence below";
-"Kumquat Settings" = "Kumquat Settings";
-"Available when running from Kumquat.app" = "Available when running from Kumquat.app";
-"Kumquat opens when you log in" = "Kumquat opens when you log in";
+"Petalwheel Settings" = "Petalwheel Settings";
+"Available when running from Petalwheel.app" = "Available when running from Petalwheel.app";
+"Petalwheel opens when you log in" = "Petalwheel opens when you log in";
 "Needs approval in System Settings → General → Login Items" = "Needs approval in System Settings → General → Login Items";
 "Off" = "Off";
 "Not available for this copy of the app" = "Not available for this copy of the app";
 "Unknown" = "Unknown";
-"Launch at login only works from the bundled Kumquat.app (build it with scripts/build-app.sh)." = "Launch at login only works from the bundled Kumquat.app (build it with scripts/build-app.sh).";
+"Launch at login only works from the bundled Petalwheel.app (build it with scripts/build-app.sh)." = "Launch at login only works from the bundled Petalwheel.app (build it with scripts/build-app.sh).";
 "language.system" = "System";
-"Restart Kumquat now?" = "Restart Kumquat now?";
-"The new language is used after Kumquat restarts." = "The new language is used after Kumquat restarts.";
+"Restart Petalwheel now?" = "Restart Petalwheel now?";
+"The new language is used after Petalwheel restarts." = "The new language is used after Petalwheel restarts.";
 "Restart Now" = "Restart Now";
 "Later" = "Later";
 "Smallest files, visibly lower quality." = "Smallest files, visibly lower quality.";
@@ -541,7 +541,7 @@
 "WebP export" = "WebP export";
 "not found" = "not found";
 "No licenses folder" = "No licenses folder";
-"This copy of Kumquat doesn't include the bundled helpers, so there are no third-party licenses to show." = "This copy of Kumquat doesn't include the bundled helpers, so there are no third-party licenses to show.";
+"This copy of Petalwheel doesn't include the bundled helpers, so there are no third-party licenses to show." = "This copy of Petalwheel doesn't include the bundled helpers, so there are no third-party licenses to show.";
 "OK" = "OK";
 "Made by" = "Made by";
 "credits.and" = "&";
@@ -561,7 +561,7 @@
 "Default quality" = "Default quality";
 "Keep EXIF, dates and location in converted files when the format allows it." = "Keep EXIF, dates and location in converted files when the format allows it.";
 "Converted files are saved next to the originals." = "Converted files are saved next to the originals.";
-"Kumquat" = "Kumquat";
+"Petalwheel" = "Petalwheel";
 "Drag, tap a key, drop on a petal. Files convert right where they are." = "Drag, tap a key, drop on a petal. Files convert right where they are.";
 "Helpers" = "Helpers";
 "Install missing helpers:" = "Install missing helpers:";
@@ -582,7 +582,7 @@
 "Apply" = "Apply";
 "No options for this tool." = "No options for this tool.";
 "KB" = "KB";
-"Kumquat will aim for files at or below this size." = "Kumquat will aim for files at or below this size.";
+"Petalwheel will aim for files at or below this size." = "Petalwheel will aim for files at or below this size.";
 "Drop shadow" = "Drop shadow";
 "Columns" = "Columns";
 "Use 1:23.5 or seconds; leave End empty to keep until the end." = "Use 1:23.5 or seconds; leave End empty to keep until the end.";
@@ -594,7 +594,7 @@
 "Anything quieter than this is treated as silence." = "Anything quieter than this is treated as silence.";
 "Target loudness" = "Target loudness";
 "Silence threshold" = "Silence threshold";
-"Welcome to Kumquat" = "Welcome to Kumquat";
+"Welcome to Petalwheel" = "Welcome to Petalwheel";
 "Start dragging files in Finder" = "Start dragging files in Finder";
 "Pick one file or a whole selection and begin a drag." = "Pick one file or a whole selection and begin a drag.";
 "Tap the key while dragging, pick a category" = "Tap the key while dragging, pick a category";

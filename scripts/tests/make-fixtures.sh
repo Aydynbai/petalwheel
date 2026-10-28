@@ -45,7 +45,7 @@ gen_images() {
   <rect width="320" height="200" fill="#ffefd5"/>
   <circle cx="100" cy="100" r="70" fill="#ff8c1a"/>
   <rect x="190" y="40" width="100" height="120" rx="16" fill="#2a7ab0"/>
-  <text x="160" y="190" font-family="Helvetica" font-size="18" text-anchor="middle">Kumquat</text>
+  <text x="160" y="190" font-family="Helvetica" font-size="18" text-anchor="middle">Petalwheel</text>
 </svg>
 SVG
     [[ -s "$FIX/vector.svg" ]] && fixture_ok vector.svg || fixture_fail vector.svg "write failed"
@@ -164,7 +164,7 @@ gen_subtitles() {
 gen_archives() {
     local src="$FIX/.archive-src"
     rm -rf "$src"; mkdir -p "$src/bundle/inner"
-    printf 'hello from kumquat\n' > "$src/bundle/hello.txt"
+    printf 'hello from petalwheel\n' > "$src/bundle/hello.txt"
     printf '%s\n' "$CYR" > "$src/bundle/inner/привет.txt"
     find "$src" -exec touch -h -t 202401010000 {} +
     (cd "$src" && rm -f "$FIX/bundle.zip" && zip -qrX "$FIX/bundle.zip" bundle) && fixture_ok bundle.zip || fixture_fail bundle.zip "zip failed"

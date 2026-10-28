@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Kumquat in release mode and assembles an ad-hoc signed build/Kumquat.app.
+# Builds Petalwheel in release mode and assembles an ad-hoc signed build/Petalwheel.app.
 #
 # Usage: scripts/build-app.sh [--install] [--no-tools]
 #   --install   also copy the app to ~/Applications
@@ -26,9 +26,9 @@ for arg in "$@"; do
     esac
 done
 
-APP_NAME="Kumquat"
-BUNDLE_ID="studio.kipper.Kumquat"
-VERSION="1.0.1"
+APP_NAME="Petalwheel"
+BUNDLE_ID="studio.kipper.Petalwheel"
+VERSION="1.1.0"
 BUILD_NUMBER="$(date +%Y%m%d%H%M)"
 APP="$ROOT/build/$APP_NAME.app"
 
@@ -116,16 +116,16 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>NSHumanReadableCopyright</key>
     <string>© 2026 kipperstudio</string>
     <key>NSAppleEventsUsageDescription</key>
-    <string>Kumquat reads the files selected in Finder when you press its global shortcut, so it can open the conversion wheel for them.</string>
+    <string>Petalwheel reads the files selected in Finder when you press its global shortcut, so it can open the conversion wheel for them.</string>
     <key>NSServices</key>
     <array>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Kumquat: Open in Wheel</string></dict>
+            <dict><key>default</key><string>Petalwheel: Open in Wheel</string></dict>
             <key>NSMessage</key>
             <string>openInWheel</string>
             <key>NSPortName</key>
-            <string>Kumquat</string>
+            <string>Petalwheel</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>
@@ -140,11 +140,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
         </dict>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Kumquat: Convert to JPG</string></dict>
+            <dict><key>default</key><string>Petalwheel: Convert to JPG</string></dict>
             <key>NSMessage</key>
             <string>convertToJPG</string>
             <key>NSPortName</key>
-            <string>Kumquat</string>
+            <string>Petalwheel</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>
@@ -160,11 +160,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
         </dict>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Kumquat: Compress</string></dict>
+            <dict><key>default</key><string>Petalwheel: Compress</string></dict>
             <key>NSMessage</key>
             <string>compress</string>
             <key>NSPortName</key>
-            <string>Kumquat</string>
+            <string>Petalwheel</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>
@@ -181,11 +181,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
         </dict>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Kumquat: Convert to MP4</string></dict>
+            <dict><key>default</key><string>Petalwheel: Convert to MP4</string></dict>
             <key>NSMessage</key>
             <string>convertToMP4</string>
             <key>NSPortName</key>
-            <string>Kumquat</string>
+            <string>Petalwheel</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>

@@ -1,6 +1,6 @@
-/* Kumquat – Info.plist (Русский) */
+/* Petalwheel – Info.plist (Русский) */
 
-"NSAppleEventsUsageDescription" = "Kumquat читает выбранные в Finder файлы, когда вы нажимаете его сочетание клавиш, чтобы открыть для них колесо конвертации.";
+"NSAppleEventsUsageDescription" = "Petalwheel читает выбранные в Finder файлы, когда вы нажимаете его сочетание клавиш, чтобы открыть для них колесо конвертации.";
 "NSHumanReadableCopyright" = "© 2026 kipperstudio";
-"CFBundleDisplayName" = "Kumquat";
-"CFBundleName" = "Kumquat";
+"CFBundleDisplayName" = "Petalwheel";
+"CFBundleName" = "Petalwheel";

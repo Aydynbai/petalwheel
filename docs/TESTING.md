@@ -1,20 +1,20 @@
-# Testing Kumquat
+# Testing Petalwheel
 
 `scripts/test-suite.sh` is an end-to-end suite that drives the headless CLI
-(`Kumquat --convert …`, `--tool …`, `--list`). It checks the files the app produces, not just
+(`Petalwheel --convert …`, `--tool …`, `--list`). It checks the files the app produces, not just
 its exit codes.
 
 ```bash
 ./scripts/build-app.sh               # or: swift build
 ./scripts/test-suite.sh              # full run (~300 cases, a few minutes)
 ./scripts/test-suite.sh --quick      # one representative per group (~30 s)
-./scripts/test-suite.sh --binary .build/debug/Kumquat
+./scripts/test-suite.sh --binary .build/debug/Petalwheel
 ./scripts/test-suite.sh --filter 'tool/|clip.mp4' --keep   # subset, keep the outputs for inspection
 ```
 
 | Option | Meaning |
 |---|---|
-| `--binary PATH` | executable to test. Default: `build/Kumquat.app/Contents/MacOS/Kumquat`, else `.build/debug/Kumquat` |
+| `--binary PATH` | executable to test. Default: `build/Petalwheel.app/Contents/MacOS/Petalwheel`, else `.build/debug/Petalwheel` |
 | `--quick` | 8 conversions and 7 tools, one per format group, plus the CLI contract checks |
 | `--keep` | keep the temp work dir (`fixtures/` plus one `runs/NNN/` dir per case, with `.stdout` and `.stderr`) |
 | `--filter REGEX` | run only cases whose `group/name` matches, e.g. `convert/tone`, `tool/split` |
@@ -41,7 +41,7 @@ Fixtures are generated into a temp dir. They use fixed content, `-fflags +bitexa
 ffmpeg, fixed mtimes in archives and `gzip -n`.
 
 - **Images:** `oriented.jpg` (stored 400×300 with EXIF orientation 6, so it displays 300×400; it
-  also has Make and GPS tags), `alpha.png`, `subject.png`, `qr.png`, `text.png` ("KUMQUAT TEST
+  also has Make and GPS tags), `alpha.png`, `subject.png`, `qr.png`, `text.png` ("PETALWHEEL TEST
   2024"), plus heic, tiff, bmp, avif (via `sips`), webp (via `cwebp`) and a hand-written svg.
 - **PDFs:** `multipage.pdf` (3 pages, each with a vector text line in Cyrillic), `single.pdf`, and
   `scan.pdf` (an image only, no text layer).
@@ -63,7 +63,7 @@ ffmpeg, fixed mtimes in archives and `gzip -n`.
   covered. An unsupported pair is rejected with an error. An unknown format exits with 2. An
   interactive editor (`annotateImage`) is rejected when run headless.
 - **Conversions:** every source fixture × every target from
-  `Sources/Kumquat/Model/ConversionCatalog.swift`. The matrix is mirrored in `targets_for()`.
+  `Sources/Petalwheel/Model/ConversionCatalog.swift`. The matrix is mirrored in `targets_for()`.
   Keep the two in sync: if the catalog gains a format, `--list` coverage fails until the suite
   learns it.
 - Formats the binary doesn't list in `--list` are skipped (so the suite works against older builds).
@@ -85,7 +85,7 @@ ffmpeg, fixed mtimes in archives and `gzip -n`.
 | xlsx / csv / tsv / html table | `unzip -l` lists workbook and worksheets. Cyrillic cell text. Quoting, comma and newline in fields survive the round trip |
 | srt / vtt / txt subtitles | timings in the target syntax, Cyrillic cue text, no timings left in txt |
 | zip / tar / tgz | lists `bundle/hello.txt` and the nested folder. `gzip -t` |
-| tools | tool-specific: QR text decoded exactly, OCR finds "KUMQUAT", crop gives a square result (1:1 default), mono gives 1 channel, 2× speed gives half the duration, split gives 2 × 1 s, join gives 3 s, normalize gives ≈ −16 LUFS, metadata stripping removes EXIF Make/GPS and the media title tags, and so on |
+| tools | tool-specific: QR text decoded exactly, OCR finds "PETALWHEEL", crop gives a square result (1:1 default), mono gives 1 channel, 2× speed gives half the duration, split gives 2 × 1 s, join gives 3 s, normalize gives ≈ −16 LUFS, metadata stripping removes EXIF Make/GPS and the media title tags, and so on |
 
 **Graceful cases.** Some pairs can't produce anything meaningful: `silent.mp4` to an audio
 format, and the image-only `scan.pdf` to a text format. For these, a clean error (non-zero exit

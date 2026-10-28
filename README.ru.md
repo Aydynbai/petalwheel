@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="Resources/AppIcon-1024.png" width="128" alt="Иконка Kumquat">
+  <img src="Resources/AppIcon-1024.png" width="128" alt="Иконка Petalwheel">
 </p>
 
-<h1 align="center">Kumquat</h1>
+<h1 align="center">Petalwheel</h1>
 
 <p align="center">
   Конвертер файлов в строке меню macOS: перетащите файлы, коснитесь <kbd>⇧ Shift</kbd>, бросьте на лепесток.<br>
@@ -19,6 +19,9 @@
   <img src="docs/screens/l10n-ru-fan-edit.png" width="300" alt="Категория «Изменить»">
 </p>
 
+> **Раньше назывался Kumquat.** В версии 1.1.0 приложение переименовано в Petalwheel, чтобы его не путали
+> с другим, не связанным с нами проектом с тем же именем. Настройки, история и пресеты переносятся автоматически.
+
 ## Как это работает
 
 1. Начните перетаскивать файлы в Finder (или в любом приложении).
@@ -27,7 +30,7 @@
 4. Бросьте файлы на лепесток. Результат сохранится рядом с оригиналами, сами оригиналы не меняются.
 
 Колесо показывает только категории и действия, подходящие ко всем перетаскиваемым файлам.
-Разрешение Accessibility не нужно: Kumquat опрашивает мышь, клавиши-модификаторы и системный
+Разрешение Accessibility не нужно: Petalwheel опрашивает мышь, клавиши-модификаторы и системный
 буфер перетаскивания.
 
 Другие способы открыть колесо: пункт в строке меню («Открыть файлы в колесе…»), правый клик ›
@@ -78,16 +81,16 @@
 Скачайте DMG из раздела [Releases](../../releases), установите через Homebrew:
 
 ```bash
-brew install --cask thealexray/tap/kumquat
+brew install --cask thealexray/tap/petalwheel
 ```
 
 или соберите приложение сами (ниже). Пока нет
 подписи Developer ID macOS блокирует первый запуск:
 
-- **macOS 15 и новее:** попробуйте открыть Kumquat, затем зайдите в **Системные настройки ›
+- **macOS 15 и новее:** попробуйте открыть Petalwheel, затем зайдите в **Системные настройки ›
   Конфиденциальность и безопасность**, прокрутите вниз и нажмите **«Всё равно открыть»**.
-- **macOS 14:** правый клик по Kumquat в «Программах» › **«Открыть»**, затем ещё раз **«Открыть»**.
-- Или один раз в Терминале: `xattr -dr com.apple.quarantine /Applications/Kumquat.app`
+- **macOS 14:** правый клик по Petalwheel в «Программах» › **«Открыть»**, затем ещё раз **«Открыть»**.
+- Или один раз в Терминале: `xattr -dr com.apple.quarantine /Applications/Petalwheel.app`
 
 ## Сборка
 
@@ -96,22 +99,22 @@ brew install --cask thealexray/tap/kumquat
 ```bash
 brew install meson ninja cmake pkgconf
 ./scripts/build-ffmpeg.sh          # LGPL-ffmpeg и кодеки из официальных исходников (первый раз долго)
-./scripts/build-app.sh --install   # собирает build/Kumquat.app и копирует в ~/Applications
+./scripts/build-app.sh --install   # собирает build/Petalwheel.app и копирует в ~/Applications
 ```
 
 Для быстрой разработки без встроенных инструментов: `brew install ffmpeg webp`, затем
-`swift build && .build/debug/Kumquat`. DMG, подпись и нотаризация описаны в
+`swift build && .build/debug/Petalwheel`. DMG, подпись и нотаризация описаны в
 [docs/RELEASE.md](docs/RELEASE.md).
 
 ## Командная строка
 
 ```bash
-Kumquat --convert webp photo.png scan.heic
-Kumquat --tool compress video.mov
-Kumquat --list
+Petalwheel --convert webp photo.png scan.heic
+Petalwheel --tool compress video.mov
+Petalwheel --list
 ```
 
-Исполняемый файл лежит в `Kumquat.app/Contents/MacOS/Kumquat`. Вывод CLI всегда на английском.
+Исполняемый файл лежит в `Petalwheel.app/Contents/MacOS/Petalwheel`. Вывод CLI всегда на английском.
 
 ## Тесты
 
@@ -133,4 +136,4 @@ libpng, libjpeg-turbo, xz. Их лицензии лежат внутри при�
 
 ## Лицензия
 
-Исходный код Kumquat распространяется по [лицензии MIT](LICENSE). © 2026 kipperstudio.
+Исходный код Petalwheel распространяется по [лицензии MIT](LICENSE). © 2026 kipperstudio.

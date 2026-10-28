@@ -1,10 +1,10 @@
-# Contributing to Kumquat
+# Contributing to Petalwheel
 
 Thanks for helping! Bug reports, format requests and pull requests are all welcome.
 
 ## Reporting bugs
 
-Open an issue with the bug report template. Include your macOS version, the Kumquat version
+Open an issue with the bug report template. Include your macOS version, the Petalwheel version
 (Settings › About), the file format involved and, if possible, a small sample file.
 Security problems: see [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
@@ -12,7 +12,7 @@ Security problems: see [SECURITY.md](SECURITY.md) instead of opening a public is
 
 ```bash
 brew install ffmpeg webp          # quick development without the bundled toolchain
-swift build && .build/debug/Kumquat
+swift build && .build/debug/Petalwheel
 ```
 
 For a full app bundle with the embedded LGPL toolchain, see the Build section of the README.
@@ -22,7 +22,7 @@ For a full app bundle with the embedded LGPL toolchain, see the Build section of
 1. Keep the change focused; one feature or fix per PR.
 2. Run the checks:
    ```bash
-   ./scripts/test-suite.sh --binary .build/debug/Kumquat --quick
+   ./scripts/test-suite.sh --binary .build/debug/Petalwheel --quick
    python3 scripts/check-l10n.py
    ```
 3. New user-facing strings go through `L()` / `Lp()` and need English and Russian entries in
