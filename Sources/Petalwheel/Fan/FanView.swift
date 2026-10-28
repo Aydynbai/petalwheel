@@ -418,7 +418,7 @@ final class FanView: NSView {
         let color = emphasized ? FanStyle.text : FanStyle.textSecondary
         let attr = NSAttributedString(string: label.replacingOccurrences(of: "\u{00AD}", with: ""),
                                       attributes: [.font: font, .foregroundColor: color, .paragraphStyle: para])
-        let labelHeight: CGFloat = message != nil ? 30 : 28
+        let labelHeight: CGFloat = 30   // two lines at 12 pt (e.g. "Strip Metadata", "Images → JPG")
         let top = thumbFrame.minY - 3
         let rect = CGRect(x: c.x - labelWidth / 2, y: top - labelHeight, width: labelWidth, height: labelHeight)
         let needed = attr.boundingRect(with: rect.size, options: [.usesLineFragmentOrigin, .truncatesLastVisibleLine]).height

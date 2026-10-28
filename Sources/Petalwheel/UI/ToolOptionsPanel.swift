@@ -37,6 +37,9 @@ final class ToolOptionsModel: ObservableObject {
     @Published var trimStartText: String
     @Published var trimEndText: String
 
+    // archives: the password asked for just failed
+    var archivePasswordWasWrong = false
+
     init(tool: FileTool, inputs: [URL], initial: ToolOptions) {
         self.tool = tool
         self.inputs = inputs
@@ -57,6 +60,7 @@ final class ToolOptionsModel: ObservableObject {
         }
         trimStartText = TimeText.format(initial.trimStart)
         trimEndText = initial.trimEnd.map(TimeText.format) ?? ""
+        prepareArchiveOptions()   // archives
     }
 
     var trimStart: Double? { TimeText.parse(trimStartText) }
@@ -84,6 +88,8 @@ final class ToolOptionsModel: ObservableObject {
             } else if let d = duration, s >= d {
                 return L("Start is past the end of the media.")
             }
+        case .extractArchive, .testArchive, .listArchive:   // archives
+            if (options.archivePassword ?? "").isEmpty { return L("Enter the password.") }
         default: break
         }
         return nil
@@ -311,6 +317,10 @@ struct ToolOptionsView: View {
         case .normalizeAudio: loudnessControls
         case .audioChannels: channelControls
         case .trimSilence: silenceControls
+        // archives
+        case .createArchive: archiveControls
+        case .compressSingle: compressFileControls
+        case .extractArchive, .testArchive, .listArchive: archivePasswordControls
         default:
             Text("No options for this tool.").foregroundStyle(.secondary)
         }

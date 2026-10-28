@@ -170,10 +170,105 @@ gen_archives() {
     (cd "$src" && rm -f "$FIX/bundle.zip" && zip -qrX "$FIX/bundle.zip" bundle) && fixture_ok bundle.zip || fixture_fail bundle.zip "zip failed"
     (cd "$src" && COPYFILE_DISABLE=1 tar -cf "$FIX/bundle.tar" bundle) && fixture_ok bundle.tar || fixture_fail bundle.tar "tar failed"
     (cd "$src" && COPYFILE_DISABLE=1 tar -cf - bundle | gzip -n > "$FIX/bundle.tar.gz") && fixture_ok bundle.tar.gz || fixture_fail bundle.tar.gz "tgz failed"
+    gen_archive_formats
+}
+
+# --- archives: every read format, Windows code pages, passwords, volumes, unsafe and damaged archives ---
+# zstd / lz4 aren't part of macOS: those fixtures (and the matching cases) exist only when the tools do.
+find_archive_tool() { local d; for d in /opt/homebrew/bin /usr/local/bin /usr/bin; do [[ -x "$d/$1" ]] && { echo "$d/$1"; return; }; done; }
+ZSTD_BIN="$(find_archive_tool zstd)"
+LZ4_BIN="$(find_archive_tool lz4)"
+ARCHIVE_PW="petal-pw"
+
+bt() { PATH="/opt/homebrew/bin:/usr/local/bin:$PATH" /usr/bin/bsdtar "$@"; }
+mkarc() { python3 -I "$HERE/make-archives.py" "$@"; }
+
+gen_archive_formats() {
+    local src="$FIX/.archive-src" t
+    rm -rf "$FIX/bundle"; cp -R "$src/bundle" "$FIX/bundle" && fixture_ok bundle || fixture_fail bundle "copy failed"
+    make_fixture bundle.7z       bt -c --format 7zip -f "$FIX/bundle.7z" -C "$src" bundle
+    make_fixture bundle.tar.bz2  bt -c --bzip2 -f "$FIX/bundle.tar.bz2" -C "$src" bundle
+    make_fixture bundle.tar.xz   bt -c --xz -f "$FIX/bundle.tar.xz" -C "$src" bundle
+    make_fixture bundle.tar.lzma bt -c --lzma -f "$FIX/bundle.tar.lzma" -C "$src" bundle
+    make_fixture bundle.tar.lz   bt -c --lzip -f "$FIX/bundle.tar.lz" -C "$src" bundle
+    [[ -n "$ZSTD_BIN" ]] && make_fixture bundle.tar.zst bt -c --zstd -f "$FIX/bundle.tar.zst" -C "$src" bundle
+    [[ -n "$LZ4_BIN" ]] && make_fixture bundle.tar.lz4 bt -c --lz4 -f "$FIX/bundle.tar.lz4" -C "$src" bundle
+    make_fixture bundle.iso      bt -c --format iso9660 -f "$FIX/bundle.iso" -C "$src" bundle
+    make_fixture bundle.cpio     bt -c --format newc -f "$FIX/bundle.cpio" -C "$src" bundle
+    make_fixture bundle.pkg      bt -c --format xar -f "$FIX/bundle.pkg" -C "$src" bundle
+    rm -f "$FIX/bundle.dmg"
+    make_fixture bundle.dmg      hdiutil create -quiet -srcfolder "$src" -volname bundle -format UDZO "$FIX/bundle.dmg"
+    # .deb: an ar archive of debian-binary, control.tar.gz and data.tar.xz.
+    t="$FIX/.deb-src"; rm -rf "$t"; mkdir -p "$t/control"
+    printf '2.0\n' > "$t/debian-binary"
+    printf 'Package: petalwheel-test\nVersion: 1.0\nArchitecture: all\n' > "$t/control/control"
+    bt -c --gzip -f "$t/control.tar.gz" -C "$t/control" control
+    bt -c --xz -f "$t/data.tar.xz" -C "$src" bundle
+    rm -f "$FIX/bundle.deb"
+    make_fixture bundle.deb      mkarc ar "$FIX/bundle.deb" "$t/debian-binary" "$t/control.tar.gz" "$t/data.tar.xz"
+    # Single-file compressors.
+    printf 'hello from petalwheel\n' > "$FIX/hello.txt"
+    make_fixture hello.txt.gz    bash -c 'gzip -n -c "$1" > "$2"' _ "$FIX/hello.txt" "$FIX/hello.txt.gz"
+    make_fixture hello.txt.bz2   bash -c 'bzip2 -c "$1" > "$2"' _ "$FIX/hello.txt" "$FIX/hello.txt.bz2"
+    make_fixture hello.txt.xz    mkarc xz "$FIX/hello.txt" "$FIX/hello.txt.xz"
+    [[ -n "$ZSTD_BIN" ]] && make_fixture hello.txt.zst "$ZSTD_BIN" -q -f "$FIX/hello.txt" -o "$FIX/hello.txt.zst"
+    # Zips made on Russian Windows: names in CP866 (Explorer) or CP1251, without the UTF-8 flag.
+    make_fixture cp866.zip       mkarc cyr-zip "$FIX/cp866.zip" cp866
+    make_fixture cp1251.zip      mkarc cyr-zip "$FIX/cp1251.zip" cp1251
+    # Password-protected zips: AES-256 (bsdtar) and traditional ZipCrypto (Info-ZIP).
+    make_fixture enc-aes.zip     bt -c --format zip --options zip:encryption=aes256 --passphrase "$ARCHIVE_PW" -f "$FIX/enc-aes.zip" -C "$src" bundle
+    rm -f "$FIX/enc-zipcrypto.zip"
+    make_fixture enc-zipcrypto.zip bash -c 'cd "$1" && zip -qrX -P "$2" "$3" bundle' _ "$src" "$ARCHIVE_PW" "$FIX/enc-zipcrypto.zip"
+    # Multi-volume: a split zip (split.z01, split.z02…, split.zip) and a byte-split 7z (volumes.7z.001…).
+    t="$FIX/.split-src"; rm -rf "$t"; mkdir -p "$t"; cp -R "$src/bundle" "$t/bundle"
+    mkarc random "$t/bundle/noise.bin" 150000 7
+    rm -f "$FIX"/split.z* "$FIX"/volumes.7z*
+    make_fixture split.zip       bash -c 'cd "$1" && zip -qrX -s 64k "$2" bundle && [[ -f "${2%.zip}.z01" ]]' _ "$t" "$FIX/split.zip"
+    make_fixture volumes.7z.001  bash -c 'bsdtar -c --format 7zip -f "$2" -C "$1" bundle && python3 -I "$3" split "$2" 60000 && rm "$2"' \
+                                     _ "$t" "$FIX/volumes.7z" "$HERE/make-archives.py"
+    # Unsafe and damaged archives.
+    make_fixture evil.tar.xz     mkarc evil-tarxz "$FIX/evil.tar.xz"
+    t="$FIX/.evil-src"; rm -rf "$t"; mkdir -p "$t"; printf 'escaped!\n' > "$t/evil.txt"
+    make_fixture evil.7z         bt -c --format 7zip -f "$FIX/evil.7z" -s ',^,../,' -C "$t" evil.txt
+    make_fixture evil-abs.zip    mkarc abs-zip "$FIX/evil-abs.zip"
+    make_fixture bomb.zip        mkarc bomb-zip "$FIX/bomb.zip"
+    make_fixture damaged.zip     mkarc bad-crc "$FIX/bundle.zip" "$FIX/damaged.zip"
+    # RAR can't be created (license-restricted): use a small sample from this Mac when there is one.
+    local rar
+    # (read-only: the smallest one under 3 MB that libarchive extracts cleanly, copied into the work dir)
+    rar=$(mdfind 'kMDItemFSName == "*.rar"' 2>/dev/null | while IFS= read -r f; do
+              [[ -f "$f" ]] && echo "$(stat -f %z "$f") $f"; done | sort -n | while read -r size f; do
+              [[ $size -lt 3000000 ]] || break
+              t="$FIX/.rar-check"; rm -rf "$t"; mkdir -p "$t"
+              /usr/bin/bsdtar -xf "$f" -C "$t" 2>/dev/null && { rm -rf "$t"; echo "$f"; break; }
+              rm -rf "$t"; done)
+    if [[ -n "$rar" ]]; then make_fixture sample.rar cp "$rar" "$FIX/sample.rar"; fi
 }
 
 generate_fixtures() {
     mkdir -p "$FIX"
     gen_images; gen_pdfs; gen_media; gen_documents; gen_subtitles; gen_archives
+    gen_new_format_fixtures   # New formats (RAW, icons, FB2, data, ASS)
     gen_tables   # last: uses the app binary
+}
+
+# --- New formats: camera RAW, PSD, icons, FB2, data, ASS/SSA ---------------------------------------
+gen_new_format_fixtures() {
+    local list="camera.dng wide.png book.fb2 book-1251.fb2 zipped.fb2.zip sample.json people.json config.yaml data.xml data.plist subs.ass subs.ssa"
+    local log="$FIX/.log-new-formats" f
+    if python3 -I "$HERE/make-new-formats.py" "$FIX" >"$log" 2>&1; then
+        for f in $list; do [[ -s "$FIX/$f" ]] && fixture_ok "$f" || fixture_fail "$f" "not written"; done
+    else
+        for f in $list; do fixture_fail "$f" "$(tail -2 "$log" | tr '\n' ' ')"; done
+    fi
+    make_fixture layered.psd sips -s format psd "$FIX/wide.png" --out "$FIX/layered.psd"
+    # A 256 px ICO and a full ICNS made with Apple's own tools (not with the app under test).
+    make_fixture favicon.ico sh -c 'sips -z 256 256 "$1" --out "$2/.fav.png" && sips -s format ico "$2/.fav.png" --out "$2/favicon.ico"' \
+        _ "$FIX/subject.png" "$FIX"
+    make_fixture app.icns sh -c 'set -e; d="$2/.app.iconset"; rm -rf "$d"; mkdir -p "$d"
+        for s in 16 32 128 256 512; do
+            sips -z $s $s "$1" --out "$d/icon_${s}x${s}.png" >/dev/null
+            sips -z $((s * 2)) $((s * 2)) "$1" --out "$d/icon_${s}x${s}@2x.png" >/dev/null
+        done
+        iconutil -c icns "$d" -o "$2/app.icns"' _ "$FIX/subject.png" "$FIX"
 }

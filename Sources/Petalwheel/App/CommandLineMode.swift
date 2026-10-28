@@ -4,6 +4,7 @@ import Foundation
 /// Runs through the same engines and tool modules as the UI; prints created files.
 enum CommandLineMode {
     static let engines: [ConversionEngine] = [
+        RawImageEngine(), IconEngine(), DataFormatEngine(), SubtitleASSEngine(), FB2Engine(),   // New formats: ahead of the generic engines
         ImageEngine(), MediaEngine(), DocumentEngine(), SpreadsheetEngine(), SubtitleEngine(), ArchiveEngine(), EpubEngine(), OfficeEngine(), IWorkEngine(),
     ]
     static let toolModules: [ToolModule] = [ImageToolsModule(), MediaToolsModule(), ArchiveToolsModule()]
@@ -19,23 +20,38 @@ enum CommandLineMode {
             return 0
         }
         guard args.count >= 4 else {
-            fputs("usage: Petalwheel --convert <format> <files…> | --tool <tool> <files…> | --list\n", stderr)
+            fputs("usage: Petalwheel --convert <format> <files…> | --tool <tool> [--password P] [--archive-format F] <files…> | --list\n", stderr)
             return 2
         }
-        let urls = args.dropFirst(3).map { URL(fileURLWithPath: $0).standardizedFileURL }
+        var rest = Array(args.dropFirst(3))
+        let toolOptions = parseArchiveFlags(&rest)   // archives: --password / --archive-format
+        guard !rest.isEmpty else { fputs("No files given.\n", stderr); return 2 }
+        let urls = rest.map { URL(fileURLWithPath: $0).standardizedFileURL }
         var status: Int32 = 0
         let done = DispatchSemaphore(value: 0)
         Task.detached {
             do {
                 if args[1] == "--convert" {
                     guard let target = FileFormat(rawValue: args[2].lowercased()) else { throw PetalwheelError("Unknown format \(args[2])") }
+                    if FolderCatalog.containsFolder(urls) {   // folders: convert the files inside
+                        do { if let r = try await FolderCommandLine.run(convert: target, tool: nil, urls: urls, engines: engines) { FolderCommandLine.print(r) } }
+                        catch { fputs("✗ \(urls[0].lastPathComponent): \(error.localizedDescription)\n", stderr); status = 1 }
+                        done.signal()
+                        return
+                    }
                     for url in urls {
                         do { try await convert(url, to: target).forEach { print($0.path) } }
                         catch { fputs("✗ \(url.lastPathComponent): \(error.localizedDescription)\n", stderr); status = 1 }
                     }
                 } else {
                     guard let tool = FileTool(rawValue: args[2]) else { throw PetalwheelError("Unknown tool \(args[2])") }
-                    let options = ToolOptions()
+                    if FolderCatalog.folderTools.contains(tool) && FolderCatalog.containsFolder(urls) {   // folders
+                        do { if let r = try await FolderCommandLine.run(convert: nil, tool: tool, urls: urls, engines: engines) { FolderCommandLine.print(r) } }
+                        catch { fputs("✗ \(urls[0].lastPathComponent): \(error.localizedDescription)\n", stderr); status = 1 }
+                        done.signal()
+                        return
+                    }
+                    let options = toolOptions
                     let batch: Set<FileTool> = [.createCollage, .createPDF, .mergePDF, .joinVideos, .createArchive]
                     let groups = batch.contains(tool) ? [urls] : urls.map { [$0] }
                     for group in groups {
@@ -45,7 +61,8 @@ enum CommandLineMode {
                         do {
                             let r = try await module.run(tool, inputs: group, options: options, progress: { _ in })
                             r.outputs.forEach { print($0.path) }
-                            r.messages.forEach { print("» \($0)") }
+                            // Multi-line messages (archive listings): every line is marked, so scripts never take it for a path.
+                            r.messages.forEach { print("» " + $0.replacingOccurrences(of: "\n", with: "\n» ")) }
                         } catch { fputs("✗ \(group[0].lastPathComponent): \(error.localizedDescription)\n", stderr); status = 1 }
                     }
                 }
@@ -69,5 +86,17 @@ enum CommandLineMode {
             throw PetalwheelError("Can't convert \(source.title) to \(target.title)")
         }
         return try await engine.convert(url, from: source, to: target, options: ConversionOptions(), progress: { _ in })
+    }
+
+    /// Archive tool flags before the files: `--password P` (encrypted zips, never printed) and
+    /// `--archive-format F` (createArchive / compressSingle target, e.g. 7z, tzst, dmg, xz).
+    static func parseArchiveFlags(_ rest: inout [String]) -> ToolOptions {
+        var options = ToolOptions()
+        while rest.count >= 2, rest[0] == "--password" || rest[0] == "--archive-format" {
+            if rest[0] == "--password" { options.archivePassword = rest[1] }
+            else if let f = FileFormat(rawValue: rest[1].lowercased()) { options.archiveFormat = f }
+            rest.removeFirst(2)
+        }
+        return options
     }
 }

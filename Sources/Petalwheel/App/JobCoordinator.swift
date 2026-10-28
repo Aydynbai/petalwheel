@@ -14,9 +14,10 @@ struct JobOutcome {
 @MainActor
 final class JobCoordinator {
     private let engines: [ConversionEngine] = [
+        RawImageEngine(), IconEngine(), DataFormatEngine(), SubtitleASSEngine(), FB2Engine(),   // New formats: ahead of the generic engines
         ImageEngine(), MediaEngine(), DocumentEngine(), SpreadsheetEngine(), SubtitleEngine(), ArchiveEngine(), EpubEngine(), OfficeEngine(), IWorkEngine(),
     ]
-    private let toolModules: [ToolModule] = [ImageToolsModule(), MediaToolsModule(), ArchiveToolsModule()]
+    private let toolModules: [ToolModule] = [ImageToolsModule(), MediaToolsModule(), ArchiveToolsModule(), FolderToolsModule()]
     private let actions = ActionPerformer()
 
     /// Tools that consume all inputs at once and produce a single result.
@@ -51,6 +52,13 @@ final class JobCoordinator {
         let engines = self.engines
         let rerun = HistoryRerun(action: .convert(target), presetID: presetID,
                                  conversion: CodableConversionOptions(options), downmixToMono: downmixToMono)
+        if FolderCatalog.containsFolder(urls) {   // folders: convert the files inside (FolderToolsModule)
+            let module = FolderToolsModule(engines: engines, conversion: options)
+            let title = title ?? L("Converting to %@", target.title)
+            return runFolderJob(title: title, urls: urls, rerun: rerun, onComplete: Self.folderMessages(title: title)) {
+                try await module.convert(urls, to: target, progress: $0)
+            }
+        }
         return runJobs(title: title ?? L("Converting to %@", target.title), urls: urls, rerun: rerun) { index, progress in
             let url = urls[index]
             guard downmixToMono else {
@@ -108,7 +116,9 @@ final class JobCoordinator {
             return
         }
         if tool.needsOptions {
-            ToolOptionsPanel.present(tool: tool, inputs: urls, initial: toolOptions) { [weak self] options in
+            let folderTool = FolderCatalog.folderTools.contains(tool) && FolderCatalog.containsFolder(urls)
+            let panelInputs = folderTool ? FolderCatalog.panelInputs(tool, urls: urls) : urls
+            ToolOptionsPanel.present(tool: tool, inputs: panelInputs, initial: toolOptions) { [weak self] options in
                 guard let self, let options else { return }
                 self.toolOptions = options
                 self.executeTool(tool, urls: urls, options: options)
@@ -133,6 +143,12 @@ final class JobCoordinator {
         }
         let rerun = HistoryRerun(action: .tool(tool), presetID: presetID, tool: CodableToolOptions(options))
         let title = title ?? tool.title
+        if FolderCatalog.folderTools.contains(tool) && FolderCatalog.containsFolder(urls) {   // folders: FolderToolsModule
+            let module = FolderToolsModule(engines: engines)
+            return runFolderJob(title: title, urls: urls, rerun: rerun, onComplete: completion) {
+                try await module.run(tool, inputs: urls, options: options, progress: $0)
+            }
+        }
 
         if batchTools.contains(tool) {
             guard let module = module(for: tool, url: urls[0]) else { reportUnsupported(tool); return nil }

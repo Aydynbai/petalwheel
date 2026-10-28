@@ -28,7 +28,7 @@ done
 
 APP_NAME="Petalwheel"
 BUNDLE_ID="studio.kipper.Petalwheel"
-VERSION="1.1.0"
+VERSION="1.2.0"
 BUILD_NUMBER="$(date +%Y%m%d%H%M)"
 APP="$ROOT/build/$APP_NAME.app"
 

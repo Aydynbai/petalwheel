@@ -21,6 +21,12 @@ HERE="$ROOT/scripts/tests"
 source "$HERE/lib.sh"
 # shellcheck source=tests/make-fixtures.sh
 source "$HERE/make-fixtures.sh"
+# shellcheck source=tests/folder-tests.sh
+source "$HERE/folder-tests.sh"
+# shellcheck source=tests/archive-tests.sh
+source "$HERE/archive-tests.sh"
+# shellcheck source=tests/new-format-tests.sh
+source "$HERE/new-format-tests.sh"
 
 BIN=""; QUICK=0; KEEP=0; FILTER=""; export KQ_TIMEOUT=300
 while [[ $# -gt 0 ]]; do
@@ -247,7 +253,7 @@ v_convert() {
         epub) check_epub "$o" ;;
         xlsx|csv|tsv) check_sheet "$o" ;;
         srt|vtt) check_subtitle "$o" ;;
-        zip|tar|tgz) check_archive "$o" ;;
+        zip|tar|tgz|7z|tbz2|txz|tzst|iso|dmg) check_archive "$o" ;;   # archives: see tests/archive-tests.sh
         *) fail_v "no validator for $tgt" ;;
     esac
 }
@@ -376,17 +382,7 @@ check_subtitle() {
     NOTE="$(grep -c . "$f") lines"
 }
 
-check_archive() {
-    local f=$1 tgt=$TARGET list
-    case "$tgt" in
-        zip) list=$(unzip -l "$f" 2>/dev/null) ;;
-        tar) list=$(tar -tf "$f" 2>/dev/null) ;;
-        tgz) gzip -t "$f" 2>/dev/null || { fail_v "not gzip"; return 1; }; list=$(tar -tzf "$f" 2>/dev/null) ;;
-    esac
-    [[ "$list" == *bundle/hello.txt* ]] || { fail_v "archive lacks bundle/hello.txt"; return 1; }
-    [[ "$list" == *inner/* ]] || { fail_v "archive lacks nested dir"; return 1; }
-    NOTE="$(echo "$list" | grep -c .) entries"
-}
+# check_archive (archive outputs) lives in tests/archive-tests.sh.
 
 # --- conversion matrix (mirror of ConversionCatalog.outputs, ffmpeg present) ------
 
@@ -398,7 +394,12 @@ group_of() {
         pdf|docx|odt|rtf|rtfd|html|md|txt|epub|doc|pptx|key|pages) echo documents ;;
         xlsx|csv|tsv|xls|numbers) echo spreadsheets ;;
         srt|vtt) echo subtitles ;;
-        zip|tar|tgz) echo archives ;;
+        # New formats (see tests/new-format-tests.sh)
+        dng|cr2|cr3|nef|arw|raf|orf|rw2|jxl|psd|ico|icns) echo images ;;
+        fb2) echo documents ;;
+        json|yaml|xml|plist) echo data ;;
+        ass|ssa) echo subtitles ;;
+        zip|tar|tgz|7z|tbz2|txz|tzst|iso|dmg|rar|cab|pkg|deb|cpio|lzh|gz|bz2|xz|zst) echo archives ;;
     esac
 }
 
@@ -420,14 +421,14 @@ targets_for() {
         spreadsheets)
             case "$src" in xls) r="xlsx csv tsv html pdf" ;; numbers) r="pdf" ;; *) r="xlsx csv tsv html" ;; esac ;;
         subtitles) r="srt vtt txt" ;;
-        archives) r="zip tar tgz" ;;
+        archives) r="$ARCHIVE_TARGETS" ;;
     esac
     local t out=""
     for t in $r; do [[ $t == "$src" ]] || out+="$t "; done
     echo "$out"
 }
 
-format_of() { case "$1" in *.tar.gz) echo tgz ;; *) echo "${1##*.}" ;; esac; }
+format_of() { case "$1" in *.tar.gz) echo tgz ;; *.tar.bz2) echo tbz2 ;; *.tar.xz) echo txz ;; *.tar.zst) echo tzst ;; *) echo "${1##*.}" ;; esac; }
 
 # fixture → expectation override for "edge" sources (expected to possibly fail cleanly).
 expect_for() { # FIXTURE TARGET
@@ -445,9 +446,10 @@ multipage.pdf scan.pdf letter.docx letter.odt letter.rtf letter.rtfd page.html n
 letter.doc deck.pptx book.epub
 sheet.xlsx table.csv table.tsv
 subs.srt subs.vtt
-bundle.zip bundle.tar bundle.tar.gz"
+bundle.zip bundle.tar bundle.tar.gz
+$ARCHIVE_CONVERSION_SOURCES"
 
-QUICK_CONVERSIONS="oriented.jpg:png tone.mp3:wav clip.mp4:webm multipage.pdf:png notes.md:pdf sheet.xlsx:csv subs.srt:vtt bundle.zip:tgz"
+QUICK_CONVERSIONS="oriented.jpg:png tone.mp3:wav clip.mp4:webm multipage.pdf:png notes.md:pdf sheet.xlsx:csv subs.srt:vtt bundle.zip:tgz bundle.tar.xz:7z"
 
 run_conversion() { # FIXTURE TARGET
     SRC_FMT=$(format_of "$1"); SRC_GROUP=$(group_of "$SRC_FMT"); TARGET=$2
@@ -694,6 +696,8 @@ run_cli_checks() {
     fi
     # Every tool --list reports must be covered here (or be a known interactive editor).
     local covered="compress removeMetadata cropImage frameImage removeBackground blurFaces readQRCode recognizeText createCollage createPDF mergePDF splitPDF trimMedia muteVideo changeVideoSpeed cropVideo joinVideos videoSnapshots splitVideo normalizeAudio audioChannels trimSilence audioToVideo extractArchive createArchive annotateImage adjustImage redactImage organizePDF redactVideo bleepAudio"
+    covered+=" $FOLDER_TOOLS"
+    covered+=" $ARCHIVE_TOOLS"
     missing=""; for f in $tools; do [[ " $covered " == *" $f "* ]] || missing+="$f "; done
     [[ -z "$missing" ]] && record cli "tool coverage" PASS 0 "" || record cli "tool coverage" FAIL 0 "tools without tests: $missing"
 
@@ -791,6 +795,9 @@ echo "${C_G}PASS${C_0}  fixture      $FIXTURES_OK fixtures generated in $FIX"
 run_cli_checks
 run_conversions
 run_tools
+run_folder_tests
+run_archive_tests
+run_new_format_tests
 FAILED=0
 write_reports
 [[ $FAILED -eq 0 ]]

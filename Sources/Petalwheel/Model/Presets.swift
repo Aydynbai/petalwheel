@@ -69,6 +69,9 @@ struct CodableToolOptions: Codable, Equatable {
     var silenceThresholdDB: Double
     var loudnessLUFS: Double
     var faceBlurStyle: String
+    // archives (the zip password is never stored)
+    var archiveFormat: String?
+    var archiveLevel: Int?
 
     init(_ o: ToolOptions = ToolOptions()) {
         quality = o.quality.rawValue
@@ -90,6 +93,8 @@ struct CodableToolOptions: Codable, Equatable {
         silenceThresholdDB = o.silenceThresholdDB
         loudnessLUFS = o.loudnessLUFS
         faceBlurStyle = o.faceBlurStyle.rawValue
+        archiveFormat = o.archiveFormat.rawValue
+        archiveLevel = o.archiveLevel
     }
 
     var options: ToolOptions {
@@ -115,6 +120,8 @@ struct CodableToolOptions: Codable, Equatable {
         o.silenceThresholdDB = silenceThresholdDB
         o.loudnessLUFS = loudnessLUFS
         o.faceBlurStyle = RedactionStyle(rawValue: faceBlurStyle) ?? o.faceBlurStyle
+        o.archiveFormat = archiveFormat.flatMap(FileFormat.init(rawValue:)) ?? o.archiveFormat
+        o.archiveLevel = archiveLevel ?? o.archiveLevel
         return o
     }
 
@@ -139,6 +146,8 @@ struct CodableToolOptions: Codable, Equatable {
         silenceThresholdDB = try c.decodeIfPresent(Double.self, forKey: .silenceThresholdDB) ?? d.silenceThresholdDB
         loudnessLUFS = try c.decodeIfPresent(Double.self, forKey: .loudnessLUFS) ?? d.loudnessLUFS
         faceBlurStyle = try c.decodeIfPresent(String.self, forKey: .faceBlurStyle) ?? d.faceBlurStyle
+        archiveFormat = try c.decodeIfPresent(String.self, forKey: .archiveFormat)
+        archiveLevel = try c.decodeIfPresent(Int.self, forKey: .archiveLevel)
     }
 }
 
@@ -171,7 +180,7 @@ struct PresetAction: Codable, Hashable {
 
     /// Tools a preset can run unattended (interactive editors need a window, so they're excluded).
     static var presettableTools: [FileTool] {
-        FileTool.allCases.filter { !$0.isInteractive }
+        FileTool.allCases.filter { !$0.isInteractive && !FolderCatalog.folderOnlyTools.contains($0) }
     }
 }
 

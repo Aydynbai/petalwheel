@@ -87,9 +87,11 @@ enum FileTool: String, CaseIterable, Identifiable {
     // audio
     case normalizeAudio, audioChannels, trimSilence, audioToVideo
     // archives
-    case extractArchive, createArchive
+    case extractArchive, createArchive, listArchive, testArchive, compressSingle
     // interactive editors
     case annotateImage, adjustImage, redactImage, organizePDF, redactVideo, bleepAudio
+    // folders (contents of dropped folders, see FolderCatalog)
+    case flattenFolder, folderReport
 
     var id: String { rawValue }
 }
@@ -122,6 +124,10 @@ struct ToolOptions {
     var silenceThresholdDB: Double = -45
     var loudnessLUFS: Double = -16
     var faceBlurStyle: RedactionStyle = .blur
+    // archives: createArchive / compressSingle target, zip/7z level 1...9, zip password (never logged or stored)
+    var archiveFormat: FileFormat = .zip
+    var archiveLevel = 6
+    var archivePassword: String? = nil
 }
 
 enum AspectRatio: String, CaseIterable, Identifiable {

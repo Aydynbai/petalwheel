@@ -27,7 +27,14 @@ extension FileTool {
         case .trimSilence: return L("Cut Silence")
         case .audioToVideo: return L("Visualize")
         case .extractArchive: return L("Extract")
-        case .createArchive: return L("Zip")
+        case .createArchive: return L("Make Archive")
+        // archives
+        case .listArchive: return L("List Contents")
+        case .testArchive: return L("Test Archive")
+        case .compressSingle: return L("Compress File")
+        // folders
+        case .flattenFolder: return L("Flatten")
+        case .folderReport: return L("Folder Report")
         case .annotateImage: return L("Annotate")
         case .adjustImage: return L("Adjust")
         case .redactImage: return L("Redact")
@@ -63,6 +70,13 @@ extension FileTool {
         case .audioToVideo: return "waveform"
         case .extractArchive: return "archivebox"
         case .createArchive: return "doc.zipper"
+        // archives
+        case .listArchive: return "list.bullet.rectangle"
+        case .testArchive: return "checkmark.seal"
+        case .compressSingle: return "arrow.down.doc"
+        // folders
+        case .flattenFolder: return "square.stack.3d.down.right"
+        case .folderReport: return "chart.bar.doc.horizontal"
         case .annotateImage: return "pencil.tip.crop.circle"
         case .adjustImage: return "camera.filters"
         case .redactImage, .redactVideo: return "eye.slash.circle"
@@ -86,7 +100,8 @@ extension FileTool {
         switch self {
         case .compress, .cropImage, .frameImage, .blurFaces, .createCollage,
              .changeVideoSpeed, .cropVideo, .videoSnapshots, .splitVideo, .normalizeAudio,
-             .audioChannels, .trimSilence:
+             .audioChannels, .trimSilence,
+             .createArchive, .compressSingle:   // archives: format picker / password
             return true
         default:
             return false
@@ -119,6 +134,10 @@ extension FileTool {
         case .audioToVideo: return g == .audio && ffmpeg
         case .extractArchive: return g == .archives
         case .createArchive: return true
+        // archives
+        case .listArchive, .testArchive: return g == .archives
+        case .compressSingle: return true
+        case .flattenFolder, .folderReport: return false   // folders only (FolderCatalog)
         case .annotateImage, .adjustImage, .redactImage: return rasterImage
         case .organizePDF: return format == .pdf
         case .redactVideo: return movie && ffmpeg
@@ -132,6 +151,7 @@ extension FileTool {
         return allCases.filter { tool in
             guard urls.count >= tool.minimumInputs else { return false }
             if tool == .createArchive { return true }
+            if tool == .compressSingle { return urls.allSatisfy { !ArchiveSupport.isDirectory($0) } }   // archives: any single file
             return formats.allSatisfy { f in f.map(tool.accepts) ?? false }
         }
     }
@@ -195,8 +215,8 @@ extension FanCategory {
                             .blurFaces, .trimMedia, .redactVideo, .bleepAudio, .changeVideoSpeed, .cropVideo,
                             .muteVideo, .audioChannels, .organizePDF]
         case .combine: return [.createCollage, .createPDF, .mergePDF, .splitPDF, .joinVideos,
-                               .splitVideo, .audioToVideo, .createArchive]
-        case .extract: return [.readQRCode, .recognizeText, .videoSnapshots, .extractArchive]
+                               .splitVideo, .audioToVideo, .createArchive, .compressSingle]
+        case .extract: return [.readQRCode, .recognizeText, .videoSnapshots, .extractArchive, .listArchive, .testArchive]
         }
     }
 }
@@ -210,6 +230,8 @@ enum FanCatalog {
     }
 
     static func items(in category: FanCategory, urls: [URL]) -> [FanItem] {
+        // Folders in the selection: offer what applies to the files inside them.
+        if let folderItems = FolderCatalog.items(in: category, urls: urls) { return folderItems }
         switch category {
         case .convert: return items(for: .conversions, urls: urls)
         case .share: return items(for: .actions, urls: urls)
@@ -228,10 +250,12 @@ enum FanCatalog {
     static func items(for mode: FanMode, urls: [URL]) -> [FanItem] {
         switch mode {
         case .conversions:
+            if let folderItems = FolderCatalog.items(in: .convert, urls: urls) { return folderItems }
             return ConversionCatalog.commonOutputs(for: urls).map {
                 FanItem(kind: .format($0), title: $0.title, symbol: nil)
             }
         case .tools:
+            if let folderItems = FolderCatalog.toolItems(urls: urls) { return folderItems }
             return FileTool.available(for: urls).map {
                 FanItem(kind: .tool($0), title: $0.title, symbol: $0.symbol)
             }

@@ -39,13 +39,21 @@ the global hotkey <kbd>⌃⌥K</kbd> for the current Finder selection, watch fol
 
 | Category | What it does |
 |---|---|
-| **Convert** | Images: JPG, PNG, HEIC, WebP, AVIF, TIFF, BMP, GIF, SVG, PDF. Audio: MP3, M4A, WAV, FLAC, OGG, Opus, AIFF, WMA. Video: MP4, MOV, MKV, WebM, AVI, WMV, GIF. Documents: PDF, DOCX, ODT, RTF, RTFD, HTML, Markdown, TXT, EPUB; plus PPTX, Keynote, Pages, Numbers, DOC, XLS as input. Spreadsheets: XLSX, CSV, TSV. Subtitles: SRT, VTT. Archives: ZIP, TAR, TAR.GZ |
+| **Convert** | Images: JPG, PNG, HEIC, WebP, AVIF, TIFF, BMP, GIF, SVG, PDF, ICO and ICNS (favicons and app icons); camera RAW (DNG, CR2, CR3, NEF, ARW, RAF, ORF, RW2), JPEG XL and PSD as input. Audio: MP3, M4A, WAV, FLAC, OGG, Opus, AIFF, WMA. Video: MP4, MOV, MKV, WebM, AVI, WMV, GIF. Documents and books: PDF, DOCX, ODT, RTF, RTFD, HTML, Markdown, TXT, EPUB, FB2; plus PPTX, Keynote, Pages, Numbers, DOC, XLS as input. Spreadsheets and data: XLSX, CSV, TSV, JSON, YAML, XML, plist. Subtitles: SRT, VTT, ASS/SSA. Archives: ZIP, 7z, TAR (gz, bz2, xz; zst with `brew install zstd`), ISO, DMG; RAR/RAR5, CAB, PKG, DEB, CPIO, LZH as input |
 | **Optimize** | Compress (quality presets or a target size), strip metadata, loudness normalization, cut silence |
 | **Edit** | Interactive editors (below), crop, frame, remove background, blur faces, video speed, crop video, mute, mono/stereo |
-| **Combine & Split** | Collage, images → PDF, merge/split PDF, join/split video, audio visualizer, zip |
-| **Extract** | Read QR codes, recognize text (OCR), video snapshots, extract archives |
+| **Combine & Split** | Collage, images → PDF, merge/split PDF, join/split video, audio visualizer, make archives (ZIP with AES-256 password, 7z, TAR.*, DMG, ISO), compress a single file (gz, bz2, xz, zst) |
+| **Extract** | Read QR codes, recognize text (OCR), video snapshots, extract any archive (multi-volume, passwords, Russian file names from Windows zips), list contents, test integrity |
 | **Share & Files** | Float shelf, AirDrop, copy, copy path, move, open in Terminal |
 | **Presets** | Your own one-tap recipes, e.g. "Email (≤2 MB JPG)" or "Instagram 4:5" |
+
+### Folders
+
+Drop whole folders (or folders mixed with files) on the wheel:
+
+- **Convert contents:** petals like *Images → JPG* or *Video → MP4* convert every matching file inside, into a sibling "<name> (converted)" folder with the same structure.
+- **Batch tools:** compress or strip metadata from everything inside, make one PDF or a collage from all images, extract text from all scans, flatten nested folders, or get a folder report (counts, sizes, largest files).
+- Hidden files, app bundles and symbolic links are skipped; up to 10,000 files per run.
 
 ### Interactive editors
 

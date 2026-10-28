@@ -37,8 +37,12 @@ enum ConversionCatalog {
         case .subtitles:
             result = [.srt, .vtt, .txt]
         case .archives:
-            result = [.zip, .tar, .tgz]
+            // Every readable archive converts to every writable one (tar.zst needs the zstd tool).
+            result = ArchiveSupport.conversionTargets
+        case .data:
+            result = newFormatOutputs(source, base: [])   // New formats
         }
+        result = newFormatOutputs(source, base: result)   // New formats: adds/replaces image, document, data and subtitle targets
         result.removeAll { $0 == source || $0.isInputOnly }
         return result
     }
@@ -55,5 +59,40 @@ enum ConversionCatalog {
         }
         // A target identical to some (but not all) sources is fine: those files get re-encoded.
         return common
+    }
+}
+
+// MARK: - New formats (images, documents, data, subtitles)
+
+extension ConversionCatalog {
+    /// Targets for the formats added with RAW / icon / FB2 / data / ASS support, and the new targets
+    /// (ICO, ICNS, FB2, JSON, YAML, XML, ASS, SSA) offered for existing sources. `base` is the list the
+    /// catalog computed for the source's group; existing entries are kept in their order.
+    static func newFormatOutputs(_ source: FileFormat, base: [FileFormat]) -> [FileFormat] {
+        let webp: [FileFormat] = ExternalTools.shared.hasWebPEncoder ? [.webp] : []
+        switch source {
+        case _ where source.isCameraRaw:
+            return [.jpg, .png, .heic] + webp + [.avif, .tiff, .pdf]
+        case .jxl, .psd:
+            return RawImageEngine.canDecode(source) ? base + [.ico, .icns] : []
+        case .ico, .icns:
+            return base + [.ico, .icns]
+        case .fb2:
+            return [.epub, .pdf, .docx, .odt, .rtf, .html, .md, .txt]
+        case .json, .yaml, .xml, .plist:
+            return [.json, .yaml, .xml, .plist, .csv, .tsv]
+        case .ass, .ssa:
+            return [.srt, .vtt, .txt, .ass, .ssa]
+        case .srt, .vtt:
+            return base + [.ass, .ssa]
+        case .csv, .tsv, .xlsx:
+            return base + [.json, .yaml, .xml]
+        case .docx, .odt, .rtf, .rtfd, .html, .md, .txt, .epub, .doc:
+            return base + [.fb2]
+        default:
+            // Every other raster or vector image can become a favicon or an app icon.
+            if source.group == .images { return base + [.ico, .icns] }
+            return base
+        }
     }
 }
