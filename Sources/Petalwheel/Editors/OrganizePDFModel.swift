@@ -63,7 +63,7 @@ enum OrganizePDFExporter {
             case .pdf:
                 return try PDFTools.open(src.url)
             case .image:
-                guard let page = imagePage(src.url) else { throw PetalwheelError(l: "Could not read the image %@.", src.url.lastPathComponent) }
+                guard let page = imagePage(src.url) else { throw NurToError(l: "Could not read the image %@.", src.url.lastPathComponent) }
                 let doc = PDFDocument()
                 doc.insert(page, at: 0)
                 return doc
@@ -86,7 +86,7 @@ enum OrganizePDFExporter {
     }
 
     static func run(_ plan: OrganizePDFPlan, progress: @escaping ProgressHandler) throws -> URL {
-        guard !plan.pages.isEmpty else { throw PetalwheelError(l: "There are no pages to save.") }
+        guard !plan.pages.isEmpty else { throw NurToError(l: "There are no pages to save.") }
         let docs = try openSources(plan.sources)
         progress(0.1)
         var pages: [PDFPage] = []
@@ -94,7 +94,7 @@ enum OrganizePDFExporter {
             try Task.checkCancellation()
             guard let original = docs[item.source].page(at: item.pageIndex),
                   let page = original.copy() as? PDFPage else {
-                throw PetalwheelError(l: "Page %d of %@ is missing.", item.originalNumber, plan.sources[item.source].url.lastPathComponent)
+                throw NurToError(l: "Page %d of %@ is missing.", item.originalNumber, plan.sources[item.source].url.lastPathComponent)
             }
             page.rotation = ((original.rotation + item.rotation) % 360 + 360) % 360
             pages.append(page)
@@ -108,14 +108,14 @@ enum OrganizePDFExporter {
             try writeScaled(pages, width: commonWidth(pages), to: dest)
         } else {
             if let attrs = docs.first?.documentAttributes { out.documentAttributes = attrs }
-            guard out.write(to: dest) else { throw PetalwheelError(l: "Could not write %@.", dest.lastPathComponent) }
+            guard out.write(to: dest) else { throw NurToError(l: "Could not write %@.", dest.lastPathComponent) }
         }
         progress(0.9)
 
         // Verify the result before reporting success.
         guard let check = PDFDocument(url: dest), check.pageCount == plan.pages.count else {
             try? FileManager.default.removeItem(at: dest)
-            throw PetalwheelError(l: "The organized PDF could not be verified.")
+            throw NurToError(l: "The organized PDF could not be verified.")
         }
         progress(1)
         return dest
@@ -124,7 +124,7 @@ enum OrganizePDFExporter {
     /// Redraws every page (vector, rotation baked in) scaled to a common width. Pages must belong to a document.
     static func writeScaled(_ pages: [PDFPage], width: CGFloat, to url: URL) throws {
         guard let ctx = CGContext(url as CFURL, mediaBox: nil, nil) else {
-            throw PetalwheelError(l: "Could not create %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not create %@.", url.lastPathComponent)
         }
         for page in pages {
             try Task.checkCancellation()

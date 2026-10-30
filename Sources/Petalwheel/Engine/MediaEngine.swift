@@ -20,14 +20,14 @@ struct MediaEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can’t convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can’t convert %@ to %@.", from.title, target.title)
         }
         let info = try await MediaProbe.probe(source)
         if MediaEncoding.audioTargets.contains(target), !info.hasAudio {
-            throw PetalwheelError(l: "“%@” has no audio track to extract.", source.lastPathComponent)
+            throw NurToError(l: "“%@” has no audio track to extract.", source.lastPathComponent)
         }
         if !MediaEncoding.audioTargets.contains(target), !info.hasVideo {
-            throw PetalwheelError(l: "“%@” has no video track.", source.lastPathComponent)
+            throw NurToError(l: "“%@” has no video track.", source.lastPathComponent)
         }
 
         var spec = MediaEncodeSpec(target: target)

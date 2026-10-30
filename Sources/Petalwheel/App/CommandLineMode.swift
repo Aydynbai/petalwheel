@@ -1,6 +1,6 @@
 import Foundation
 
-/// Headless mode: `Petalwheel --convert <format> files…` or `Petalwheel --tool <tool> files…`.
+/// Headless mode: `NurTo --convert <format> files…` or `NurTo --tool <tool> files…`.
 /// Runs through the same engines and tool modules as the UI; prints created files.
 enum CommandLineMode {
     static let engines: [ConversionEngine] = [
@@ -11,7 +11,9 @@ enum CommandLineMode {
 
     /// Returns nil when the arguments don't request CLI mode.
     static func runIfRequested(_ args: [String]) -> Int32? {
-        guard args.count >= 2, ["--convert", "--tool", "--list"].contains(args[1]) else { return nil }
+        if args.count == 3, args[1] == "--render-wheel" { return MainActor.assumeIsolated { NurToChecks.renderWheel(to: args[2]) } }
+        if args.count == 2, args[1] == "--self-check" { return NurToChecks.run() }
+        guard args.count >= 2, ["--convert", "--tool", "--list", "--preview"].contains(args[1]) else { return nil }
         // CLI output is always English so scripts and tests can rely on it.
         UserDefaults.standard.setVolatileDomain(["AppleLanguages": ["en"]], forName: UserDefaults.argumentDomain)
         if args[1] == "--list" {
@@ -20,7 +22,7 @@ enum CommandLineMode {
             return 0
         }
         guard args.count >= 4 else {
-            fputs("usage: Petalwheel --convert <format> <files…> | --tool <tool> [--video-mode fast|quality] [--password P] [--archive-format F] <files…> | --list\n", stderr)
+            fputs("usage: NurTo --convert <format> <files…> | --tool <tool> [--video-mode fast|quality] [--password P] [--archive-format F] <files…> | --list\n", stderr)
             return 2
         }
         var rest = Array(args.dropFirst(3))
@@ -42,8 +44,15 @@ enum CommandLineMode {
         let done = DispatchSemaphore(value: 0)
         Task.detached {
             do {
-                if args[1] == "--convert" {
-                    guard let target = FileFormat(rawValue: args[2].lowercased()) else { throw PetalwheelError("Unknown format \(args[2])") }
+                if args[1] == "--preview" {
+                    guard let mode = VideoCompressionMode(rawValue: args[2]), urls.count == 1 else {
+                        throw NurToError("usage: NurTo --preview fast|quality video")
+                    }
+                    let info = try await MediaProbe.probe(urls[0])
+                    let artifact = try await VideoCompression.preview(urls[0], info: info, mode: mode, start: 0, progress: { _ in })
+                    print(artifact.output.path)
+                } else if args[1] == "--convert" {
+                    guard let target = FileFormat(rawValue: args[2].lowercased()) else { throw NurToError("Unknown format \(args[2])") }
                     if FolderCatalog.containsFolder(urls) {   // folders: convert the files inside
                         do { if let r = try await FolderCommandLine.run(convert: target, tool: nil, urls: urls, engines: engines) { FolderCommandLine.print(r) } }
                         catch { fputs("✗ \(urls[0].lastPathComponent): \(error.localizedDescription)\n", stderr); status = 1 }
@@ -55,7 +64,7 @@ enum CommandLineMode {
                         catch { fputs("✗ \(url.lastPathComponent): \(error.localizedDescription)\n", stderr); status = 1 }
                     }
                 } else {
-                    guard let tool = FileTool(rawValue: args[2]) else { throw PetalwheelError("Unknown tool \(args[2])") }
+                    guard let tool = FileTool(rawValue: args[2]) else { throw NurToError("Unknown tool \(args[2])") }
                     if FolderCatalog.folderTools.contains(tool) && FolderCatalog.containsFolder(urls) {   // folders
                         do { if let r = try await FolderCommandLine.run(convert: nil, tool: tool, urls: urls, engines: engines) { FolderCommandLine.print(r) } }
                         catch { fputs("✗ \(urls[0].lastPathComponent): \(error.localizedDescription)\n", stderr); status = 1 }
@@ -67,7 +76,7 @@ enum CommandLineMode {
                     let groups = batch.contains(tool) ? [urls] : urls.map { [$0] }
                     for group in groups {
                         guard let module = toolModules.first(where: { $0.canRun(tool, format: FileFormat.detect(group[0])) }) else {
-                            throw PetalwheelError("\(tool.rawValue) can't handle \(group[0].lastPathComponent)")
+                            throw NurToError("\(tool.rawValue) can't handle \(group[0].lastPathComponent)")
                         }
                         do {
                             let r = try await module.run(tool, inputs: group, options: options, progress: { _ in })
@@ -91,10 +100,10 @@ enum CommandLineMode {
     }
 
     static func convert(_ url: URL, to target: FileFormat) async throws -> [URL] {
-        guard let source = FileFormat.detect(url) else { throw PetalwheelError("Unsupported file type") }
-        if source == target { throw PetalwheelError("Already \(target.title)") }
+        guard let source = FileFormat.detect(url) else { throw NurToError("Unsupported file type") }
+        if source == target { throw NurToError("Already \(target.title)") }
         guard let engine = engines.first(where: { $0.canConvert(from: source, to: target) }) else {
-            throw PetalwheelError("Can't convert \(source.title) to \(target.title)")
+            throw NurToError("Can't convert \(source.title) to \(target.title)")
         }
         return try await engine.convert(url, from: source, to: target, options: ConversionOptions(), progress: { _ in })
     }

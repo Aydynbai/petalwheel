@@ -162,7 +162,7 @@ enum TimelineMediaLoader {
                 builder.append(UnsafeBufferPointer(start: floats, count: count), channels: channels)
             }
         }
-        if reader.status == .failed { throw reader.error ?? PetalwheelError(l: "Audio can’t be read.") }
+        if reader.status == .failed { throw reader.error ?? NurToError(l: "Audio can’t be read.") }
         return builder.finish()
     }
 

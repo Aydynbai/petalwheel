@@ -18,10 +18,10 @@ struct ImageToolsModule: ToolModule {
 
     func run(_ tool: FileTool, inputs: [URL], options: ToolOptions,
              progress: @escaping ProgressHandler) async throws -> ToolResult {
-        guard let first = inputs.first else { throw PetalwheelError(l: "No files given.") }
+        guard let first = inputs.first else { throw NurToError(l: "No files given.") }
         switch tool {
         case .createCollage:
-            guard inputs.count >= 2 else { throw PetalwheelError(l: "A collage needs at least two images.") }
+            guard inputs.count >= 2 else { throw NurToError(l: "A collage needs at least two images.") }
             return ToolResult(outputs: [try ImageLayout.collage(inputs, options: options, progress: progress)])
         case .createPDF:
             let out = inputs.count == 1
@@ -35,7 +35,7 @@ struct ImageToolsModule: ToolModule {
             }
             return ToolResult(outputs: [out])
         case .mergePDF:
-            guard inputs.count >= 2 else { throw PetalwheelError(l: "Merging needs at least two PDFs.") }
+            guard inputs.count >= 2 else { throw NurToError(l: "Merging needs at least two PDFs.") }
             return ToolResult(outputs: [try PDFTools.merge(inputs, progress: progress)])
         default:
             break
@@ -109,7 +109,7 @@ struct ImageToolsModule: ToolModule {
             return ToolResult(outputs: try PDFTools.split(url, progress: progress))
 
         default:
-            throw PetalwheelError(l: "%@ isn't available for %@.", tool.title, name)
+            throw NurToError(l: "%@ isn't available for %@.", tool.title, name)
         }
     }
 }

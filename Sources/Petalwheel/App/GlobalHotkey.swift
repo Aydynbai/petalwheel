@@ -122,14 +122,14 @@ final class GlobalHotkey: ObservableObject {
             }
             return noErr
         }, 1, &spec, nil, &handlerRef)
-        if status != noErr { NSLog("Petalwheel: InstallEventHandler failed (%d)", status) }
+        if status != noErr { NSLog("NurTo: InstallEventHandler failed (%d)", status) }
         reregister()
     }
 
     func resetToDefault() { combo = .default }
 
     private func fire() {
-        NSLog("Petalwheel: global hotkey %@ pressed", combo.displayString)
+        NSLog("NurTo: global hotkey %@ pressed", combo.displayString)
         onPress?()
     }
 
@@ -148,12 +148,12 @@ final class GlobalHotkey: ObservableObject {
         if status == noErr, let ref {
             hotKeyRef = ref
             isRegistered = true
-            NSLog("Petalwheel: global hotkey %@ registered", combo.displayString)
+            NSLog("NurTo: global hotkey %@ registered", combo.displayString)
         } else {
             lastError = status == OSStatus(eventHotKeyExistsErr)
                 ? L("%@ is already used by another app. Pick another shortcut.", combo.displayString)
                 : L("Couldn't register %@ (error %d).", combo.displayString, Int(status))
-            NSLog("Petalwheel: global hotkey %@ registration failed (%d)", combo.displayString, status)
+            NSLog("NurTo: global hotkey %@ registration failed (%d)", combo.displayString, status)
         }
     }
 }
@@ -166,7 +166,7 @@ enum FinderSelection {
     enum Permission { case allowed, notDetermined, denied, finderNotRunning, unknown }
 
     static let finderBundleID = "com.apple.finder"
-    private static let queue = DispatchQueue(label: "studio.kipper.Petalwheel.finder-selection")
+    private static let queue = DispatchQueue(label: "app.nurto.mac.finder-selection")
 
     static var finderIsFrontmost: Bool {
         NSWorkspace.shared.frontmostApplication?.bundleIdentifier == finderBundleID
@@ -197,7 +197,7 @@ enum FinderSelection {
                 case -600: result = .finderNotRunning
                 default: result = .failed(message)
                 }
-                NSLog("Petalwheel: Finder selection failed (%ld) %@", code, message)
+                NSLog("NurTo: Finder selection failed (%ld) %@", code, message)
             } else {
                 let paths = (output?.stringValue ?? "").split(separator: "\n").map(String.init).filter { !$0.isEmpty }
                 let urls = paths.map { URL(fileURLWithPath: $0).standardizedFileURL }
@@ -239,8 +239,8 @@ enum FinderSelection {
     static func presentPermissionHelp() {
         KQWindowing.activate()
         let alert = NSAlert()
-        alert.messageText = L("Petalwheel can't read the Finder selection")
-        alert.informativeText = L("To open the wheel for files selected in Finder, allow Petalwheel to control Finder in System Settings › Privacy & Security › Automation › Petalwheel › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services.")
+        alert.messageText = L("NurTo can't read the Finder selection")
+        alert.informativeText = L("To open the wheel for files selected in Finder, allow NurTo to control Finder in System Settings › Privacy & Security › Automation › NurTo › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services.")
         alert.addButton(withTitle: L("Open Automation Settings"))
         alert.addButton(withTitle: L("Not Now"))
         if alert.runModal() == .alertFirstButtonReturn { openAutomationSettings() }

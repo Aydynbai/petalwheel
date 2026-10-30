@@ -62,11 +62,11 @@ enum ImageCodec {
         if fmt == .svg { return LoadedImage(image: try renderSVG(url), properties: [:], sourceType: nil) }
         guard let src = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary),
               CGImageSourceGetCount(src) > 0 else {
-            throw PetalwheelError(l: "Could not read the image %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not read the image %@.", url.lastPathComponent)
         }
         let index = CGImageSourceGetPrimaryImageIndex(src)
         guard let raw = CGImageSourceCreateImageAtIndex(src, index, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) else {
-            throw PetalwheelError(l: "Could not decode the image %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not decode the image %@.", url.lastPathComponent)
         }
         let props = (CGImageSourceCopyPropertiesAtIndex(src, index, nil) as? [CFString: Any]) ?? [:]
         let orientation = (props[kCGImagePropertyOrientation] as? NSNumber)?.uint32Value ?? 1
@@ -97,7 +97,7 @@ enum ImageCodec {
 
     static func renderSVG(_ url: URL) throws -> CGImage {
         guard let img = NSImage(contentsOf: url) else {
-            throw PetalwheelError(l: "Could not read the SVG %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not read the SVG %@.", url.lastPathComponent)
         }
         var size = img.size
         if size.width < 1 || size.height < 1 { size = CGSize(width: 1024, height: 1024) }
@@ -108,14 +108,14 @@ enum ImageCodec {
         if long * scale > 8192 { scale = 8192 / long }
         let w = max(1, Int((size.width * scale).rounded())), h = max(1, Int((size.height * scale).rounded()))
         guard let ctx = makeContext(width: w, height: h, opaque: false) else {
-            throw PetalwheelError(l: "Could not allocate an image of %d×%d.", w, h)
+            throw NurToError(l: "Could not allocate an image of %d×%d.", w, h)
         }
         let gc = NSGraphicsContext(cgContext: ctx, flipped: false)
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = gc
         img.draw(in: CGRect(x: 0, y: 0, width: w, height: h), from: .zero, operation: .copy, fraction: 1)
         NSGraphicsContext.restoreGraphicsState()
-        guard let out = ctx.makeImage() else { throw PetalwheelError(l: "Could not render the SVG %@.", url.lastPathComponent) }
+        guard let out = ctx.makeImage() else { throw NurToError(l: "Could not render the SVG %@.", url.lastPathComponent) }
         return out
     }
 
@@ -202,11 +202,11 @@ enum ImageCodec {
         let cs = image.colorSpace?.model == .rgb ? image.colorSpace! : CGColorSpace(name: CGColorSpace.sRGB)!
         let info = hasAlpha(image) ? CGImageAlphaInfo.premultipliedLast.rawValue : CGImageAlphaInfo.noneSkipLast.rawValue
         guard let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: 0, space: cs, bitmapInfo: info) else {
-            throw PetalwheelError(l: "Could not allocate an image of %d×%d.", w, h)
+            throw NurToError(l: "Could not allocate an image of %d×%d.", w, h)
         }
         ctx.concatenate(orientationTransform(o, rawWidth: CGFloat(rw), rawHeight: CGFloat(rh)))
         ctx.draw(image, in: CGRect(x: 0, y: 0, width: rw, height: rh))
-        guard let out = ctx.makeImage() else { throw PetalwheelError(l: "Could not rotate the image.") }
+        guard let out = ctx.makeImage() else { throw NurToError(l: "Could not rotate the image.") }
         return out
     }
 
@@ -236,10 +236,10 @@ enum ImageCodec {
 
     static func encode(_ image: CGImage, format: FileFormat, quality: Double,
                        metadata: [CFString: Any]? = nil) throws -> Data {
-        guard let type = utType(for: format) else { throw PetalwheelError(l: "Can't encode %@ images.", format.title) }
+        guard let type = utType(for: format) else { throw NurToError(l: "Can't encode %@ images.", format.title) }
         let data = NSMutableData()
         guard let dest = CGImageDestinationCreateWithData(data, type as CFString, 1, nil) else {
-            throw PetalwheelError(l: "This Mac can't write %@ images.", format.title)
+            throw NurToError(l: "This Mac can't write %@ images.", format.title)
         }
         var img = image
         if needsOpaque(format) { img = flatten(img) }
@@ -255,7 +255,7 @@ enum ImageCodec {
         if format == .gif { props.removeValue(forKey: kCGImagePropertyExifDictionary); props.removeValue(forKey: kCGImagePropertyGPSDictionary) }
         CGImageDestinationAddImage(dest, img, props as CFDictionary)
         guard CGImageDestinationFinalize(dest) else {
-            throw PetalwheelError(l: "Failed to encode the %@ image.", format.title)
+            throw NurToError(l: "Failed to encode the %@ image.", format.title)
         }
         return data as Data
     }
@@ -289,7 +289,7 @@ enum ImageCodec {
     /// Writes one page per image, each page the image's pixel size at 72 dpi.
     static func writePDF(images: [CGImage], to url: URL) throws {
         guard let ctx = CGContext(url as CFURL, mediaBox: nil, nil) else {
-            throw PetalwheelError(l: "Could not create %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not create %@.", url.lastPathComponent)
         }
         for img in images {
             var box = CGRect(x: 0, y: 0, width: img.width, height: img.height)
@@ -304,7 +304,7 @@ enum ImageCodec {
     /// Writes image files to a PDF, keeping JPEG data as-is (no re-encode) where possible.
     static func writePDF(imageFiles: [URL], to url: URL, progress: ProgressHandler? = nil) throws {
         guard let ctx = CGContext(url as CFURL, mediaBox: nil, nil) else {
-            throw PetalwheelError(l: "Could not create %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not create %@.", url.lastPathComponent)
         }
         for (i, file) in imageFiles.enumerated() {
             let fmt = FileFormat.detect(file)

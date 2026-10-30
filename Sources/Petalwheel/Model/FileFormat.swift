@@ -96,7 +96,7 @@ enum FileFormat: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Formats Petalwheel can read but never writes (never offered as a conversion target).
+    /// Formats NurTo can read but never writes (never offered as a conversion target).
     var isInputOnly: Bool {
         switch self {
         case .doc, .pptx, .key, .pages, .xls, .numbers: return true

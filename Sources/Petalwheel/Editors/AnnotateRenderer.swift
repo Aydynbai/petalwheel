@@ -252,12 +252,12 @@ enum AnnotateRenderer {
         let w = image.width, h = image.height
         let opaque = !ImageCodec.hasAlpha(image)
         guard let ctx = ImageCanvasIO.makeFlippedContext(like: image, width: w, height: h, opaque: opaque) else {
-            throw PetalwheelError(l: "Could not allocate an image of %d×%d.", w, h)
+            throw NurToError(l: "Could not allocate an image of %d×%d.", w, h)
         }
         let size = CGSize(width: w, height: h)
         ImageCanvasIO.drawImage(image, in: CGRect(origin: .zero, size: size), ctx: ctx)
         draw(items, base: image, imageSize: size, in: ctx)
-        guard let out = ctx.makeImage() else { throw PetalwheelError(l: "Could not render the annotated image.") }
+        guard let out = ctx.makeImage() else { throw NurToError(l: "Could not render the annotated image.") }
         return out
     }
 }

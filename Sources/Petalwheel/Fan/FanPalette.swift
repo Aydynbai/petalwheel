@@ -11,6 +11,7 @@ extension FanCategory {
         case .combine: return KQPalette.terracotta
         case .extract: return KQPalette.denim
         case .share: return KQPalette.lagoon
+        case .more: return NSColor(srgbRed: 0.45, green: 0.5, blue: 0.6, alpha: 1)
         case .favorites: return KQPalette.driftwood
         }
     }
@@ -27,6 +28,7 @@ extension FanCategory {
         case .combine: return KQPalette.Dark.terracotta
         case .extract: return KQPalette.Dark.denim
         case .share: return KQPalette.Dark.lagoon
+        case .more: return NSColor(srgbRed: 0.55, green: 0.62, blue: 0.75, alpha: 1)
         case .favorites: return KQPalette.Dark.driftwood
         }
     }

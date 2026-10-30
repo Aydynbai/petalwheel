@@ -54,7 +54,7 @@ extension ToolOptionsView {
                     SecureField("No password", text: model.archivePasswordText)
                         .textFieldStyle(.roundedBorder)
                 }
-                Text("Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or Petalwheel.")
+                Text("Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or NurTo.")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
@@ -69,7 +69,7 @@ extension ToolOptionsView {
         switch model.options.archiveFormat {
         case .dmg: return L("A compressed disk image that opens on any Mac.")
         case .iso: return L("A disc image that opens on Mac, Windows and Linux.")
-        case .sevenZ: return L("Smallest files. Opens with 7-Zip, The Unarchiver or Petalwheel.")
+        case .sevenZ: return L("Smallest files. Opens with 7-Zip, The Unarchiver or NurTo.")
         default: return L("Only zip archives can have a password.")
         }
     }

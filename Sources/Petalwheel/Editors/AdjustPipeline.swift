@@ -135,7 +135,7 @@ struct AdjustPreset: Identifiable {
 enum AdjustPipeline {
     /// Shared GPU-backed context (thread-safe), used for both the preview and the export.
     static let context: CIContext = {
-        let opts: [CIContextOption: Any] = [.cacheIntermediates: false, .name: "Petalwheel.Adjust"]
+        let opts: [CIContextOption: Any] = [.cacheIntermediates: false, .name: "NurTo.Adjust"]
         if let device = MTLCreateSystemDefaultDevice() { return CIContext(mtlDevice: device, options: opts) }
         return CIContext(options: opts)
     }()
@@ -329,7 +329,7 @@ enum AdjustPipeline {
             return CGColorSpace(name: CGColorSpace.sRGB)!
         }()
         guard var out = render(apply(settings, to: ci), colorSpace: cs) else {
-            throw PetalwheelError(l: "Could not render %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not render %@.", url.lastPathComponent)
         }
         if !ImageCodec.hasAlpha(source) { out = ImageCodec.flatten(out) }
         let format = outputFormat(for: url)

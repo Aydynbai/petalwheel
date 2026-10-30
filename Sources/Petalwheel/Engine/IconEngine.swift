@@ -22,7 +22,7 @@ struct IconEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         progress(0.05)
         let loaded = try RawImageEngine.load(source, format: from)
@@ -37,7 +37,7 @@ struct IconEngine: ConversionEngine {
                 try await Self.writeICNS(from: loaded.image, to: out)
             default:
                 if (target == .heic || target == .avif) && !ImageCodec.canEncode(target) {
-                    throw PetalwheelError(l: "This Mac can't encode %@ images.", target.title)
+                    throw NurToError(l: "This Mac can't encode %@ images.", target.title)
                 }
                 try await ImageCodec.write(loaded.image, to: out, format: target,
                                            quality: ImageCodec.quality(options.quality), metadata: nil)
@@ -55,7 +55,7 @@ struct IconEngine: ConversionEngine {
     /// The largest image in an ICO / ICNS file (ImageIO lists every size as a separate image).
     static func loadLargest(_ url: URL) throws -> LoadedImage {
         guard let src = CGImageSourceCreateWithURL(url as CFURL, nil), CGImageSourceGetCount(src) > 0 else {
-            throw PetalwheelError(l: "Could not read the image %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not read the image %@.", url.lastPathComponent)
         }
         var best: (index: Int, pixels: Int)?
         for i in 0..<CGImageSourceGetCount(src) {
@@ -66,7 +66,7 @@ struct IconEngine: ConversionEngine {
         }
         guard let index = best?.index,
               let image = CGImageSourceCreateImageAtIndex(src, index, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) else {
-            throw PetalwheelError(l: "Could not decode the image %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not decode the image %@.", url.lastPathComponent)
         }
         return LoadedImage(image: image, properties: [:], sourceType: CGImageSourceGetType(src) as String?)
     }
@@ -76,7 +76,7 @@ struct IconEngine: ConversionEngine {
     /// `image` centred on a transparent square of `side` px, scaled to fit.
     static func squared(_ image: CGImage, side: Int) throws -> CGImage {
         guard let ctx = ImageCodec.makeContext(width: side, height: side, opaque: false) else {
-            throw PetalwheelError(l: "Could not allocate an image of %d×%d.", side, side)
+            throw NurToError(l: "Could not allocate an image of %d×%d.", side, side)
         }
         let w = Double(image.width), h = Double(image.height)
         let scale = Double(side) / max(w, h)
@@ -84,7 +84,7 @@ struct IconEngine: ConversionEngine {
         ctx.clear(CGRect(x: 0, y: 0, width: side, height: side))
         ctx.interpolationQuality = .high
         ctx.draw(image, in: CGRect(x: (Double(side) - dw) / 2, y: (Double(side) - dh) / 2, width: dw, height: dh))
-        guard let out = ctx.makeImage() else { throw PetalwheelError(l: "Could not render the icon.") }
+        guard let out = ctx.makeImage() else { throw NurToError(l: "Could not render the icon.") }
         return out
     }
 
@@ -153,13 +153,13 @@ struct IconEngine: ConversionEngine {
             // ImageIO writes ICNS too (one image per size).
             try? FileManager.default.removeItem(at: packed)
             guard let dest = CGImageDestinationCreateWithURL(packed as CFURL, UTType.icns.identifier as CFString, 6, nil) else {
-                throw PetalwheelError(l: "This Mac can't write %@ images.", FileFormat.icns.title)
+                throw NurToError(l: "This Mac can't write %@ images.", FileFormat.icns.title)
             }
             for side in [16, 32, 64, 128, 256, 512, 1024] {
                 CGImageDestinationAddImage(dest, try iconImage(image, side: side), nil)
             }
             guard CGImageDestinationFinalize(dest) else {
-                throw PetalwheelError(l: "Failed to encode the %@ image.", FileFormat.icns.title)
+                throw NurToError(l: "Failed to encode the %@ image.", FileFormat.icns.title)
             }
         }
         try FileManager.default.moveItem(at: packed, to: output)

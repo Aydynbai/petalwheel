@@ -22,7 +22,7 @@ struct OfficeEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         let temp = try OutputNaming.tempDirectory()
         defer { try? FileManager.default.removeItem(at: temp) }
@@ -31,7 +31,7 @@ struct OfficeEngine: ConversionEngine {
         case .pptx: return try await convertPresentation(source, to: target, temp: temp, progress: progress)
         case .doc: return try await convertWordDoc(source, to: target, temp: temp, options: options, progress: progress)
         case .xls: return try await convertLegacySpreadsheet(source, to: target, temp: temp, progress: progress)
-        default: throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+        default: throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
     }
 
@@ -77,7 +77,7 @@ struct OfficeEngine: ConversionEngine {
             }))
             """
         let rects = try await renderer.evaluateJSON(measure, as: [[Double]].self)
-        guard !rects.isEmpty else { throw PetalwheelError(l: "Quick Look found no slides in “%@”.", title) }
+        guard !rects.isEmpty else { throw NurToError(l: "Quick Look found no slides in “%@”.", title) }
         progress(0.4)
         // Show one slide at a time so each is rendered at the top of the page.
         let merged = PDFDocument()
@@ -93,9 +93,9 @@ struct OfficeEngine: ConversionEngine {
             if let doc = PDFDocument(data: data), let page = doc.page(at: 0) { merged.insert(page, at: merged.pageCount) }
             progress(0.4 + 0.6 * Double(i + 1) / Double(rects.count))
         }
-        guard merged.pageCount > 0 else { throw PetalwheelError(l: "Nothing was rendered.") }
-        merged.documentAttributes = [PDFDocumentAttribute.titleAttribute: title, PDFDocumentAttribute.creatorAttribute: "Petalwheel"]
-        guard merged.write(to: output) else { throw PetalwheelError(l: "Couldn't write “%@”.", output.lastPathComponent) }
+        guard merged.pageCount > 0 else { throw NurToError(l: "Nothing was rendered.") }
+        merged.documentAttributes = [PDFDocumentAttribute.titleAttribute: title, PDFDocumentAttribute.creatorAttribute: "NurTo"]
+        guard merged.write(to: output) else { throw NurToError(l: "Couldn't write “%@”.", output.lastPathComponent) }
     }
 
     // MARK: - Word 97–2004
@@ -120,10 +120,10 @@ struct OfficeEngine: ConversionEngine {
         do {
             try await ProcessRunner.run(OfficeSupport.textutil, ["-convert", "rtfd", "-output", rtfd.path, source.path])
         } catch let e as ProcessError {
-            throw PetalwheelError(l: "Couldn't read “%@”: %@", source.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw NurToError(l: "Couldn't read “%@”: %@", source.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         guard FileManager.default.fileExists(atPath: rtfd.path) else {
-            throw PetalwheelError(l: "Couldn't read “%@” as a Word document.", source.lastPathComponent)
+            throw NurToError(l: "Couldn't read “%@” as a Word document.", source.lastPathComponent)
         }
         return rtfd
     }
@@ -148,7 +148,7 @@ struct OfficeEngine: ConversionEngine {
                 if try await Self.printSheet(page.html, root: preview, to: part) { parts.append(part) }
                 progress(0.3 + 0.6 * Double(i + 1) / Double(pages.count))
             }
-            guard !parts.isEmpty else { throw PetalwheelError(l: "“%@” has no data.", source.lastPathComponent) }
+            guard !parts.isEmpty else { throw NurToError(l: "“%@” has no data.", source.lastPathComponent) }
             try OfficeSupport.mergePDFs(parts, to: out, title: baseName)
             progress(1)
             return [out]
@@ -169,7 +169,7 @@ struct OfficeEngine: ConversionEngine {
             progress(0.3 + 0.5 * Double(i + 1) / Double(pages.count))
         }
         if sheets.count > 1 { sheets.removeAll { $0.rows.isEmpty } }
-        guard sheets.contains(where: { !$0.rows.isEmpty }) else { throw PetalwheelError(l: "“%@” has no data.", source.lastPathComponent) }
+        guard sheets.contains(where: { !$0.rows.isEmpty }) else { throw NurToError(l: "“%@” has no data.", source.lastPathComponent) }
 
         switch target {
         case .xlsx:

@@ -20,7 +20,7 @@ enum ImageLayout {
             rect = CGRect(x: 0, y: ((h - nh) / 2).rounded(), width: w, height: nh)
         }
         rect = rect.integral.intersection(CGRect(x: 0, y: 0, width: w, height: h))
-        guard let cropped = img.cropping(to: rect) else { throw PetalwheelError(l: "Could not crop %@.", url.lastPathComponent) }
+        guard let cropped = img.cropping(to: rect) else { throw NurToError(l: "Could not crop %@.", url.lastPathComponent) }
 
         var outFormat = format
         if outFormat == .webp && !ExternalTools.shared.hasWebPEncoder { outFormat = .png }
@@ -53,7 +53,7 @@ enum ImageLayout {
         let radius = min(max(0, CGFloat(options.cornerRadius) * s), min(w, h) / 2)
         let cw = Int((w + 2 * pad).rounded()), ch = Int((h + 2 * pad).rounded())
         guard let ctx = ImageCodec.makeContext(width: cw, height: ch, opaque: false) else {
-            throw PetalwheelError(l: "Could not allocate an image of %d×%d.", cw, ch)
+            throw NurToError(l: "Could not allocate an image of %d×%d.", cw, ch)
         }
         let canvas = CGRect(x: 0, y: 0, width: cw, height: ch)
         let (c1, c2) = gradientColors(from: options.backgroundColor)
@@ -72,7 +72,7 @@ enum ImageLayout {
         ctx.clip()
         ctx.draw(img, in: imageRect)
         ctx.endTransparencyLayer()
-        guard let result = ctx.makeImage() else { throw PetalwheelError(l: "Could not render the frame.") }
+        guard let result = ctx.makeImage() else { throw NurToError(l: "Could not render the frame.") }
         let out = OutputNaming.url(for: url, ext: "png", suffix: "framed")
         try ImageCodec.encode(result, format: .png, quality: 1).write(to: out, options: .atomic)
         return out
@@ -89,7 +89,7 @@ enum ImageLayout {
                   kCGImageSourceCreateThumbnailWithTransform: true,
                   kCGImageSourceThumbnailMaxPixelSize: maxSide,
               ] as CFDictionary) else {
-            throw PetalwheelError(l: "Could not read the image %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not read the image %@.", url.lastPathComponent)
         }
         return img
     }
@@ -107,7 +107,7 @@ enum ImageLayout {
         let W = Int(CGFloat(cols) * cellW + CGFloat(cols + 1) * gap)
         let H = Int(CGFloat(rows) * cellH + CGFloat(rows + 1) * gap)
         guard W * H <= 300_000_000, let ctx = ImageCodec.makeContext(width: W, height: H, opaque: true) else {
-            throw PetalwheelError(l: "The collage would be too large.")
+            throw NurToError(l: "The collage would be too large.")
         }
         ctx.setFillColor(CGColor(gray: 1, alpha: 1))
         ctx.fill(CGRect(x: 0, y: 0, width: W, height: H))
@@ -128,7 +128,7 @@ enum ImageLayout {
             ctx.draw(img, in: CGRect(x: cell.midX - dw / 2, y: cell.midY - dh / 2, width: dw, height: dh))
             progress(Double(i + 1) / Double(inputs.count) * 0.9)
         }
-        guard let result = ctx.makeImage() else { throw PetalwheelError(l: "Could not render the collage.") }
+        guard let result = ctx.makeImage() else { throw NurToError(l: "Could not render the collage.") }
         let out = OutputNaming.url(named: "Collage", ext: "png", in: inputs[0].deletingLastPathComponent())
         try ImageCodec.encode(result, format: .png, quality: 1).write(to: out, options: .atomic)
         progress(1)

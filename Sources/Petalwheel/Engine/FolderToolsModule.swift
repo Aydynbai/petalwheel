@@ -34,7 +34,7 @@ struct FolderToolsModule: ToolModule {
             let step = MirrorStep(keepSourceName: true, copyWhenNoOutput: tool == .compress, copyAsIs: { _ in false }) { input, p in
                 let format = FileFormat.detect(input)
                 guard let module = modules.first(where: { $0.canRun(tool, format: format) }) else {
-                    throw PetalwheelError(l: "%@ isn't available for %@.", tool.title, input.lastPathComponent)
+                    throw NurToError(l: "%@ isn't available for %@.", tool.title, input.lastPathComponent)
                 }
                 return try await module.run(tool, inputs: [input], options: options, progress: p).outputs
             }
@@ -52,7 +52,7 @@ struct FolderToolsModule: ToolModule {
             progress(1)
             return ToolResult(messages: Self.report(scan, inputs: inputs))
         default:
-            throw PetalwheelError(l: "%@ isn't available for folders.", tool.title)
+            throw NurToError(l: "%@ isn't available for folders.", tool.title)
         }
     }
 
@@ -61,16 +61,16 @@ struct FolderToolsModule: ToolModule {
         let scan = try Self.prepare(inputs)
         let entries = FolderCatalog.convertSources(scan, to: target)
         guard entries.contains(where: { FolderCatalog.isConvertible($0, to: target) }) else {
-            throw PetalwheelError(l: "Nothing in the selected folders can be converted to %@.", target.title)
+            throw NurToError(l: "Nothing in the selected folders can be converted to %@.", target.title)
         }
         let engines = self.engines
         let options = conversion
         let step = MirrorStep(keepSourceName: false, copyWhenNoOutput: false, copyAsIs: { $0.format == target }) { input, p in
             guard let source = FileFormat.detect(input) else {
-                throw PetalwheelError(l: "Unsupported file type: %@", input.lastPathComponent)
+                throw NurToError(l: "Unsupported file type: %@", input.lastPathComponent)
             }
             guard let engine = engines.first(where: { $0.canConvert(from: source, to: target) }) else {
-                throw PetalwheelError(l: "Can't convert %@ to %@", source.title, target.title)
+                throw NurToError(l: "Can't convert %@ to %@", source.title, target.title)
             }
             return try await engine.convert(input, from: source, to: target, options: options, progress: p)
         }
@@ -84,9 +84,9 @@ struct FolderToolsModule: ToolModule {
         try Task.checkCancellation()
         if scan.truncated {
             let limit = NumberFormatter.localizedString(from: NSNumber(value: FolderCatalog.maxFiles), number: .decimal)
-            throw PetalwheelError(l: "The selection contains more than %@ files. Choose a smaller folder.", limit)
+            throw NurToError(l: "The selection contains more than %@ files. Choose a smaller folder.", limit)
         }
-        guard !scan.entries.isEmpty else { throw PetalwheelError(l: "The selected folders contain no files.") }
+        guard !scan.entries.isEmpty else { throw NurToError(l: "The selected folders contain no files.") }
         return scan
     }
 
@@ -126,7 +126,7 @@ struct FolderToolsModule: ToolModule {
 
     private func runMirrored(_ scan: FolderScan, entries: [FolderEntry], suffix: String, step: MirrorStep,
                              progress: @escaping ProgressHandler) async throws -> ToolResult {
-        guard !entries.isEmpty else { throw PetalwheelError(l: "Nothing in the selected folders can be processed this way.") }
+        guard !entries.isEmpty else { throw NurToError(l: "Nothing in the selected folders can be processed this way.") }
         let fm = FileManager.default
         let ordered = Self.naturalOrder(entries, scan: scan)
         var mirrors: [URL: URL] = [:]
@@ -315,7 +315,7 @@ struct FolderToolsModule: ToolModule {
 
     private func makePDF(_ scan: FolderScan, progress: @escaping ProgressHandler) throws -> ToolResult {
         let images = Self.naturalOrder(FolderCatalog.toolInputs(.createPDF, scan: scan), scan: scan).map(\.url)
-        guard !images.isEmpty else { throw PetalwheelError(l: "There are no images in the selected folders.") }
+        guard !images.isEmpty else { throw NurToError(l: "There are no images in the selected folders.") }
         let inputs = scan.roots.isEmpty ? images : scan.roots
         let out = OutputNaming.url(named: Self.outputBase(scan, inputs: inputs), ext: "pdf", in: Self.outputDirectory(inputs))
         do {
@@ -330,7 +330,7 @@ struct FolderToolsModule: ToolModule {
     /// `ImageCodec.writePDF` with cancellation between pages (folders can hold thousands of images).
     static func writePDF(_ files: [URL], to url: URL, progress: @escaping ProgressHandler) throws {
         guard let ctx = CGContext(url as CFURL, mediaBox: nil, nil) else {
-            throw PetalwheelError(l: "Could not create %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not create %@.", url.lastPathComponent)
         }
         for (i, file) in files.enumerated() {
             try Task.checkCancellation()
@@ -359,7 +359,7 @@ struct FolderToolsModule: ToolModule {
 
     private func makeCollage(_ scan: FolderScan, options: ToolOptions, progress: @escaping ProgressHandler) throws -> ToolResult {
         let all = Self.naturalOrder(FolderCatalog.toolInputs(.createCollage, scan: scan), scan: scan).map(\.url)
-        guard all.count >= 2 else { throw PetalwheelError(l: "A collage needs at least two images.") }
+        guard all.count >= 2 else { throw NurToError(l: "A collage needs at least two images.") }
         let images = Array(all.prefix(Self.maxCollageImages))
         let inputs = scan.roots.isEmpty ? images : scan.roots
         let dir = Self.outputDirectory(inputs)
@@ -381,7 +381,7 @@ struct FolderToolsModule: ToolModule {
 
     private func recognizeText(_ scan: FolderScan, progress: @escaping ProgressHandler) async throws -> ToolResult {
         let files = Self.naturalOrder(FolderCatalog.toolInputs(.recognizeText, scan: scan), scan: scan)
-        guard !files.isEmpty else { throw PetalwheelError(l: "There are no images or PDFs in the selected folders.") }
+        guard !files.isEmpty else { throw NurToError(l: "There are no images or PDFs in the selected folders.") }
         let limit = concurrency ?? min(4, max(1, ProcessInfo.processInfo.activeProcessorCount))
         let texts = await Self.parallel(count: files.count, limit: limit, progress: progress) { i, p in
             try Self.text(of: files[i].url, progress: p)
@@ -434,7 +434,7 @@ struct FolderToolsModule: ToolModule {
     private func flatten(_ scan: FolderScan, progress: @escaping ProgressHandler) throws -> ToolResult {
         let fm = FileManager.default
         let entries = Self.naturalOrder(scan.entries.filter { $0.root != nil }, scan: scan)
-        guard !entries.isEmpty else { throw PetalwheelError(l: "The selected folders contain no files.") }
+        guard !entries.isEmpty else { throw NurToError(l: "The selected folders contain no files.") }
         var outputs: [URL] = []
         var done = 0
         do {

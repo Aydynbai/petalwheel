@@ -35,7 +35,7 @@ struct ArchiveVolumeSet {
         }
         func checkContiguous(_ parts: [(Int, String)], from first: Int) throws {
             for (i, p) in parts.enumerated() where p.0 != first + i {
-                throw PetalwheelError(l: "Part %d of “%@” is missing.", first + i, name)
+                throw NurToError(l: "Part %d of “%@” is missing.", first + i, name)
             }
         }
         func escaped(_ s: String) -> String { NSRegularExpression.escapedPattern(for: s) }
@@ -56,7 +56,7 @@ struct ArchiveVolumeSet {
             let parts = numbered("^" + escaped(stem) + #"\.r(\d\d)$"#)
             guard !parts.isEmpty else { return ArchiveVolumeSet(volumes: [url], kind: .single) }
             guard let main = siblings.first(where: { $0.lowercased() == (stem + ".rar").lowercased() }) else {
-                throw PetalwheelError(l: "The first part of “%@” (.rar) is missing.", name)
+                throw NurToError(l: "The first part of “%@” (.rar) is missing.", name)
             }
             try checkContiguous(parts, from: 0)
             return ArchiveVolumeSet(volumes: [dir.appendingPathComponent(main)] + parts.map { dir.appendingPathComponent($0.1) },
@@ -68,7 +68,7 @@ struct ArchiveVolumeSet {
             let parts = numbered("^" + escaped(stem) + #"\.z(\d\d)$"#)
             guard !parts.isEmpty else { return ArchiveVolumeSet(volumes: [url], kind: .single) }
             guard let last = siblings.first(where: { $0.lowercased() == (stem + ".zip").lowercased() }) else {
-                throw PetalwheelError(l: "The last part of “%@” (.zip) is missing.", name)
+                throw NurToError(l: "The last part of “%@” (.zip) is missing.", name)
             }
             try checkContiguous(parts, from: 1)
             return ArchiveVolumeSet(volumes: parts.map { dir.appendingPathComponent($0.1) } + [dir.appendingPathComponent(last)],

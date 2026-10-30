@@ -1,6 +1,6 @@
-/* Petalwheel – Finder Services menu titles (NSMenuItem default → title) */
+/* NurTo – Finder Services menu titles (NSMenuItem default → title) */
 
-"Petalwheel: Open in Wheel" = "Petalwheel: Open in Wheel";
-"Petalwheel: Convert to JPG" = "Petalwheel: Convert to JPG";
-"Petalwheel: Compress" = "Petalwheel: Compress";
-"Petalwheel: Convert to MP4" = "Petalwheel: Convert to MP4";
+"NurTo: Open in Wheel" = "NurTo: Open in Wheel";
+"NurTo: Convert to JPG" = "NurTo: Convert to JPG";
+"NurTo: Compress" = "NurTo: Compress";
+"NurTo: Convert to MP4" = "NurTo: Convert to MP4";

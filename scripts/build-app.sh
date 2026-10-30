@@ -26,19 +26,19 @@ for arg in "$@"; do
     esac
 done
 
-APP_NAME="Petalwheel"
-BUNDLE_ID="studio.kipper.Petalwheel"
-VERSION="1.2.0"
+APP_NAME="NurTo"
+BUNDLE_ID="app.nurto.mac"
+VERSION="1.3.0"
 BUILD_NUMBER="$(date +%Y%m%d%H%M)"
 APP="$ROOT/build/$APP_NAME.app"
 
 echo "==> swift build -c release --arch arm64"
 swift build -c release --arch arm64
 BIN_DIR="$(swift build -c release --arch arm64 --show-bin-path)"
-BIN="$BIN_DIR/$APP_NAME"
+BIN="$BIN_DIR/Petalwheel"
 [[ -x "$BIN" ]] || { echo "Binary not found at $BIN" >&2; exit 1; }
 
-ICON="$ROOT/Resources/AppIcon.icns"
+ICON="$ROOT/Resources/NurTo.icns"
 if [[ ! -f "$ICON" ]]; then
     echo "==> Generating app icon"
     swift "$ROOT/scripts/make-icon.swift" "$ICON"
@@ -116,16 +116,16 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>NSHumanReadableCopyright</key>
     <string>© 2026 kipperstudio</string>
     <key>NSAppleEventsUsageDescription</key>
-    <string>Petalwheel reads the files selected in Finder when you press its global shortcut, so it can open the conversion wheel for them.</string>
+    <string>NurTo reads the files selected in Finder when you press its global shortcut, so it can open the conversion wheel for them.</string>
     <key>NSServices</key>
     <array>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Petalwheel: Open in Wheel</string></dict>
+            <dict><key>default</key><string>NurTo: Open in Wheel</string></dict>
             <key>NSMessage</key>
             <string>openInWheel</string>
             <key>NSPortName</key>
-            <string>Petalwheel</string>
+            <string>NurTo</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>
@@ -140,11 +140,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
         </dict>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Petalwheel: Convert to JPG</string></dict>
+            <dict><key>default</key><string>NurTo: Convert to JPG</string></dict>
             <key>NSMessage</key>
             <string>convertToJPG</string>
             <key>NSPortName</key>
-            <string>Petalwheel</string>
+            <string>NurTo</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>
@@ -160,11 +160,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
         </dict>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Petalwheel: Compress</string></dict>
+            <dict><key>default</key><string>NurTo: Compress</string></dict>
             <key>NSMessage</key>
             <string>compress</string>
             <key>NSPortName</key>
-            <string>Petalwheel</string>
+            <string>NurTo</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>
@@ -181,11 +181,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
         </dict>
         <dict>
             <key>NSMenuItem</key>
-            <dict><key>default</key><string>Petalwheel: Convert to MP4</string></dict>
+            <dict><key>default</key><string>NurTo: Convert to MP4</string></dict>
             <key>NSMessage</key>
             <string>convertToMP4</string>
             <key>NSPortName</key>
-            <string>Petalwheel</string>
+            <string>NurTo</string>
             <key>NSRequiredContext</key>
             <dict/>
             <key>NSSendTypes</key>

@@ -23,12 +23,12 @@ enum OfficeSupport {
                 try await ProcessRunner.run(qlmanage, args)
             }
         } catch let e as ProcessError {
-            throw PetalwheelError(l: "Quick Look couldn't render “%@”: %@", source.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw NurToError(l: "Quick Look couldn't render “%@”: %@", source.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         let items = (try? FileManager.default.contentsOfDirectory(at: out, includingPropertiesForKeys: nil)) ?? []
         guard let preview = items.first(where: { $0.pathExtension == "qlpreview" }),
               FileManager.default.fileExists(atPath: preview.appendingPathComponent("Preview.html").path) else {
-            throw PetalwheelError(l: "macOS can't preview “%@”, so Petalwheel can't convert it.", source.lastPathComponent)
+            throw NurToError(l: "macOS can't preview “%@”, so NurTo can't convert it.", source.lastPathComponent)
         }
         return preview
     }
@@ -43,7 +43,7 @@ enum OfficeSupport {
                 return nil
             }
             defer { group.cancelAll() }
-            guard let first = try await group.next(), let box = first else { throw PetalwheelError(message) }
+            guard let first = try await group.next(), let box = first else { throw NurToError(message) }
             return box.value
         }
     }
@@ -108,9 +108,9 @@ enum OfficeSupport {
                 merged.insert(page, at: merged.pageCount)
             }
         }
-        guard merged.pageCount > 0 else { throw PetalwheelError(l: "Nothing to render: the document has no pages.") }
-        merged.documentAttributes = [PDFDocumentAttribute.titleAttribute: title, PDFDocumentAttribute.creatorAttribute: "Petalwheel"]
-        guard merged.write(to: output) else { throw PetalwheelError(l: "Couldn't write “%@”.", output.lastPathComponent) }
+        guard merged.pageCount > 0 else { throw NurToError(l: "Nothing to render: the document has no pages.") }
+        merged.documentAttributes = [PDFDocumentAttribute.titleAttribute: title, PDFDocumentAttribute.creatorAttribute: "NurTo"]
+        guard merged.write(to: output) else { throw NurToError(l: "Couldn't write “%@”.", output.lastPathComponent) }
     }
 
     /// Renders every page of `pdf` to PNG/JPEG files ("<base> 01.png", …) inside a new folder
@@ -118,7 +118,7 @@ enum OfficeSupport {
     static func rasterizePages(of pdf: URL, source: URL, format: FileFormat, minWidth: CGFloat = 1920,
                                progress: (Double) -> Void) throws -> [URL] {
         guard let doc = CGPDFDocument(pdf as CFURL), doc.numberOfPages > 0 else {
-            throw PetalwheelError(l: "Couldn't read the rendered slides.")
+            throw NurToError(l: "Couldn't read the rendered slides.")
         }
         let base = source.deletingPathExtension().lastPathComponent
         let folder = OutputNaming.unique(source.deletingLastPathComponent().appendingPathComponent("\(base) (\(format.title))"))
@@ -174,7 +174,7 @@ enum OfficeSupport {
         try FileManager.default.copyItem(at: intermediate, to: input)
         let engine = DocumentEngine()
         guard engine.canConvert(from: format, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", format.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", format.title, target.title)
         }
         let produced = try await engine.convert(input, from: format, to: target, options: options, progress: progress)
         return try relocate(produced, primary: final)

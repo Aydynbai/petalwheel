@@ -17,10 +17,10 @@ enum FB2Writer {
         do {
             doc = try XMLDocument(xmlString: html, options: [.documentTidyHTML])
         } catch {
-            throw PetalwheelError(l: "Couldn't read the document's HTML: %@", error.localizedDescription)
+            throw NurToError(l: "Couldn't read the document's HTML: %@", error.localizedDescription)
         }
         guard let body = (try? doc.nodes(forXPath: "//body"))?.first as? XMLElement else {
-            throw PetalwheelError(l: "The document has no content.")
+            throw NurToError(l: "The document has no content.")
         }
         var b = Builder(baseURL: baseURL)
         let chapters = ((try? body.nodes(forXPath: ".//section[contains(concat(' ', @class, ' '), ' kq-chapter ')]")) ?? [])
@@ -475,8 +475,8 @@ extension FB2Writer.Builder {
               <lang>\(FB2Writer.escape(lang))</lang>
             </title-info>
             <document-info>
-              <author><nickname>Petalwheel</nickname></author>
-              <program-used>Petalwheel</program-used>
+              <author><nickname>NurTo</nickname></author>
+              <program-used>NurTo</program-used>
               <date value="\(date)">\(date)</date>
               <id>\(UUID().uuidString.lowercased())</id>
               <version>1.0</version>

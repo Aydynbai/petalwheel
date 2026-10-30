@@ -1,46 +1,49 @@
-# Personal customization
+# NurTo development state
 
-This fork is the starting point for a personal macOS file conversion app based on Petalwheel (formerly Kumquat).
+Personal fork of Petalwheel/Kumquat. Work on `nur/custom`; retain upstream copyright and licenses.
 
-## Current state
+## Current product direction
 
-- Upstream: https://github.com/TheAlexRay/petalwheel
-- Baseline: db043016e6609460004fa503ab103028bcac6e39 (1.2.0).
-- The unmodified baseline compiles successfully with Swift on Apple Silicon.
-- Added explicit fast and quality-first SDR video compression modes.
-- Upstream copyright, MIT license and third-party notices must be retained.
+The Ctrl-triggered radial wheel is the primary interface. No dashboard, full-screen visual overlay, lengthy explanatory UI or automatic comparison result window.
+English labels, a white translucent glass wheel, an unchanged desktop backdrop, thin sector divisions and a blue selection border. The wheel is about 13% wider than the upstream wheel for the same five symbol items.
+Contextual actions: Compress, Convert, Level Audio, Trim/Edit, More. All original tools remain under More.
+Navigation is deliberate: Hold Ctrl for 2.5 seconds with a dragged file or Finder selection to open the wheel. The wheel closes when Ctrl is released, without auto-selecting anything. Releasing only the mouse after the initial drag does not select a function. Hover only highlights; deliberate clicks open a category/function, and center-click goes back one level. There are no hover navigation timers. A deterministic gate test covers the exact 2.5-second threshold, one open per hold, early release and close-on-release.
 
-## Development
+## Implemented
 
-Use `nur/custom` for personal changes. Keep `main` available for upstream updates.
+- NurTo bundle/display/process name and `app.nurto.mac` identity, generated N icon.
+- One-time copy of old preferences/support data; one-time migration to Ctrl and English.
+- Fix for video-only settings leaking into photo/audio/GIF/mixed selections.
+- Two video modes: hardware HEVC q73; libx265 CRF20 slow.
+- Compact optional preview panel, a frame selector, optional Compare, one draggable before/after split view, stepwise 1–4× zoom, drag-to-pan and click-scale-to-reset. There is no hover panning, automatic zoom or playback-mode switching in the UI.
+- Preview shares encoding arguments with full export; cancellation and invalidation clean up temporary media.
+- Level Audio: compressor + dynamic normalizer + measured two-pass loudness normalization. One click, separate output, copy video when present.
+- Legacy presets, image/audio size compression and remaining tools retained.
 
-Build the development executable with `swift build`.
-Package a local app using `./scripts/build-app.sh --no-tools`; this variant uses locally installed media tools, so it is not a standalone distribution.
+## Validation
 
-## Next step
+Regression checks: media-state isolation, target-size controls, legacy/new preset roundtrips, 4–5 root actions and nonrecursive More navigation.
+Generated media tests: both video modes, playable previews, PCM stream-copy integrity, unchanged originals and safe 10-bit refusal.
+Audio test: 24-second recording with three levels. Center-section spread reduced from 28.8 dB to 3.7 dB; no clipping, unchanged source and duration.
+A mouse-release regression check verifies that only a subsequent real click selects an action.
+A render of the actual FanView is available via `--render-wheel <png>` for design QA.
 
-Review the two compression modes on sample media before selecting further custom features.
-
-## Video compression modes
-
-For a video, choose Optimize > Compress, then one of the two Kazakh-labelled modes:
-
-- **Тез сығу** (`fast`): Apple VideoToolbox HEVC, constant quality 73, hardware required.
-- **Сапаға басымдық** (`quality`): software libx265 HEVC, CRF 20, slow preset. Requires an FFmpeg build with libx265; the upstream bundled LGPL build does not include it.
-
-Both keep source dimensions and frame cadence, copy all audio tracks without re-encoding, preserve ordinary metadata/chapters, and write a separate file. MP4 is used for compatible audio; other audio codecs use MKV. A result that is not smaller is discarded. Neither mode is lossless. This first version accepts 8-bit SDR YUV420 video only; HDR, 10-bit, alpha and other pixel formats are rejected rather than silently converted. Subtitle/data tracks are not included.
-
-Legacy presets without a mode retain the previous compression behaviour. New mode selections are retained in presets and history. Image/audio compression controls are unchanged.
-
-CLI:
+## Developer commands
 
 ```sh
-Petalwheel --tool compress --video-mode fast input.mov
-Petalwheel --tool compress --video-mode quality input.mov
-```
-
-Integration check (small generated fixtures; does not upload media):
-
-```sh
+swift build
+.build/debug/Petalwheel --self-check
 python3 scripts/tests/video-compression-modes.py .build/debug/Petalwheel
+python3 scripts/tests/audio-leveling.py .build/debug/Petalwheel
+./scripts/build-app.sh --no-tools
 ```
+
+`--compress-window <video>` opens the preview panel for local UI QA.
+`--preview fast|quality <video>` writes a short temporary preview; the CLI caller cleans up its directory.
+The internal SwiftPM executable remains Petalwheel. The installed executable is NurTo.
+
+## Scope limits
+
+Local Homebrew FFmpeg required by this build; the upstream LGPL bundle does not include libx265.
+Video compression accepts 8-bit SDR YUV420 only, copies audio and omits subtitle/data tracks.
+No lossless promise or broad codec/HDR guarantee. Level control can raise background noise; it is not speech isolation.

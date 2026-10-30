@@ -19,60 +19,60 @@ enum KQPalette {
     }
 
     // Raw palette (light / dark)
-    static let ember = dynamic("ember", light: 0xF07A22, dark: 0xFF9140)
+    static let ember = dynamic("ember", light: 0x239F89, dark: 0x59D1B7)
     /// Prominent fill under white text (light); accent-coloured text on dark backgrounds (dark).
-    static let peel = dynamic("peel", light: 0xB8520E, dark: 0xFFB27A)
-    static let pith = dynamic("pith", light: 0xFBF4EA, dark: 0x2A231D)
+    static let peel = dynamic("peel", light: 0x167A69, dark: 0x85E3CE)
+    static let pith = dynamic("pith", light: 0xF1F8F7, dark: 0x15242A)
     static let leaf = dynamic("leaf", light: 0x4F8A5B, dark: 0x7DB889)
     static let honey = dynamic("honey", light: 0xE3A72F, dark: 0xF2C25E)
     static let terracotta = dynamic("terracotta", light: 0xC45A3C, dark: 0xE58466)
     static let denim = dynamic("denim", light: 0x4A78A6, dark: 0x86AED6)
     static let lagoon = dynamic("lagoon", light: 0x3E8C86, dark: 0x74BDB6)
     static let driftwood = dynamic("driftwood", light: 0x8B7B6B, dark: 0xBFAE9C)
-    static let ink = dynamic("ink", light: 0x2A2521, dark: 0xF3EDE6)
-    static let inkSecondary = dynamic("inkSecondary", light: 0x6F655C, dark: 0xB3A89D)
+    static let ink = dynamic("ink", light: 0x2A2521, dark: 0xECF4F8)
+    static let inkSecondary = dynamic("inkSecondary", light: 0x6F655C, dark: 0xA5B8C6)
     static let brick = dynamic("brick", light: 0xC8443A, dark: 0xF07468)
     /// Dark window / fan glass base and its raised panel tone (appearance-independent).
-    static let graphite = rgb(0x1C1916)
-    static let graphiteRaised = rgb(0x26211D)
+    static let graphite = rgb(0x10161F)
+    static let graphiteRaised = rgb(0x17212D)
 
     // Fixed (non-dynamic) values for surfaces that stay dark in both appearances (the fan).
     enum Dark {
-        static let ember = rgb(0xFF9140)
-        static let peel = rgb(0xB8520E)
+        static let ember = rgb(0x59D1B7)
+        static let peel = rgb(0x167A69)
         static let leaf = rgb(0x7DB889)
         static let honey = rgb(0xF2C25E)
         static let terracotta = rgb(0xE58466)
         static let denim = rgb(0x86AED6)
         static let lagoon = rgb(0x74BDB6)
         static let driftwood = rgb(0xBFAE9C)
-        static let ink = rgb(0x1C1916)
-        static let text = rgb(0xF3EDE6)
-        static let textSecondary = rgb(0xB3A89D)
+        static let ink = rgb(0x10161F)
+        static let text = rgb(0xECF4F8)
+        static let textSecondary = rgb(0xA5B8C6)
     }
 }
 
-/// Shared look & feel for Petalwheel's windows: semantic colour tokens plus metrics.
+/// Shared look & feel for NurTo's windows: semantic colour tokens plus metrics.
 enum KQTheme {
     // MARK: Semantic tokens (NSColor)
 
-    /// Petalwheel: tints, strokes, selection rings and fills that carry dark text.
+    /// NurTo: tints, strokes, selection rings and fills that carry dark text.
     static let accentNS = KQPalette.ember
     /// Accent-coloured text/icons on window backgrounds (Peel in light, light peel in dark): readable at small sizes.
     static let accentTextNS = KQPalette.peel
-    /// Fill of prominent buttons and selected chips: Peel (light) / Petalwheel (dark).
-    static let accentProminentFillNS = KQPalette.dynamic("accentProminentFill", light: 0xB8520E, dark: 0xFF9140)
+    /// Fill of prominent buttons and selected chips: Peel (light) / NurTo (dark).
+    static let accentProminentFillNS = KQPalette.dynamic("accentProminentFill", light: 0x167A69, dark: 0x59D1B7)
     /// Pressed state of the prominent fill.
-    static let accentProminentPressedNS = KQPalette.dynamic("accentProminentPressed", light: 0x9C450B, dark: 0xE87C2E)
+    static let accentProminentPressedNS = KQPalette.dynamic("accentProminentPressed", light: 0x126554, dark: 0x39B99E)
     /// Text/icons on `accentProminentFill`: white (light) / graphite (dark).
-    static let onAccentProminentNS = KQPalette.dynamic("onAccentProminent", light: 0xFFFFFF, dark: 0x1C1916)
+    static let onAccentProminentNS = KQPalette.dynamic("onAccentProminent", light: 0xFFFFFF, dark: 0x10161F)
     /// Warm surface tint (Pith).
     static let surfaceTintNS = KQPalette.pith
     static let successNS = KQPalette.leaf
     static let warningNS = KQPalette.honey
     static let dangerNS = KQPalette.brick
-    /// Dark text on any palette fill (Petalwheel, Leaf, Honey…), in both appearances.
-    static let textOnFillNS = KQPalette.dynamic("textOnFill", light: 0x2A2521, dark: 0x1C1916)
+    /// Dark text on any palette fill (NurTo, Leaf, Honey…), in both appearances.
+    static let textOnFillNS = KQPalette.dynamic("textOnFill", light: 0x2A2521, dark: 0x10161F)
 
     // MARK: Semantic tokens (SwiftUI)
 
@@ -99,9 +99,9 @@ enum KQTheme {
     static let presets = Color(nsColor: KQPalette.driftwood)
 
     /// Deep end of the accent (Peel, fixed) for illustrations.
-    static let accentDeep = Color(nsColor: KQPalette.rgb(0xB8520E))
-    /// Icon-tile gradient (Petalwheel → Peel) under white glyphs; identical in both appearances, like an app icon.
-    static let gradient = LinearGradient(colors: [Color(nsColor: KQPalette.rgb(0xF07A22)), accentDeep],
+    static let accentDeep = Color(nsColor: KQPalette.rgb(0x167A69))
+    /// Icon-tile gradient (NurTo → Peel) under white glyphs; identical in both appearances, like an app icon.
+    static let gradient = LinearGradient(colors: [Color(nsColor: KQPalette.rgb(0x239F89)), accentDeep],
                                          startPoint: .topLeading, endPoint: .bottomTrailing)
     static let corner: CGFloat = 14
     static let spacing: CGFloat = 12
@@ -127,7 +127,7 @@ struct VisualEffectBackground: NSViewRepresentable {
     }
 }
 
-/// Prominent accent button: Peel with white text (light), Petalwheel with graphite text (dark).
+/// Prominent accent button: Peel with white text (light), NurTo with graphite text (dark).
 struct KQProminentButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

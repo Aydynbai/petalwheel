@@ -61,7 +61,7 @@ struct BleepExportPlan {
     /// Filtergraph from `[0:<audio>]` to `[aout]`. `offset`/`length` describe a preview window cut with input -ss/-t.
     func filterGraph(offset: Double = 0, length: Double? = nil) throws -> String {
         guard let aIdx = info.audioIndices.first else {
-            throw PetalwheelError(l: "“%@” has no audio track.", source.lastPathComponent)
+            throw NurToError(l: "“%@” has no audio track.", source.lastPathComponent)
         }
         let input = "[0:\(aIdx)]"
         guard let g = gate(offset: offset, length: length) else {
@@ -83,7 +83,7 @@ struct BleepExportPlan {
     }
 
     func export(progress: @escaping ProgressHandler) async throws -> [URL] {
-        guard info.hasAudio else { throw PetalwheelError(l: "“%@” has no audio track.", source.lastPathComponent) }
+        guard info.hasAudio else { throw NurToError(l: "“%@” has no audio track.", source.lastPathComponent) }
         progress(0)
         let target = TimelineOutput.target(for: source, info: info)
         let ext = TimelineOutput.ext(for: source, target: target)

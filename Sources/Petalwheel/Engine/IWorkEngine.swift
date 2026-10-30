@@ -21,7 +21,7 @@ struct IWorkEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         let temp = try OutputNaming.tempDirectory()
         defer { try? FileManager.default.removeItem(at: temp) }
@@ -52,7 +52,7 @@ struct IWorkEngine: ConversionEngine {
         do {
             preview = try await OfficeSupport.quickLookPreview(of: source, in: temp)
         } catch {
-            throw PetalwheelError(l: "macOS couldn't render “%@”. Open it in %@ and export it instead.", source.lastPathComponent, FileFormat.detect(source)?.title ?? L("its app"))
+            throw NurToError(l: "macOS couldn't render “%@”. Open it in %@ and export it instead.", source.lastPathComponent, FileFormat.detect(source)?.title ?? L("its app"))
         }
         let html = (try? String(contentsOf: preview.appendingPathComponent("Preview.html"), encoding: .utf8)) ?? ""
         let pages = OfficeSupport.imageSources(inHTML: html).compactMap { OfficeSupport.containedFile($0, in: preview) }
@@ -63,10 +63,10 @@ struct IWorkEngine: ConversionEngine {
         }
         // Some previews are bitmaps: one PDF page per image.
         let images = pages.compactMap { NSImage(contentsOf: $0) }
-        guard !images.isEmpty else { throw PetalwheelError(l: "Quick Look returned no pages for “%@”.", source.lastPathComponent) }
+        guard !images.isEmpty else { throw NurToError(l: "Quick Look returned no pages for “%@”.", source.lastPathComponent) }
         let doc = PDFDocument()
         for image in images { if let page = PDFPage(image: image) { doc.insert(page, at: doc.pageCount) } }
-        guard doc.write(to: output) else { throw PetalwheelError(l: "Couldn't write “%@”.", output.lastPathComponent) }
+        guard doc.write(to: output) else { throw NurToError(l: "Couldn't write “%@”.", output.lastPathComponent) }
     }
 
     /// `QuickLook/Preview.pdf` inside a package directory or a single-file (zip) document.

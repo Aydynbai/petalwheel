@@ -96,7 +96,7 @@ final class RedactVideoModel: ObservableObject {
                 let info = try await MediaProbe.probe(self.url)
                 guard !self.closed else { return }
                 guard info.hasVideo, info.width > 0, info.height > 0 else {
-                    throw PetalwheelError(l: "“%@” has no video track.", self.url.lastPathComponent)
+                    throw NurToError(l: "“%@” has no video track.", self.url.lastPathComponent)
                 }
                 self.info = info
                 self.displaySize = CGSize(width: info.width, height: info.height)

@@ -27,111 +27,23 @@ func gradient(_ colors: [CGColor], _ locations: [CGFloat]) -> CGGradient {
 var renderPixels = 1024
 
 func drawIcon(_ ctx: CGContext) {
-    // macOS Big Sur+ grid: 824pt body centered in 1024 with a ~185pt corner radius.
     let body = CGRect(x: 100, y: 100, width: 824, height: 824)
-    let bodyPath = CGPath(roundedRect: body, cornerWidth: 186, cornerHeight: 186, transform: nil)
-
-    // Drop shadow under the tile.
+    let tile = CGPath(roundedRect: body, cornerWidth: 186, cornerHeight: 186, transform: nil)
     ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -14), blur: 34, color: rgb(20, 12, 6, 0.45))
-    ctx.addPath(bodyPath)
-    ctx.setFillColor(rgb(38, 33, 29))
-    ctx.fillPath()
+    ctx.setShadow(offset: CGSize(width: 0, height: -12), blur: 30, color: rgb(8, 16, 24, 0.35))
+    ctx.addPath(tile); ctx.setFillColor(rgb(16, 22, 31)); ctx.fillPath()
     ctx.restoreGState()
-
-    // Background: warm graphite, slightly lighter at the top.
-    ctx.saveGState()
-    ctx.addPath(bodyPath)
-    ctx.clip()
-    ctx.drawLinearGradient(gradient([rgb(54, 47, 41), rgb(28, 25, 22)], [0, 1]),
-                           start: CGPoint(x: 512, y: 924), end: CGPoint(x: 512, y: 100), options: [])
-    // Soft warm glow behind the wheel.
-    ctx.drawRadialGradient(gradient([rgb(240, 122, 34, 0.22), rgb(240, 122, 34, 0)], [0, 1]),
-                           startCenter: CGPoint(x: 512, y: 540), startRadius: 0,
-                           endCenter: CGPoint(x: 512, y: 540), endRadius: 420, options: [])
+    ctx.saveGState(); ctx.addPath(tile); ctx.clip()
+    ctx.drawLinearGradient(gradient([rgb(37, 60, 74), rgb(12, 20, 31)], [0, 1]),
+        start: CGPoint(x: 180, y: 920), end: CGPoint(x: 850, y: 100), options: [])
     ctx.restoreGState()
-
-    // The wheel: six petals (annular sectors with gaps), category colours, top one highlighted.
-    let center = CGPoint(x: 512, y: 512)
-    let colors: [CGColor] = [
-        rgb(240, 122, 34),   // Convert – orange (top)
-        rgb(79, 138, 91),    // Optimize – leaf
-        rgb(227, 167, 47),   // Edit – honey
-        rgb(196, 90, 60),    // Combine – terracotta
-        rgb(74, 120, 166),   // Extract – denim
-        rgb(62, 140, 134),   // Share – lagoon
-    ]
-    let n = colors.count
-    let step = 2 * CGFloat.pi / CGFloat(n)
-    let gap: CGFloat = 0.075            // radians between petals
-    let inner: CGFloat = 150, outer: CGFloat = 318, rounding: CGFloat = 26
-    for i in 0..<n {
-        let mid = CGFloat.pi / 2 - CGFloat(i) * step            // start at the top, go clockwise
-        let a0 = mid + step / 2 - gap / 2, a1 = mid - step / 2 + gap / 2
-        let highlighted = i == 0
-        let r1 = highlighted ? outer + 34 : outer
-        let r0 = inner + (highlighted ? 6 : 0)
-        let path = CGMutablePath()
-        // Inset by half the stroke so the rounded stroke keeps the intended size.
-        let o = r1 - rounding / 2, inR = r0 + rounding / 2
-        let da = (rounding / 2) / o, dai = (rounding / 2) / inR
-        path.addArc(center: center, radius: o, startAngle: a0 - da, endAngle: a1 + da, clockwise: true)
-        path.addArc(center: center, radius: inR, startAngle: a1 + dai, endAngle: a0 - dai, clockwise: false)
-        path.closeSubpath()
-        ctx.saveGState()
-        if highlighted {
-            ctx.setShadow(offset: CGSize(width: 0, height: -6), blur: 28, color: rgb(240, 122, 34, 0.55))
-        } else {
-            ctx.setShadow(offset: CGSize(width: 0, height: -5), blur: 14, color: rgb(0, 0, 0, 0.35))
-        }
-        ctx.beginTransparencyLayer(auxiliaryInfo: nil)   // one shadow for fill + rounded stroke
-        ctx.addPath(path)
-        ctx.setFillColor(colors[i])
-        ctx.setStrokeColor(colors[i])
-        ctx.setLineWidth(rounding)
-        ctx.setLineJoin(.round)
-        ctx.drawPath(using: .fillStroke)
-        ctx.endTransparencyLayer()
-        ctx.restoreGState()
-    }
-
-    // Centre disc: warm cream with a soft inner shadow edge.
-    let disc = CGRect(x: center.x - 112, y: center.y - 112, width: 224, height: 224)
-    ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -6), blur: 18, color: rgb(0, 0, 0, 0.4))
-    ctx.addEllipse(in: disc)
-    ctx.setFillColor(rgb(251, 244, 234))
-    ctx.fillPath()
-    ctx.restoreGState()
-    ctx.saveGState()
-    ctx.addEllipse(in: disc)
-    ctx.clip()
-    ctx.drawLinearGradient(gradient([rgb(255, 252, 246), rgb(242, 222, 196)], [0, 1]),
-                           start: CGPoint(x: 512, y: disc.maxY), end: CGPoint(x: 512, y: disc.minY), options: [])
-    ctx.restoreGState()
-
-    // Tiny document glyph in the centre (folded corner), in graphite. Too noisy below 64 px.
-    guard renderPixels >= 64 else { return }
-    let doc = CGRect(x: 512 - 42, y: 512 - 56, width: 84, height: 112)
-    let fold: CGFloat = 28
-    let page = CGMutablePath()
-    page.move(to: CGPoint(x: doc.minX, y: doc.minY))
-    page.addLine(to: CGPoint(x: doc.maxX, y: doc.minY))
-    page.addLine(to: CGPoint(x: doc.maxX, y: doc.maxY - fold))
-    page.addLine(to: CGPoint(x: doc.maxX - fold, y: doc.maxY))
-    page.addLine(to: CGPoint(x: doc.minX, y: doc.maxY))
-    page.closeSubpath()
-    ctx.saveGState()
-    ctx.addPath(page)
-    ctx.setStrokeColor(rgb(54, 47, 41))
-    ctx.setLineWidth(12)
-    ctx.setLineJoin(.round)
+    ctx.setLineWidth(95); ctx.setLineCap(.round); ctx.setLineJoin(.round)
+    ctx.setStrokeColor(rgb(89, 209, 183))
+    ctx.move(to: CGPoint(x: 330, y: 315))
+    ctx.addLine(to: CGPoint(x: 330, y: 710))
+    ctx.addLine(to: CGPoint(x: 694, y: 315))
+    ctx.addLine(to: CGPoint(x: 694, y: 710))
     ctx.strokePath()
-    ctx.move(to: CGPoint(x: doc.maxX - fold, y: doc.maxY))
-    ctx.addLine(to: CGPoint(x: doc.maxX - fold, y: doc.maxY - fold))
-    ctx.addLine(to: CGPoint(x: doc.maxX, y: doc.maxY - fold))
-    ctx.strokePath()
-    ctx.restoreGState()
 }
 
 func renderPNG(pixels: Int, to url: URL) throws {
@@ -162,7 +74,7 @@ for base in [16, 32, 128, 256, 512] {
 
 // Keep a large preview next to the .icns for docs / inspection.
 try fm.createDirectory(at: outICNS.deletingLastPathComponent(), withIntermediateDirectories: true)
-let preview = outICNS.deletingLastPathComponent().appendingPathComponent("AppIcon-1024.png")
+let preview = outICNS.deletingLastPathComponent().appendingPathComponent(outICNS.deletingPathExtension().lastPathComponent + "-1024.png")
 try renderPNG(pixels: 1024, to: preview)
 
 let p = Process()

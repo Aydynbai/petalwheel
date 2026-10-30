@@ -28,7 +28,7 @@ enum ArchiveSingleFile {
         case .zst:
             guard ArchiveSupport.zstd != nil else { throw ArchiveSupport.missingTool("zstd") }
             filter = "--zstd"
-        default: throw PetalwheelError(l: "%@ isn't an archive format.", format.title)
+        default: throw NurToError(l: "%@ isn't an archive format.", format.title)
         }
         let list = try ArchiveSupport.nameList([file.lastPathComponent], near: output)
         defer { try? FileManager.default.removeItem(at: list) }
@@ -62,7 +62,7 @@ enum ArchiveSingleFile {
         var handle: FileHandle
         if let output {
             guard fm.createFile(atPath: output.path, contents: nil) else {
-                throw PetalwheelError(l: "Couldn't extract “%@”: %@", archive.lastPathComponent, output.path)
+                throw NurToError(l: "Couldn't extract “%@”: %@", archive.lastPathComponent, output.path)
             }
             handle = try FileHandle(forWritingTo: output)
         } else {
@@ -81,7 +81,7 @@ enum ArchiveSingleFile {
             case .xz:
                 try decodeXZ(archive, to: handle)
             default:
-                throw PetalwheelError(l: "%@ isn't an archive format.", format.title)
+                throw NurToError(l: "%@ isn't an archive format.", format.title)
             }
         } catch {
             if let output { try? fm.removeItem(at: output) }
@@ -111,7 +111,7 @@ enum ArchiveSingleFile {
             throw CancellationError()
         } catch {
             if let writeError { throw writeError }
-            throw PetalwheelError(l: "“%@” is damaged or incomplete.", archive.lastPathComponent)
+            throw NurToError(l: "“%@” is damaged or incomplete.", archive.lastPathComponent)
         }
     }
 }

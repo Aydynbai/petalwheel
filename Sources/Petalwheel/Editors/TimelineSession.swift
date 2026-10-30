@@ -35,10 +35,10 @@ final class TimelineSession: ObservableObject {
     static func open(_ url: URL) async throws -> TimelineSession {
         let info = try await MediaProbe.probe(url)
         guard info.duration > 0.05 else {
-            throw PetalwheelError(l: "“%@” has no playable duration.", url.lastPathComponent)
+            throw NurToError(l: "“%@” has no playable duration.", url.lastPathComponent)
         }
         guard info.hasAudio || info.hasVideo else {
-            throw PetalwheelError(l: "“%@” has no audio or video.", url.lastPathComponent)
+            throw NurToError(l: "“%@” has no audio or video.", url.lastPathComponent)
         }
         let s = TimelineSession(url: url, info: info)
         s.startLoading()

@@ -10,7 +10,7 @@ final class SettingsWindowController {
 
     func show() {
         if window == nil {
-            let w = KQWindowing.makeWindow(title: L("Petalwheel Settings"), size: NSSize(width: 560, height: 520),
+            let w = KQWindowing.makeWindow(title: L("NurTo Settings"), size: NSSize(width: 560, height: 520),
                                            content: SettingsView())
             w.titlebarAppearsTransparent = false
             w.styleMask.remove(.fullSizeContentView)
@@ -39,9 +39,9 @@ final class LoginItemModel: ObservableObject {
     var isOn: Bool { status == .enabled || status == .requiresApproval }
 
     var statusText: String {
-        if !isInAppBundle { return L("Available when running from Petalwheel.app") }
+        if !isInAppBundle { return L("Available when running from NurTo.app") }
         switch status {
-        case .enabled: return L("Petalwheel opens when you log in")
+        case .enabled: return L("NurTo opens when you log in")
         case .requiresApproval: return L("Needs approval in System Settings → General → Login Items")
         case .notRegistered: return L("Off")
         case .notFound: return L("Not available for this copy of the app")
@@ -52,7 +52,7 @@ final class LoginItemModel: ObservableObject {
     func set(_ on: Bool) {
         errorMessage = nil
         guard isInAppBundle else {
-            errorMessage = L("Launch at login only works from the bundled Petalwheel.app (build it with scripts/build-app.sh).")
+            errorMessage = L("Launch at login only works from the bundled NurTo.app (build it with scripts/build-app.sh).")
             return
         }
         do {
@@ -87,7 +87,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         }
     }
 
-    private static var domain: String { Bundle.main.bundleIdentifier ?? "studio.kipper.Petalwheel" }
+    private static var domain: String { Bundle.main.bundleIdentifier ?? "app.nurto.mac" }
 
     /// The saved choice (ignores a one-off `-AppleLanguages` launch argument).
     static var saved: AppLanguage {
@@ -113,7 +113,7 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         NSWorkspace.shared.openApplication(at: Bundle.main.bundleURL, configuration: config) { _, error in
             DispatchQueue.main.async {
                 if let error {
-                    NSLog("Petalwheel: relaunch failed: %@", error.localizedDescription)
+                    NSLog("NurTo: relaunch failed: %@", error.localizedDescription)
                     return
                 }
                 NSApp.terminate(nil)
@@ -135,8 +135,8 @@ final class LanguageModel: ObservableObject {
 
     @MainActor private static func offerRestart() {
         let alert = NSAlert()
-        alert.messageText = L("Restart Petalwheel now?")
-        alert.informativeText = L("The new language is used after Petalwheel restarts.")
+        alert.messageText = L("Restart NurTo now?")
+        alert.informativeText = L("The new language is used after NurTo restarts.")
         alert.addButton(withTitle: L("Restart Now"))
         alert.addButton(withTitle: L("Later"))
         KQWindowing.activate()
@@ -189,9 +189,9 @@ struct GeneralSettingsView: View {
                     }
                 }
             } header: {
-                Text("While dragging files, tap this key to open the wheel")
+                Text(verbatim: "Hold to open · 2.5 s")
             } footer: {
-                Text("Hover a category (Convert, Optimize, Edit…) to open it; hover the centre to go back.")
+                Text(verbatim: "Click to choose. Release to close.")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
             }
 
@@ -271,13 +271,13 @@ struct AboutSettingsView: View {
 
     var body: some View {
         VStack(spacing: 14) {
-            PetalwheelMark()
+            NurToMark()
                 .frame(width: 72, height: 72)
             VStack(spacing: 2) {
-                Text("Petalwheel").font(.system(size: 22, weight: .bold, design: .rounded))
+                Text("NurTo").font(.system(size: 22, weight: .bold, design: .rounded))
                 Text(L("Version %@", version)).font(.system(size: 12)).foregroundStyle(.secondary)
             }
-            Text("Drag, tap a key, drop on a petal. Files convert right where they are.")
+            Text(verbatim: "Hold. Choose. Done.")
                 .font(.system(size: 12)).foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
@@ -351,7 +351,7 @@ enum Credits {
         }
         let alert = NSAlert()
         alert.messageText = L("No licenses folder")
-        alert.informativeText = L("This copy of Petalwheel doesn't include the bundled helpers, so there are no third-party licenses to show.")
+        alert.informativeText = L("This copy of NurTo doesn't include the bundled helpers, so there are no third-party licenses to show.")
         alert.addButton(withTitle: L("OK"))
         alert.runModal()
     }
@@ -363,6 +363,8 @@ struct CreditsView: View {
 
     var body: some View {
         VStack(spacing: 2) {
+            Text(verbatim: "NurTo · Based on Petalwheel")
+                .font(.system(size: compact ? 11 : 12, weight: .semibold))
             (Text(L("Made by")) + Text(verbatim: " ")
                 + Text(verbatim: "kipperstudio").fontWeight(.semibold)
                 + Text(verbatim: " ") + Text(L("credits.and")) + Text(verbatim: " ")
@@ -379,29 +381,18 @@ struct CreditsView: View {
     }
 }
 
-/// Small Petalwheel glyph drawn in SwiftUI (used in About and Welcome): the app icon's wheel of petals.
-struct PetalwheelMark: View {
-    private static let petals: [UInt32] = [0xF07A22, 0x4F8A5B, 0xE3A72F, 0xC45A3C, 0x4A78A6, 0x3E8C86]
-
+/// Small NurTo glyph drawn in SwiftUI (used in About and Welcome): the app icon's wheel of petals.
+struct NurToMark: View {
     var body: some View {
         GeometryReader { geo in
             let s = min(geo.size.width, geo.size.height)
             ZStack {
-                RoundedRectangle(cornerRadius: s * 0.24, style: .continuous)
-                    .fill(LinearGradient(colors: [Color(nsColor: KQPalette.rgb(0x362F29)),
-                                                  Color(nsColor: KQPalette.rgb(0x1C1916))],
-                                         startPoint: .top, endPoint: .bottom))
-                ForEach(0..<Self.petals.count, id: \.self) { i in
-                    PetalShape(index: i, count: Self.petals.count, inner: 0.17, outer: i == 0 ? 0.42 : 0.38)
-                        .fill(Color(nsColor: KQPalette.rgb(Self.petals[i])))
-                }
-                Circle()
-                    .fill(Color(nsColor: KQPalette.rgb(0xFBF4EA)))
-                    .frame(width: s * 0.26, height: s * 0.26)
-            }
-            .frame(width: s, height: s)
-        }
-        .aspectRatio(1, contentMode: .fit)
+                RoundedRectangle(cornerRadius: s * 0.24)
+                    .fill(LinearGradient(colors: [Color(red: 0.14, green: 0.22, blue: 0.28), Color(red: 0.05, green: 0.08, blue: 0.12)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                Text(verbatim: "N").font(.system(size: s * 0.66, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color(red: 0.35, green: 0.82, blue: 0.72))
+            }.frame(width: s, height: s)
+        }.aspectRatio(1, contentMode: .fit)
     }
 }
 

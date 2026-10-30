@@ -1,129 +1,114 @@
 import AppKit
 import os
 
-/// `log stream --predicate 'subsystem == "studio.kipper.Petalwheel"' --level debug` shows gesture decisions.
-let gestureLog = Logger(subsystem: "studio.kipper.Petalwheel", category: "gesture")
+let gestureLog = Logger(subsystem: "app.nurto.mac", category: "gesture")
 
-/// Detects "files are being dragged + a modifier key was tapped" without Accessibility permission,
-/// by polling the global mouse/modifier state and the system drag pasteboard.
+/// A hold is deliberate: no open before 2.5 s, one request per hold, release closes.
+struct WheelHoldGate {
+    enum Event: Equatable { case none, open, close }
+    static let delay: TimeInterval = 2.5
+    private var began: TimeInterval?
+    private(set) var requested = false
+    private(set) var session = UUID()
+
+    mutating func update(down: Bool, now: TimeInterval) -> Event {
+        if !down {
+            let wasRequested = requested
+            began = nil; requested = false
+            return wasRequested ? .close : .none
+        }
+        if began == nil { began = now; session = UUID() }
+        if !requested, now - (began ?? now) >= Self.delay {
+            requested = true
+            return .open
+        }
+        return .none
+    }
+}
+
+/// Polls modifier state without a keyboard listener. Supports a file drag or Finder selection.
 @MainActor
 final class DragGestureMonitor {
-    /// mode, cursor location (screen coordinates), dragged file URLs
     var onTrigger: ((FanMode, NSPoint, [URL]) -> Void)?
-    /// The mouse button was released after a file drag.
     var onDragEnded: (() -> Void)?
+    var onModifierReleased: (() -> Void)?
 
     private let dragPasteboard = NSPasteboard(name: .drag)
     private var timer: Timer?
-    private let idleInterval: TimeInterval = 0.12
-    private let activeInterval: TimeInterval = 1.0 / 60
-    private var isPollingActively = false
-
+    private var active = false
     private var wasMouseDown = false
-    private var changeCountAtMouseDown = 0
     private var isDraggingFiles = false
-    private var draggedURLs: [URL] = []
-
-    // Modifier tap tracking
-    private var previousModifiers: NSEvent.ModifierFlags = []
-    private var pressStarted: TimeInterval = 0
-    private var pressedUnion: NSEvent.ModifierFlags = []
-    private let tapGraceInterval: TimeInterval = 0.6
-    private let relevantFlags: NSEvent.ModifierFlags = [.command, .option, .control, .shift]
+    private var lastIdleCount = 0
+    private var downCount = 0
+    private var heldURLs: [URL] = []
+    private var gate = WheelHoldGate()
 
     func start() {
-        schedule(interval: idleInterval)
+        lastIdleCount = dragPasteboard.changeCount
+        schedule(active: false)
     }
+    func stop() { timer?.invalidate(); timer = nil }
 
-    func stop() {
-        timer?.invalidate()
-        timer = nil
-    }
-
-    private func schedule(interval: TimeInterval) {
-        timer?.invalidate()
-        let t = Timer(timeInterval: interval, repeats: true) { [weak self] _ in
+    private func schedule(active: Bool) {
+        timer?.invalidate(); self.active = active
+        let t = Timer(timeInterval: active ? 1.0 / 60 : 1.0 / 30, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.tick() }
         }
-        RunLoop.main.add(t, forMode: .common)
-        timer = t
-        isPollingActively = interval == activeInterval
+        RunLoop.main.add(t, forMode: .common); timer = t
     }
 
     private func tick() {
         let mouseDown = NSEvent.pressedMouseButtons & 1 != 0
+        let key = AppSettings.shared.triggerKey
+        let mods = NSEvent.modifierFlags.intersection([.control, .shift, .command, .option])
+        let keyDown = gate.requested ? mods.contains(key.flag) : mods == key.flag
 
         if mouseDown && !wasMouseDown {
-            changeCountAtMouseDown = dragPasteboard.changeCount
-            isDraggingFiles = false
-            draggedURLs = []
-            if !isPollingActively { schedule(interval: activeInterval) }
+            downCount = lastIdleCount; isDraggingFiles = false
         }
-
-        if mouseDown && !isDraggingFiles && dragPasteboard.changeCount != changeCountAtMouseDown {
+        if mouseDown && !isDraggingFiles && dragPasteboard.changeCount != downCount {
             let urls = readFileURLs()
-            if !urls.isEmpty {
-                isDraggingFiles = true
-                draggedURLs = urls
-                gestureLog.debug("file drag started: \(urls.count) item(s)")
-                previousModifiers = NSEvent.modifierFlags.intersection(relevantFlags)
-                pressedUnion = []
-            } else {
-                // Not a file drag; ignore until next mouse down.
-                changeCountAtMouseDown = dragPasteboard.changeCount
-            }
+            if !urls.isEmpty { isDraggingFiles = true; heldURLs = urls }
+            else { downCount = dragPasteboard.changeCount }
+        }
+        if isDraggingFiles && mouseDown {
+            let current = readFileURLs()
+            if !current.isEmpty { heldURLs = current }
         }
 
-        if isDraggingFiles && mouseDown {
-            trackModifierTap()
+        switch gate.update(down: keyDown, now: ProcessInfo.processInfo.systemUptime) {
+        case .open:
+            let session = gate.session
+            if !heldURLs.isEmpty {
+                onTrigger?(.categories, NSEvent.mouseLocation, heldURLs)
+            } else if FinderSelection.finderIsFrontmost {
+                FinderSelection.fetch { [weak self] result in
+                    guard let self, self.gate.requested, self.gate.session == session,
+                          NSEvent.modifierFlags.contains(key.flag) else { return }
+                    if case .files(let urls) = result, !urls.isEmpty {
+                        self.onTrigger?(.categories, NSEvent.mouseLocation, urls)
+                    } else if case .notAuthorized = result {
+                        IntegrationsToast.show("Allow Finder access in Settings", symbol: "lock")
+                    }
+                }
+            }
+        case .close:
+            onModifierReleased?(); heldURLs = []
+        case .none: break
         }
 
         if !mouseDown && wasMouseDown {
-            if isDraggingFiles {
-                gestureLog.debug("file drag ended")
-                onDragEnded?()
-            }
-            isDraggingFiles = false
-            draggedURLs = []
-            if isPollingActively { schedule(interval: idleInterval) }
+            onDragEnded?(); isDraggingFiles = false
+        }
+        if !mouseDown {
+            lastIdleCount = dragPasteboard.changeCount
+            if !keyDown { heldURLs = [] }
         }
         wasMouseDown = mouseDown
-    }
-
-    private func trackModifierTap() {
-        let now = ProcessInfo.processInfo.systemUptime
-        let mods = NSEvent.modifierFlags.intersection(relevantFlags)
-        defer { previousModifiers = mods }
-        guard mods != previousModifiers else { return }
-
-        if previousModifiers.isEmpty && !mods.isEmpty {
-            pressStarted = now
-            pressedUnion = mods
-        } else if !mods.isEmpty {
-            pressedUnion.formUnion(mods)
-        } else if !previousModifiers.isEmpty && mods.isEmpty {
-            // Released: a tap if it was short and exactly one modifier key was involved.
-            defer { pressedUnion = [] }
-            let held = now - pressStarted
-            guard held <= tapGraceInterval else {
-                gestureLog.debug("modifier ignored: held \(held, format: .fixed(precision: 2))s > \(self.tapGraceInterval)s")
-                return
-            }
-            guard let key = ModifierKey.allCases.first(where: { pressedUnion == $0.flag }),
-                  let mode = AppSettings.shared.mode(for: key) else {
-                gestureLog.debug("modifier ignored: combination \(self.pressedUnion.rawValue) is not the wheel key")
-                return
-            }
-            gestureLog.debug("wheel triggered by \(key.rawValue) tap (\(held, format: .fixed(precision: 2))s)")
-            // Re-read in case more files were added to the drag.
-            let urls = readFileURLs()
-            onTrigger?(mode, NSEvent.mouseLocation, urls.isEmpty ? draggedURLs : urls)
-        }
+        if active != (mouseDown || keyDown) { schedule(active: mouseDown || keyDown) }
     }
 
     private func readFileURLs() -> [URL] {
-        let objects = dragPasteboard.readObjects(forClasses: [NSURL.self],
-                                                 options: [.urlReadingFileURLsOnly: true]) as? [URL]
-        return objects ?? []
+        dragPasteboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []
     }
 }

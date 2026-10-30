@@ -10,7 +10,7 @@ final class WelcomeWindowController {
     func show() {
         if window == nil {
             let view = WelcomeView(onDone: { [weak self] in self?.complete() })
-            let w = KQWindowing.makeWindow(title: L("Welcome to Petalwheel"), size: NSSize(width: 560, height: 520), content: view)
+            let w = KQWindowing.makeWindow(title: L("Welcome to NurTo"), size: NSSize(width: 560, height: 520), content: view)
             w.titleVisibility = .hidden
             w.isMovableByWindowBackground = true
             w.collectionBehavior = [.moveToActiveSpace]
@@ -38,19 +38,17 @@ struct WelcomeView: View {
                 .padding(.top, 8)
 
             VStack(spacing: 4) {
-                Text("Welcome to Petalwheel")
+                Text("Welcome to NurTo")
                     .font(.system(size: 26, weight: .bold, design: .rounded))
                 Text("Convert files without leaving Finder.")
                     .font(.system(size: 13)).foregroundStyle(.secondary)
             }
 
             VStack(alignment: .leading, spacing: 12) {
-                step(1, title: L("Start dragging files in Finder"),
-                     detail: L("Pick one file or a whole selection and begin a drag."))
-                step(2, title: L("Tap the key while dragging, pick a category"),
+                step(1, title: "Select a file", detail: nil)
+                step(2, title: "Hold the key for 2.5 seconds",
                      detail: nil, keys: true)
-                step(3, title: L("Drop onto a petal"),
-                     detail: L("Hover a category to open it, hover the centre to go back. Results are saved next to the originals."))
+                step(3, title: "Click to choose. Release to close.", detail: nil)
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)

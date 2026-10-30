@@ -29,9 +29,9 @@ enum ArchiveDiskImage {
                 throw ArchiveFailure.wrongPassword
             }
             if text.contains("license") || text.contains("agree") {
-                throw PetalwheelError(l: "“%@” shows a license agreement first. Open it in Finder once, then try again.", dmg.lastPathComponent)
+                throw NurToError(l: "“%@” shows a license agreement first. Open it in Finder once, then try again.", dmg.lastPathComponent)
             }
-            throw PetalwheelError(l: "Couldn't open the disk image “%@”: %@", dmg.lastPathComponent,
+            throw NurToError(l: "Couldn't open the disk image “%@”: %@", dmg.lastPathComponent,
                                   e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         do {
@@ -96,7 +96,7 @@ enum ArchiveDiskImage {
         do {
             try await ArchiveProcess.run(hdiutil, ["verify", "-quiet", dmg.path])
         } catch let e as ProcessError {
-            throw PetalwheelError(l: "“%@” is damaged: %@", dmg.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw NurToError(l: "“%@” is damaged: %@", dmg.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
     }
 
@@ -108,7 +108,7 @@ enum ArchiveDiskImage {
             try await ArchiveProcess.run(hdiutil, ["create", "-srcfolder", folder.path, "-volname", name, "-format", "UDZO",
                                                    "-ov", "-quiet", output.path])
         } catch let e as ProcessError {
-            throw PetalwheelError(l: "Couldn't create %@: %@", "DMG", e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw NurToError(l: "Couldn't create %@: %@", "DMG", e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         progress(1)
     }

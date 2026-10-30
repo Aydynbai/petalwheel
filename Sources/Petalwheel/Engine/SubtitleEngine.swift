@@ -11,13 +11,13 @@ struct SubtitleEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         progress(0.1)
         let text = try DocumentTextDecoder.decode(contentsOf: source)
         let cues = SubtitleDocument.parse(text)
         guard !cues.isEmpty else {
-            throw PetalwheelError(l: "No subtitles found in “%@”.", source.lastPathComponent)
+            throw NurToError(l: "No subtitles found in “%@”.", source.lastPathComponent)
         }
         progress(0.6)
         let output: String

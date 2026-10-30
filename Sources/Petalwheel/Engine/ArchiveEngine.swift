@@ -13,7 +13,7 @@ struct ArchiveEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         // Several volumes of one set dropped together: convert the set once.
         let set = try ArchiveVolumeSet.resolve(source)
@@ -29,7 +29,7 @@ struct ArchiveEngine: ConversionEngine {
         try await ArchiveSupport.extract(source, format: from, into: contents) { progress(0.02 + $0 * 0.48) }
         try Task.checkCancellation()
         if try ArchiveSupport.topLevelItems(contents).isEmpty {
-            throw PetalwheelError(l: "“%@” is empty.", source.lastPathComponent)
+            throw NurToError(l: "“%@” is empty.", source.lastPathComponent)
         }
 
         let base = ArchiveSupport.baseName(of: source)

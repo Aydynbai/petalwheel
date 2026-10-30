@@ -47,7 +47,7 @@ enum ArchiveSupport {
         return env
     }()
 
-    /// Archive formats Petalwheel can write (conversion targets and "Make Archive" choices).
+    /// Archive formats NurTo can write (conversion targets and "Make Archive" choices).
     static var conversionTargets: [FileFormat] {
         var r: [FileFormat] = [.zip, .sevenZ, .tar, .tgz, .tbz2, .txz]
         if zstd != nil { r.append(.tzst) }
@@ -56,8 +56,8 @@ enum ArchiveSupport {
 
     static var createFormats: [FileFormat] { conversionTargets }
 
-    static func missingTool(_ name: String) -> PetalwheelError {
-        PetalwheelError(l: "%@ is not installed. Install it with: brew install %@", name, name)
+    static func missingTool(_ name: String) -> NurToError {
+        NurToError(l: "%@ is not installed. Install it with: brew install %@", name, name)
     }
 
     // MARK: - Files
@@ -302,10 +302,10 @@ enum ArchiveSupport {
     static func checkSafety(_ entries: [ArchiveEntry], archive: URL) throws {
         for e in entries {
             if !isSafeEntry(e.path) {
-                throw PetalwheelError(l: "“%@” contains an unsafe path (%@). Extraction was stopped.", archive.lastPathComponent, e.path)
+                throw NurToError(l: "“%@” contains an unsafe path (%@). Extraction was stopped.", archive.lastPathComponent, e.path)
             }
             if let t = e.linkTarget, !isSafeEntry(t) {
-                throw PetalwheelError(l: "“%@” contains an unsafe path (%@). Extraction was stopped.", archive.lastPathComponent, e.path + " → " + t)
+                throw NurToError(l: "“%@” contains an unsafe path (%@). Extraction was stopped.", archive.lastPathComponent, e.path + " → " + t)
             }
         }
     }
@@ -314,7 +314,7 @@ enum ArchiveSupport {
     static func checkBomb(unpacked: Int64, packed: Int64, archive: URL) async throws {
         guard unpacked > bombMinimum, unpacked > packed * bombRatio else { return }
         if await ArchivePrompts.confirmLargeExtraction(archive: archive, packed: packed, unpacked: unpacked) { return }
-        throw PetalwheelError(l: "“%@” would unpack to %@, %d times its own size. It looks like a zip bomb, so nothing was extracted.",
+        throw NurToError(l: "“%@” would unpack to %@, %d times its own size. It looks like a zip bomb, so nothing was extracted.",
                               archive.lastPathComponent, formatSize(unpacked), Int(unpacked / max(packed, 1)))
     }
 
@@ -361,16 +361,16 @@ enum ArchiveSupport {
         }.filter { !$0.isEmpty && !$0.contains("Error exit delayed") }
         let detail = lines.first { $0.contains(": ") } ?? lines.first ?? ""
         if lower.contains("unrecognized archive format") {
-            return PetalwheelError(l: "“%@” isn't an archive Petalwheel can read, or it is damaged.", name)
+            return NurToError(l: "“%@” isn't an archive NurTo can read, or it is damaged.", name)
         }
         if lower.contains("unsupported") {
-            return PetalwheelError(l: "“%@” uses a compression method Petalwheel can't read yet: %@", name, detail)
+            return NurToError(l: "“%@” uses a compression method NurTo can't read yet: %@", name, detail)
         }
         if ["truncated", "premature end", "damaged", "crc", "checksum", "corrupt", "invalid", "bad ", "unexpected end"]
             .contains(where: lower.contains) {
-            return PetalwheelError(l: "“%@” is damaged or incomplete: %@", name, detail)
+            return NurToError(l: "“%@” is damaged or incomplete: %@", name, detail)
         }
-        return PetalwheelError(l: "Couldn't read “%@”: %@", name, detail.isEmpty ? e.localizedDescription : detail)
+        return NurToError(l: "Couldn't read “%@”: %@", name, detail.isEmpty ? e.localizedDescription : detail)
     }
 
     /// Runs `body` with the archive password: asks for it (UI) when the archive is known to be encrypted
@@ -382,7 +382,7 @@ enum ArchiveSupport {
             password = await ArchivePrompts.askPassword(tool: tool, archive: archive, previous: nil)
             if password == nil {
                 if await ArchivePrompts.isInteractive { throw CancellationError() }
-                throw PetalwheelError(l: "“%@” is password-protected. Pass the password with --password.", archive.lastPathComponent)
+                throw NurToError(l: "“%@” is password-protected. Pass the password with --password.", archive.lastPathComponent)
             }
         }
         var attempts = 0
@@ -390,15 +390,15 @@ enum ArchiveSupport {
             do {
                 return try await body(password)
             } catch ArchiveFailure.unsupportedEncryption {
-                throw PetalwheelError(l: "This archive is password-protected in a way Petalwheel can't open yet.")
+                throw NurToError(l: "This archive is password-protected in a way NurTo can't open yet.")
             } catch let failure as ArchiveFailure {
                 attempts += 1
                 let interactive = await ArchivePrompts.isInteractive
                 if !interactive || attempts >= 4 {
                     if password == nil || failure == .passwordRequired && !interactive {
-                        throw PetalwheelError(l: "“%@” is password-protected. Pass the password with --password.", archive.lastPathComponent)
+                        throw NurToError(l: "“%@” is password-protected. Pass the password with --password.", archive.lastPathComponent)
                     }
-                    throw PetalwheelError(l: "The password for “%@” is wrong.", archive.lastPathComponent)
+                    throw NurToError(l: "The password for “%@” is wrong.", archive.lastPathComponent)
                 }
                 guard let next = await ArchivePrompts.askPassword(tool: tool, archive: archive, previous: password ?? "") else {
                     throw CancellationError()
@@ -425,7 +425,7 @@ enum ArchiveSupport {
             progress(0.1)
             try await ArchiveSingleFile.decompress(archive, format: format, into: destination)
         default:
-            guard format.group == .archives else { throw PetalwheelError(l: "%@ isn't an archive format.", format.title) }
+            guard format.group == .archives else { throw NurToError(l: "%@ isn't an archive format.", format.title) }
             let p = try await prepare(archive, format: format)
             defer { p.cleanup() }
             // Zip names aren't encrypted, so listing works before the password is known.
@@ -517,7 +517,7 @@ enum ArchiveSupport {
     static func pack(_ names: [String], in dir: URL, format: FileFormat, to output: URL,
                      level: Int = 6, password: String? = nil, volumeName: String? = nil,
                      progress: @escaping ProgressHandler = { _ in }) async throws {
-        guard !names.isEmpty else { throw PetalwheelError(l: "The archive is empty.") }
+        guard !names.isEmpty else { throw NurToError(l: "The archive is empty.") }
         let label = volumeName ?? output.deletingPathExtension().lastPathComponent
         if format == .dmg {
             // hdiutil images a whole folder: stage the items unless `dir` holds exactly them.
@@ -553,7 +553,7 @@ enum ArchiveSupport {
         case .iso:
             args += ["--format", "iso9660", "--options", "iso9660:volume-id=\(isoVolumeID(label)),iso9660:joliet=long"]
         default:
-            throw PetalwheelError(l: "Petalwheel can't create %@ archives.", format.title)
+            throw NurToError(l: "NurTo can't create %@ archives.", format.title)
         }
         let list = try nameList(names, near: output)
         defer { try? FileManager.default.removeItem(at: list) }
@@ -573,7 +573,7 @@ enum ArchiveSupport {
                 if e.stderr.contains("external program") || e.stderr.contains("unable to run program") {
                     throw translate(e, archive: output)
                 }
-                throw PetalwheelError(l: "Couldn't create %@: %@", format.title, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+                throw NurToError(l: "Couldn't create %@: %@", format.title, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
             }
             throw error
         }

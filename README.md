@@ -1,157 +1,69 @@
-<p align="center">
-  <img src="Resources/AppIcon-1024.png" width="128" alt="Petalwheel icon">
-</p>
+# NurTo
 
-<h1 align="center">Petalwheel</h1>
+Offline file tools at your cursor. Select a file (or drag it), hold **Ctrl for 2.5 seconds**, then click to choose while holding Ctrl.
 
-<p align="center">
-  A menu-bar file converter for macOS: drag files, tap <kbd>⇧ Shift</kbd>, drop on a petal.<br>
-  Apple Silicon · macOS 14+ · English / Русский
-</p>
+A personal fork of [Petalwheel](https://github.com/TheAlexRay/petalwheel) (formerly Kumquat).
 
-<p align="center">
-  <a href="README.ru.md">Читать на русском</a> ·
-  <a href="LICENSE">MIT License</a>
-</p>
+## The wheel
 
-<p align="center">
-  <img src="docs/screens/palette-fan-root.png" width="300" alt="Category wheel">
-  <img src="docs/screens/palette-fan-convert.png" width="300" alt="Convert category">
-</p>
+A larger white translucent wheel over your unchanged desktop, short English labels and 4–5 contextual actions:
 
-> **Formerly Kumquat.** The app was renamed to Petalwheel in 1.1.0 to avoid confusion with an unrelated
-> project of the same name. Settings, history and presets carry over automatically.
+- **Convert** — choose an output format.
+- **Compress** — reduce image, audio or video file size.
+- **Level Audio** — reduce loud/quiet differences within a recording; also works on a video's audio.
+- **Trim / Edit** — the relevant editor for the file.
+- **More** — the remaining tools and presets.
 
-## How it works
+No dashboard or automatic result window. The wheel is the main interface.
+Hover only highlights. Keep Ctrl held while choosing a category or function.
+Release Ctrl to close the wheel without selecting anything. Click the center to go back one level.
 
-1. Start dragging files in Finder (or any app).
-2. While still holding the mouse button, tap **⇧ Shift**. A wheel opens under the cursor.
-3. Hover a category to open it. Hover the centre to go back.
-4. Drop the files on a petal. Results are saved next to the originals, which are never modified.
+## Video compression
 
-The wheel only shows categories and actions that apply to every dragged file. No Accessibility
-permission is needed: Petalwheel polls the mouse, modifier keys and the system drag pasteboard.
+**Fast** uses hardware HEVC. **Quality** uses software HEVC.
+Choose a frame and click **Compare**. Drag the Before/After divider to compare the same detail.
+Use **+ / −** to zoom, drag the image to pan, and click the scale value to reset.
+Nothing moves or zooms merely because the pointer passes over it. Comparison is optional; **Compress** works directly.
+Detail inspection uses full-resolution decoded still frames.
+A short test encode is used internally to produce the comparison frame; it is not a full-file quality guarantee.
 
-Other ways in: the menu-bar item (**Open Files in Wheel…**), right-click › **Services** in Finder,
-the global hotkey <kbd>⌃⌥K</kbd> for the current Finder selection, watch folders, and a CLI.
+The original is kept; output is saved beside it. Audio tracks are copied without re-encoding.
+Output is MP4 or MKV according to audio compatibility. Neither mode is lossless.
+Currently accepts 8-bit SDR YUV420 video; unsupported HDR/10-bit inputs are rejected safely.
 
-## Features
+## Audio leveling
 
-| Category | What it does |
-|---|---|
-| **Convert** | Images: JPG, PNG, HEIC, WebP, AVIF, TIFF, BMP, GIF, SVG, PDF, ICO and ICNS (favicons and app icons); camera RAW (DNG, CR2, CR3, NEF, ARW, RAF, ORF, RW2), JPEG XL and PSD as input. Audio: MP3, M4A, WAV, FLAC, OGG, Opus, AIFF, WMA. Video: MP4, MOV, MKV, WebM, AVI, WMV, GIF. Documents and books: PDF, DOCX, ODT, RTF, RTFD, HTML, Markdown, TXT, EPUB, FB2; plus PPTX, Keynote, Pages, Numbers, DOC, XLS as input. Spreadsheets and data: XLSX, CSV, TSV, JSON, YAML, XML, plist. Subtitles: SRT, VTT, ASS/SSA. Archives: ZIP, 7z, TAR (gz, bz2, xz; zst with `brew install zstd`), ISO, DMG; RAR/RAR5, CAB, PKG, DEB, CPIO, LZH as input |
-| **Optimize** | Compress (quality presets or a target size), strip metadata, loudness normalization, cut silence |
-| **Edit** | Interactive editors (below), crop, frame, remove background, blur faces, video speed, crop video, mute, mono/stereo |
-| **Combine & Split** | Collage, images → PDF, merge/split PDF, join/split video, audio visualizer, make archives (ZIP with AES-256 password, 7z, TAR.*, DMG, ISO), compress a single file (gz, bz2, xz, zst) |
-| **Extract** | Read QR codes, recognize text (OCR), video snapshots, extract any archive (multi-volume, passwords, Russian file names from Windows zips), list contents, test integrity |
-| **Share & Files** | Float shelf, AirDrop, copy, copy path, move, open in Terminal |
-| **Presets** | Your own one-tap recipes, e.g. "Email (≤2 MB JPG)" or "Instagram 4:5" |
-
-### Folders
-
-Drop whole folders (or folders mixed with files) on the wheel:
-
-- **Convert contents:** petals like *Images → JPG* or *Video → MP4* convert every matching file inside, into a sibling "<name> (converted)" folder with the same structure.
-- **Batch tools:** compress or strip metadata from everything inside, make one PDF or a collage from all images, extract text from all scans, flatten nested folders, or get a folder report (counts, sizes, largest files).
-- Hidden files, app bundles and symbolic links are skipped; up to 10,000 files per run.
-
-### Interactive editors
-
-| Editor | Highlights |
-|---|---|
-| **Annotate** | Arrows, pen, shapes, highlighter, text, numbered steps, magnifier, stickers |
-| **Redact** | Blur / pixelate / solid boxes, automatic face and text detection |
-| **Adjust** | 22 Core Image adjustments, presets, before/after, batch apply |
-| **Organize PDF** | Reorder, rotate, delete, duplicate, insert and merge pages |
-| **Trim** | Timeline with thumbnails and waveform, split into clips, remove clips, auto-trim silence |
-| **Bleep** | Draw bleep ranges on the waveform, 1 kHz tone or silence, preview |
-| **Redact Video** | Boxes with per-box time ranges on a layer timeline, face detection |
-
-All editors share the same shortcuts (⌘S, Esc, ⌘Z/⇧⌘Z, Space) and ask before discarding unsaved changes.
-
-<p align="center">
-  <img src="docs/screens/editor-annotate.png" width="420" alt="Annotate editor">
-  <img src="docs/screens/editor-trim.png" width="420" alt="Trim editor">
-</p>
-
-### Under the hood
-
-- Hardware H.264/HEVC encoding through VideoToolbox, with parallel jobs across files.
-- Friendly error messages, a **Recent** history menu with **Run Again**, and a progress HUD with cancel.
-- Bundled ffmpeg, ffprobe and cwebp, built from official sources under the **LGPL** and targeting macOS 14.
-- Native frameworks everywhere else: ImageIO, Core Image, Vision, PDFKit, AVFoundation, WebKit, textutil.
-
-## Install
-
-Download the DMG from [Releases](../../releases), install with Homebrew:
-
-```bash
-brew install --cask thealexray/tap/petalwheel
-```
-
-or build it yourself (below). Builds are ad-hoc
-signed until a Developer ID is set up, so macOS blocks the first launch:
-
-- **macOS 15 and later:** open Petalwheel once, then go to **System Settings › Privacy & Security**,
-  scroll down and click **Open Anyway**.
-- **macOS 14:** right-click Petalwheel in Applications, choose **Open**, then **Open** again.
-- Or, once in Terminal: `xattr -dr com.apple.quarantine /Applications/Petalwheel.app`
+**Level Audio** is a one-step action, distinct from file-size compression and whole-file normalization.
+It applies compression, dynamic normalization and measured loudness normalization (-16 LUFS, -1.5 dBTP target).
+For videos, the video stream is copied. A separate `leveled` file is created.
+Louder background noise can also become more audible; this is level control, not noise removal.
 
 ## Build
 
-Requires the Xcode Command Line Tools (Xcode itself is not needed) and Homebrew for build tools.
+Apple Silicon, macOS 14+, Xcode Command Line Tools and Homebrew:
 
-```bash
-brew install meson ninja cmake pkgconf
-./scripts/build-ffmpeg.sh          # LGPL ffmpeg + codecs from official sources (first run takes a while)
-./scripts/build-app.sh --install   # builds build/Petalwheel.app and copies it to ~/Applications
+```sh
+brew install ffmpeg webp
+swift build
+./scripts/build-app.sh --no-tools
+open build/NurTo.app
 ```
 
-For quick development without the bundled toolchain, `brew install ffmpeg webp`, then
-`swift build && .build/debug/Petalwheel`. See [docs/RELEASE.md](docs/RELEASE.md) for the DMG,
-signing and notarization.
+This development build uses local Homebrew helpers. Quality mode needs FFmpeg with libx265.
+The internal SwiftPM executable is still `Petalwheel`; the app bundle and process are **NurTo**.
+The icon is generated from `scripts/make-icon.swift`.
 
-## Command line
+## Checks
 
-```bash
-Petalwheel --convert webp photo.png scan.heic
-Petalwheel --tool compress video.mov
-Petalwheel --list
+```sh
+.build/debug/Petalwheel --self-check
+python3 scripts/tests/video-compression-modes.py .build/debug/Petalwheel
+python3 scripts/tests/audio-leveling.py .build/debug/Petalwheel
+python3 scripts/check-l10n.py
 ```
-
-The binary is `Petalwheel.app/Contents/MacOS/Petalwheel`. CLI output is always in English.
-
-## Tests
-
-```bash
-./scripts/test-suite.sh            # ~400 conversion and tool cases with output validation
-./scripts/test-suite.sh --quick    # one representative per group
-python3 scripts/check-l10n.py      # missing or unused localization keys
-```
-
-See [docs/TESTING.md](docs/TESTING.md).
-
-## Project layout
-
-| Folder | Contents |
-|---|---|
-| `Sources/Petalwheel/Model` | Formats, conversion matrix, tool catalog, settings, presets, shared contracts |
-| `Sources/Petalwheel/App` | Drag gesture monitor, job coordinator, actions, menu bar, history, Finder services, hotkey, watch folders, CLI |
-| `Sources/Petalwheel/Fan` | The radial wheel |
-| `Sources/Petalwheel/Engine` | Image, media (ffmpeg), document, EPUB, Office/iWork, spreadsheet, subtitle and archive engines, tool modules |
-| `Sources/Petalwheel/Editors` | The seven interactive editors and their shared window, canvas and timeline code |
-| `Sources/Petalwheel/UI` | Theme, HUD, tool options, settings, welcome, float shelf |
-| `Resources` | App icon, `en.lproj` and `ru.lproj` strings |
-| `scripts` | Build, toolchain, release, test and localization scripts |
-
-## Credits
-
-Made by **kipperstudio** and **Claude** (an AI model by Anthropic).
-
-Bundled third-party software: FFmpeg (LGPL 2.1+), libwebp, LAME, Opus, libvpx, dav1d, SVT-AV1,
-libpng, libjpeg-turbo, xz. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md); the licenses ship inside the app at `Contents/Resources/Tools/licenses`
-and are listed in **Settings › About › Licenses…**.
 
 ## License
 
-Petalwheel's source code is released under the [MIT License](LICENSE). © 2026 kipperstudio.
+[MIT](LICENSE). Original source © 2026 kipperstudio. Upstream attribution and
+[third-party notices](THIRD_PARTY_NOTICES.md) are retained.
+Older upstream documentation/screenshots may show the original interface.

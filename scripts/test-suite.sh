@@ -2,7 +2,7 @@
 # End-to-end test suite for Petalwheel's headless CLI.
 #
 # Usage: scripts/test-suite.sh [--binary PATH] [--quick] [--keep] [--filter REGEX] [--timeout SECS]
-#   --binary PATH   Petalwheel executable (default: build/Petalwheel.app/Contents/MacOS/Petalwheel,
+#   --binary PATH   Petalwheel executable (default: build/NurTo.app/Contents/MacOS/NurTo,
 #                   falling back to .build/debug/Petalwheel)
 #   --quick         one representative conversion/tool per group (~1 minute)
 #   --keep          keep the temp work dir (fixtures + outputs) for inspection
@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$BIN" ]]; then
-    for c in "$ROOT/build/Petalwheel.app/Contents/MacOS/Petalwheel" "$ROOT/.build/debug/Petalwheel"; do
+    for c in "$ROOT/build/NurTo.app/Contents/MacOS/NurTo" "$ROOT/.build/debug/Petalwheel"; do
         [[ -x "$c" ]] && { BIN="$c"; break; }
     done
 fi

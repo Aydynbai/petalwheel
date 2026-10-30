@@ -3,24 +3,18 @@ import AppKit
 /// Shared colours and fonts of the fan. The fan is dark glass in both appearances,
 /// so it uses the fixed dark variants of the Grove palette.
 enum FanStyle {
-    static let accent = KQPalette.Dark.ember          // #FF9140
+    static let accent = NSColor(srgbRed: 0.25, green: 0.45, blue: 0.94, alpha: 1) // NurTo mint
     static let peel = KQPalette.Dark.peel               // #B8520E
-    static let glass = KQPalette.graphite               // #1C1916
-    static let centerDisc = KQPalette.graphiteRaised    // #26211D
+    static let glass = NSColor.white
+    static let centerDisc = NSColor.white
     static let ink = KQPalette.Dark.ink                 // text/icons on coloured fills
-    static let text = KQPalette.Dark.text               // text on glass
-    static let textSecondary = KQPalette.Dark.textSecondary
+    static let text = NSColor(srgbRed: 0.12, green: 0.16, blue: 0.22, alpha: 1)               // text on glass
+    static let textSecondary = NSColor(srgbRed: 0.39, green: 0.44, blue: 0.51, alpha: 1)
     /// Width of the coloured rim on the outer edge of an unhighlighted petal.
-    static let rimWidth: CGFloat = 5.5
+    static let rimWidth: CGFloat = 2.5
 
     /// Colour of a petal: categories use their own colour, presets Driftwood, everything else `tint`.
-    static func color(for item: FanItem, tint: NSColor?) -> NSColor {
-        switch item.kind {
-        case .category(let c): return c.fanColor
-        case .preset: return tint ?? KQPalette.Dark.driftwood
-        default: return tint ?? accent
-        }
-    }
+    static func color(for item: FanItem, tint: NSColor?) -> NSColor { accent }
 
     /// `color` lightened towards white by `amount` (0…1).
     static func lighter(_ color: NSColor, _ amount: CGFloat) -> NSColor {
@@ -45,6 +39,8 @@ final class FanView: NSView {
     var isIconThumbnail = true
     var fileCount = 0 { didSet { needsDisplay = true } }
     var clickEnabled = false
+    var captureDrops = false
+    private var clickArmed = false
     /// Colour of the open category; nil at the root, where each category petal uses its own colour.
     var tint: NSColor? { didSet { needsDisplay = true } }
 
@@ -176,10 +172,10 @@ final class FanView: NSView {
         ctx.addPath(path)
         ctx.clip(using: .evenOdd)
         // Warm graphite tint so the glass reads well over any wallpaper, plus a soft top sheen.
-        ctx.setFillColor((fill ?? FanStyle.glass.withAlphaComponent(0.62)).cgColor)
+        ctx.setFillColor((fill ?? FanStyle.glass.withAlphaComponent(0.48)).cgColor)
         ctx.fill(rect)
         let sheen = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB),
-                               colors: [NSColor(white: 1, alpha: 0.11).cgColor, NSColor(white: 1, alpha: 0.02).cgColor] as CFArray,
+                               colors: [NSColor(white: 1, alpha: 0.035).cgColor, NSColor(white: 1, alpha: 0.01).cgColor] as CFArray,
                                locations: [0, 1])!
         ctx.drawLinearGradient(sheen, start: CGPoint(x: rect.midX, y: rect.maxY), end: CGPoint(x: rect.midX, y: rect.minY), options: [])
         ctx.restoreGState()
@@ -200,34 +196,19 @@ final class FanView: NSView {
         let box = path.boundingBoxOfPath
         let color = FanStyle.color(for: item, tint: tint)
         if highlighted {
-            ctx.saveGState()
-            ctx.setShadow(offset: .zero, blur: 14, color: color.withAlphaComponent(0.55).cgColor)
-            ctx.addPath(path)
-            ctx.setFillColor(color.cgColor)
-            ctx.fillPath(using: .evenOdd)
-            ctx.restoreGState()
-
-            ctx.saveGState()
-            ctx.addPath(path)
-            ctx.clip(using: .evenOdd)
-            let g = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB),
-                               colors: [FanStyle.lighter(color, 0.14).cgColor, color.cgColor] as CFArray,
-                               locations: [0, 1])!
-            ctx.drawLinearGradient(g, start: CGPoint(x: box.midX, y: box.maxY), end: CGPoint(x: box.midX, y: box.minY), options: [])
-            ctx.restoreGState()
-            strokeInside(ctx, path: path, color: NSColor(white: 1, alpha: 0.35), width: 1)
+            drawGlassFill(ctx, path: path, rect: box, fill: NSColor(white: 1, alpha: 0.9))
+            strokeInside(ctx, path: path, color: color, width: 1.6)
         } else {
             drawGlassFill(ctx, path: path, rect: box)
-            drawRim(ctx, path: path, petal: petal, color: color)
-            strokeInside(ctx, path: path, color: NSColor(white: 1, alpha: 0.14), width: 1)
+            strokeInside(ctx, path: path, color: NSColor(white: 1, alpha: 0.8), width: 0.7)
         }
+        let textColor = FanStyle.text
+        let iconColor = highlighted ? color : FanStyle.textSecondary
 
-        let textColor = highlighted ? FanStyle.ink : FanStyle.text
-        let iconColor = highlighted ? FanStyle.ink : color
         let lc = petal.labelCenter(center)
         let maxW = petal.labelWidth
         if let symbol = item.symbol {
-            let symbolSize: CGFloat = petal.outer - petal.inner >= 58 ? 18 : 15
+            let symbolSize: CGFloat = petal.outer - petal.inner >= 58 ? 20 : 16
             let lines = captionLines(item.title, maxWidth: maxW, color: textColor)
             let lineSizes = lines.map { $0.size() }
             let capHeight = lineSizes.reduce(0) { $0 + $1.height } - CGFloat(max(0, lines.count - 1)) * 2
@@ -338,7 +319,7 @@ final class FanView: NSView {
         let c = center
         let r = layout.centerRadius
         let circle = CGPath(ellipseIn: CGRect(x: c.x - r, y: c.y - r, width: 2 * r, height: 2 * r), transform: nil)
-        drawGlassFill(ctx, path: circle, rect: circle.boundingBoxOfPath, fill: FanStyle.centerDisc.withAlphaComponent(0.9))
+        drawGlassFill(ctx, path: circle, rect: circle.boundingBoxOfPath, fill: FanStyle.centerDisc.withAlphaComponent(0.65))
         strokeInside(ctx, path: circle, color: NSColor(white: 1, alpha: 0.16), width: 1)
 
         // Thumbnail
@@ -428,7 +409,7 @@ final class FanView: NSView {
 
     static func hint(for mode: FanMode) -> String {
         switch mode {
-        case .categories: return "Petalwheel"
+        case .categories: return "NurTo"
         case .conversions: return L("Convert to…")
         case .tools: return L("Tools")
         case .actions: return L("Actions")
@@ -460,14 +441,19 @@ final class FanView: NSView {
 
     override func mouseDown(with event: NSEvent) {
         guard clickEnabled else { return }
+        clickArmed = true
         setHighlighted(petalIndex(atWindowPoint: event.locationInWindow))
     }
 
     override func mouseUp(with event: NSEvent) {
-        guard clickEnabled else { return }
+        guard clickEnabled, clickArmed else { return }
+        clickArmed = false
         if let i = petalIndex(atWindowPoint: event.locationInWindow) { onClick?(i) }
         else if isInCenter(windowPoint: event.locationInWindow) { onCenterClick?() }
     }
+
+    override func rightMouseDown(with event: NSEvent) { mouseDown(with: event) }
+    override func rightMouseUp(with event: NSEvent) { mouseUp(with: event) }
 
     // MARK: NSDraggingDestination
 
@@ -475,7 +461,7 @@ final class FanView: NSView {
         let i = petalIndex(atWindowPoint: sender.draggingLocation)
         setHighlighted(i)
         updateCenterHover(sender.draggingLocation)
-        return i == nil ? [] : .copy
+        return captureDrops ? .copy : (i == nil ? [] : .copy)
     }
 
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation { dragOperation(sender) }
@@ -484,10 +470,11 @@ final class FanView: NSView {
     override func wantsPeriodicDraggingUpdates() -> Bool { false }
 
     override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        petalIndex(atWindowPoint: sender.draggingLocation) != nil
+        captureDrops || petalIndex(atWindowPoint: sender.draggingLocation) != nil
     }
 
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        if captureDrops { return true } // Captured URLs are already held by the controller.
         guard let i = petalIndex(atWindowPoint: sender.draggingLocation) else { return false }
         let urls = sender.draggingPasteboard.readObjects(forClasses: [NSURL.self],
                                                          options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []

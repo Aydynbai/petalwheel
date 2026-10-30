@@ -37,7 +37,7 @@ final class AppSettings: ObservableObject {
     @Published var hasCompletedWelcome: Bool { didSet { d.set(hasCompletedWelcome, forKey: "hasCompletedWelcome") } }
 
     private init() {
-        triggerKey = ModifierKey(rawValue: d.string(forKey: "triggerKey") ?? "") ?? .shift
+        triggerKey = ModifierKey(rawValue: d.string(forKey: "triggerKey") ?? "") ?? .control
         soundsEnabled = d.object(forKey: "soundsEnabled") as? Bool ?? true
         revealOutputs = d.object(forKey: "revealOutputs") as? Bool ?? false
         conversionQuality = Quality(rawValue: d.string(forKey: "conversionQuality") ?? "") ?? .high

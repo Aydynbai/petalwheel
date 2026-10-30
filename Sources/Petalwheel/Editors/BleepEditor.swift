@@ -62,7 +62,7 @@ final class BleepDocument: TimelineEditorDocument {
 
     static func validate(_ session: TimelineSession) throws {
         guard session.info.hasAudio else {
-            throw PetalwheelError(l: "“%@” has no audio track to bleep.", session.url.lastPathComponent)
+            throw NurToError(l: "“%@” has no audio track to bleep.", session.url.lastPathComponent)
         }
     }
 

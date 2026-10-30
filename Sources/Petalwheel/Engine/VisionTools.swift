@@ -21,7 +21,7 @@ enum VisionTools {
         let ci = CIImage(cvPixelBuffer: buffer)
         guard let cg = ciContext.createCGImage(ci, from: ci.extent, format: .RGBA8,
                                                colorSpace: CGColorSpace(name: CGColorSpace.sRGB)) else {
-            throw PetalwheelError(l: "Could not build the cut-out image.")
+            throw NurToError(l: "Could not build the cut-out image.")
         }
         let out = OutputNaming.url(for: url, ext: "png", suffix: "no background")
         try ImageCodec.encode(cg, format: .png, quality: 1).write(to: out, options: .atomic)
@@ -75,7 +75,7 @@ enum VisionTools {
         guard let maskCtx = CGContext(data: nil, width: image.width, height: image.height, bitsPerComponent: 8,
                                       bytesPerRow: 0, space: CGColorSpaceCreateDeviceGray(),
                                       bitmapInfo: CGImageAlphaInfo.none.rawValue) else {
-            throw PetalwheelError(l: "Could not allocate a mask.")
+            throw NurToError(l: "Could not allocate a mask.")
         }
         maskCtx.setFillColor(gray: 0, alpha: 1)
         maskCtx.fill(extent)
@@ -88,7 +88,7 @@ enum VisionTools {
             }
         }
         maskCtx.fillPath()
-        guard let maskCG = maskCtx.makeImage() else { throw PetalwheelError(l: "Could not build a mask.") }
+        guard let maskCG = maskCtx.makeImage() else { throw NurToError(l: "Could not build a mask.") }
         var mask = CIImage(cgImage: maskCG)
         if style != .solid { mask = mask.applyingGaussianBlur(sigma: Double(longFace) / 30).cropped(to: extent) }
 
@@ -99,7 +99,7 @@ enum VisionTools {
 
         guard let cg = ciContext.createCGImage(result, from: extent, format: .RGBA8,
                                                colorSpace: CGColorSpace(name: CGColorSpace.sRGB)) else {
-            throw PetalwheelError(l: "Could not render the redacted image.")
+            throw NurToError(l: "Could not render the redacted image.")
         }
         // Keep the source format where possible; fall back to PNG when it can't be written.
         var outFormat = format

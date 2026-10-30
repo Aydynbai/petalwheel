@@ -25,7 +25,7 @@ struct DocumentEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         let output = OutputNaming.url(for: source, ext: target.fileExtension)
         let temp = try OutputNaming.tempDirectory()
@@ -122,10 +122,10 @@ struct DocumentEngine: ConversionEngine {
         do {
             try await ProcessRunner.run(Self.textutil, args)
         } catch let e as ProcessError {
-            throw PetalwheelError(l: "Couldn't convert “%@” to %@: %@", input.lastPathComponent, target.title, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw NurToError(l: "Couldn't convert “%@” to %@: %@", input.lastPathComponent, target.title, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         guard FileManager.default.fileExists(atPath: output.path) else {
-            throw PetalwheelError(l: "textutil produced no output for “%@”.", input.lastPathComponent)
+            throw NurToError(l: "textutil produced no output for “%@”.", input.lastPathComponent)
         }
     }
 
@@ -146,7 +146,7 @@ struct DocumentEngine: ConversionEngine {
             if #available(macOS 15.0, *) { options[NSAttributedString.DocumentReadingOptionKey.textKit1ListMarkerFormatDocumentOption] = true }
             return try NSAttributedString(url: url, options: options, documentAttributes: nil)
         } catch {
-            throw PetalwheelError(l: "Couldn't read “%@”: %@", displayName, error.localizedDescription)
+            throw NurToError(l: "Couldn't read “%@”: %@", displayName, error.localizedDescription)
         }
     }
 
@@ -227,10 +227,10 @@ struct DocumentEngine: ConversionEngine {
     // MARK: - PDF input
 
     private func convertPDF(_ source: URL, to target: FileFormat, output: URL, progress: @escaping ProgressHandler) async throws -> [URL] {
-        guard let doc = PDFDocument(url: source) else { throw PetalwheelError(l: "Couldn't open “%@” as a PDF.", source.lastPathComponent) }
-        if doc.isLocked { throw PetalwheelError(l: "“%@” is password-protected.", source.lastPathComponent) }
+        guard let doc = PDFDocument(url: source) else { throw NurToError(l: "Couldn't open “%@” as a PDF.", source.lastPathComponent) }
+        if doc.isLocked { throw NurToError(l: "“%@” is password-protected.", source.lastPathComponent) }
         let count = doc.pageCount
-        guard count > 0 else { throw PetalwheelError(l: "“%@” has no pages.", source.lastPathComponent) }
+        guard count > 0 else { throw NurToError(l: "“%@” has no pages.", source.lastPathComponent) }
 
         if target == .txt {
             var pages: [String] = []
@@ -248,7 +248,7 @@ struct DocumentEngine: ConversionEngine {
 
         let result: [URL] = try await MainActor.run {
             // Re-open on the main actor so no PDFKit object crosses actors.
-            guard let doc = PDFDocument(url: source) else { throw PetalwheelError(l: "Couldn't open “%@”.", source.lastPathComponent) }
+            guard let doc = PDFDocument(url: source) else { throw NurToError(l: "Couldn't open “%@”.", source.lastPathComponent) }
             let combined = NSMutableAttributedString()
             for i in 0..<count {
                 guard let page = doc.page(at: i), let s = page.attributedString else { continue }
@@ -279,8 +279,8 @@ struct DocumentEngine: ConversionEngine {
         return result
     }
 
-    static func noTextLayer(_ url: URL) -> PetalwheelError {
-        PetalwheelError(l: "“%@” has no text layer (it looks like a scanned document). Use the “Extract Text” tool to recognize its text with OCR.", url.lastPathComponent)
+    static func noTextLayer(_ url: URL) -> NurToError {
+        NurToError(l: "“%@” has no text layer (it looks like a scanned document). Use the “Extract Text” tool to recognize its text with OCR.", url.lastPathComponent)
     }
 
     /// PDFKit returns one paragraph per visual line. Join lines that clearly continue a sentence
@@ -350,9 +350,9 @@ struct DocumentEngine: ConversionEngine {
         }
 
         var mediaBox = CGRect(origin: .zero, size: pageSize)
-        let info: [CFString: Any] = [kCGPDFContextTitle: title, kCGPDFContextCreator: "Petalwheel"]
+        let info: [CFString: Any] = [kCGPDFContextTitle: title, kCGPDFContextCreator: "NurTo"]
         guard let ctx = CGContext(url as CFURL, mediaBox: &mediaBox, info as CFDictionary) else {
-            throw PetalwheelError(l: "Couldn't create “%@”.", url.lastPathComponent)
+            throw NurToError(l: "Couldn't create “%@”.", url.lastPathComponent)
         }
         let previous = NSGraphicsContext.current
         defer { NSGraphicsContext.current = previous }

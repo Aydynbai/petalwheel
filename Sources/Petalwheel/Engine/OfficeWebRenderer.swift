@@ -54,7 +54,7 @@ final class OfficeWebRenderer: NSObject, WKNavigationDelegate {
             webView.loadFileURL(file.resolvingSymlinksInPath(), allowingReadAccessTo: readAccess.resolvingSymlinksInPath())
             DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { [weak self] in
                 guard let self, self.loadID == id else { return }
-                self.finishLoad(PetalwheelError(l: "Rendering “%@” timed out.", file.lastPathComponent))
+                self.finishLoad(NurToError(l: "Rendering “%@” timed out.", file.lastPathComponent))
             }
         }
         // Give decoders (PDF/SVG images, web fonts) a moment to settle.
@@ -80,7 +80,7 @@ final class OfficeWebRenderer: NSObject, WKNavigationDelegate {
     }
 
     nonisolated func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
-        MainActor.assumeIsolated { finishLoad(PetalwheelError(l: "The renderer stopped unexpectedly.")) }
+        MainActor.assumeIsolated { finishLoad(NurToError(l: "The renderer stopped unexpectedly.")) }
     }
 
     /// Only file: and data: URLs may load (no tracking pixels / remote fonts from documents).
@@ -107,7 +107,7 @@ final class OfficeWebRenderer: NSObject, WKNavigationDelegate {
 
     func evaluateJSON<T: Decodable>(_ js: String, as type: T.Type) async throws -> T {
         guard let s = try await evaluate(js) as? String, let data = s.data(using: .utf8) else {
-            throw PetalwheelError(l: "Couldn't read the rendered document.")
+            throw NurToError(l: "Couldn't read the rendered document.")
         }
         return try JSONDecoder().decode(T.self, from: data)
     }
@@ -163,7 +163,7 @@ final class OfficeWebRenderer: NSObject, WKNavigationDelegate {
                         didRun: #selector(printOperationDidRun(_:success:contextInfo:)), contextInfo: nil)
         }
         guard ok, FileManager.default.fileExists(atPath: output.path) else {
-            throw PetalwheelError(l: "Couldn't print “%@”.", output.lastPathComponent)
+            throw NurToError(l: "Couldn't print “%@”.", output.lastPathComponent)
         }
     }
 

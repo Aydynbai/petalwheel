@@ -176,7 +176,7 @@ final class OperationProgress {
         if let existing = self.card(id) {
             card = existing
         } else {
-            card = OperationCardModel(id: id, title: "Petalwheel", itemCount: 1, onCancel: {})
+            card = OperationCardModel(id: id, title: "NurTo", itemCount: 1, onCancel: {})
             add(card)
         }
         let wasCancelling = card.phase == .cancelling
@@ -572,7 +572,7 @@ struct OperationProblemRow: View {
     }
 }
 
-/// Determinate Petalwheel progress bar.
+/// Determinate NurTo progress bar.
 struct KQProgressBar: View {
     var value: Double
     var height: CGFloat = 6

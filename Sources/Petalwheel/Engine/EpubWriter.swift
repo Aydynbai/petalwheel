@@ -20,11 +20,11 @@ enum EpubWriter {
         do {
             doc = try XMLDocument(xmlString: html, options: [.documentTidyHTML])
         } catch {
-            throw PetalwheelError(l: "Couldn't read the document's HTML: %@", error.localizedDescription)
+            throw NurToError(l: "Couldn't read the document's HTML: %@", error.localizedDescription)
         }
         let headStyles = ((try? doc.nodes(forXPath: "//head//style")) ?? []).compactMap { $0.stringValue }
         guard let body = (try? doc.nodes(forXPath: "//body"))?.first as? XMLElement else {
-            throw PetalwheelError(l: "The document has no content.")
+            throw NurToError(l: "The document has no content.")
         }
         for xpath in ["//script", "//noscript", "//iframe", "//object", "//embed", "//form", "//base", "//link", "//meta"] {
             for node in (try? body.nodes(forXPath: xpath)) ?? [] { node.detach() }
@@ -66,7 +66,7 @@ enum EpubWriter {
             try await ProcessRunner.run(OfficeSupport.zip, ["-X0q", tmpOut.path, "mimetype"], currentDirectory: root)
             try await ProcessRunner.run(OfficeSupport.zip, ["-Xr9Dq", tmpOut.path, "META-INF", "OEBPS"], currentDirectory: root)
         } catch let e as ProcessError {
-            throw PetalwheelError(l: "Couldn't pack the EPUB: %@", e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw NurToError(l: "Couldn't pack the EPUB: %@", e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         try fm.moveItem(at: tmpOut, to: output)
     }

@@ -1,6 +1,6 @@
-/* Petalwheel – Info.plist (Русский) */
+/* NurTo – Info.plist (Русский) */
 
-"NSAppleEventsUsageDescription" = "Petalwheel читает выбранные в Finder файлы, когда вы нажимаете его сочетание клавиш, чтобы открыть для них колесо конвертации.";
+"NSAppleEventsUsageDescription" = "NurTo читает выбранные в Finder файлы, когда вы нажимаете его сочетание клавиш, чтобы открыть для них колесо конвертации.";
 "NSHumanReadableCopyright" = "© 2026 kipperstudio";
-"CFBundleDisplayName" = "Petalwheel";
-"CFBundleName" = "Petalwheel";
+"CFBundleDisplayName" = "NurTo";
+"CFBundleName" = "NurTo";

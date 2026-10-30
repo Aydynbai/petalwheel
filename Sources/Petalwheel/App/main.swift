@@ -8,6 +8,7 @@ PreferencesMigration.run()
 
 MainActor.assumeIsolated {
     let app = NSApplication.shared
+    app.appearance = NSAppearance(named: .aqua)
     let delegate = AppDelegate()
     app.delegate = delegate
     app.setActivationPolicy(.accessory)

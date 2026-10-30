@@ -11,7 +11,7 @@ struct ProcessError: LocalizedError {
     }
 }
 
-struct PetalwheelError: LocalizedError {
+struct NurToError: LocalizedError {
     /// English text: used for logs, the HUD's "Details" and ErrorTranslator's pattern matching.
     let message: String
     /// What people see (the localized message).
@@ -55,7 +55,7 @@ final class ExternalTools {
 
     func require(_ url: URL?, _ name: String) throws -> URL {
         guard let url else {
-            throw PetalwheelError(l: "%@ is not installed. Install it with: brew install %@", name, name == "cwebp" ? "webp" : "ffmpeg")
+            throw NurToError(l: "%@ is not installed. Install it with: brew install %@", name, name == "cwebp" ? "webp" : "ffmpeg")
         }
         return url
     }

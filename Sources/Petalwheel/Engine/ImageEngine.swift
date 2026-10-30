@@ -17,7 +17,7 @@ struct ImageEngine: ConversionEngine {
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
             if target == .webp { _ = try ExternalTools.shared.require(nil, "cwebp") }
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         let quality = ImageCodec.quality(options.quality)
         progress(0.05)
@@ -44,7 +44,7 @@ struct ImageEngine: ConversionEngine {
                     ? ImageCodec.carriedMetadata(loaded.properties, width: loaded.width, height: loaded.height)
                     : nil
                 if (target == .heic || target == .avif) && !ImageCodec.canEncode(target) {
-                    throw PetalwheelError(l: "This Mac can't encode %@ images.", target.title)
+                    throw NurToError(l: "This Mac can't encode %@ images.", target.title)
                 }
                 try await ImageCodec.write(loaded.image, to: out, format: target, quality: quality, metadata: metadata)
             }

@@ -1,4 +1,4 @@
-/* Petalwheel – Русский. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
+/* NurTo – Русский. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
 
 "AirDrop isn't available on this Mac right now." = "AirDrop сейчас недоступен на этом Mac.";
 "Copied %@" = "Скопировано: %@";
@@ -12,20 +12,20 @@
 "Show Float" = "Показать полку";
 "How It Works" = "Как это работает";
 "Settings…" = "Настройки…";
-"Quit Petalwheel" = "Выйти из Petalwheel";
+"Quit NurTo" = "Выйти из NurTo";
 "Choose" = "Выбрать";
 "A helper" = "Вспомогательная программа";
 "this folder" = "эту папку";
-"Petalwheel: Open in Wheel" = "Petalwheel: открыть в колесе";
-"Petalwheel: Convert to JPG" = "Petalwheel: конвертировать в JPG";
-"Petalwheel: Compress" = "Petalwheel: сжать";
-"Petalwheel: Convert to MP4" = "Petalwheel: конвертировать в MP4";
-"Petalwheel: no files were passed to the service." = "Petalwheel: службе не передано ни одного файла.";
+"NurTo: Open in Wheel" = "NurTo: открыть в колесе";
+"NurTo: Convert to JPG" = "NurTo: конвертировать в JPG";
+"NurTo: Compress" = "NurTo: сжать";
+"NurTo: Convert to MP4" = "NurTo: конвертировать в MP4";
+"NurTo: no files were passed to the service." = "NurTo: службе не передано ни одного файла.";
 "Space" = "Пробел";
 "%@ is already used by another app. Pick another shortcut." = "Сочетание %@ уже занято другой программой. Выберите другое.";
 "Couldn't register %@ (error %d)." = "Не удалось назначить %@ (ошибка %d).";
-"Petalwheel can't read the Finder selection" = "Petalwheel не может прочитать выбранное в Finder";
-"To open the wheel for files selected in Finder, allow Petalwheel to control Finder in System Settings › Privacy & Security › Automation › Petalwheel › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services." = "Чтобы открывать колесо для файлов, выбранных в Finder, разрешите Petalwheel управлять Finder: Системные настройки › Конфиденциальность и безопасность › Автоматизация › Petalwheel › Finder.\n\nМожно и дальше перетаскивать файлы с нажатием клавиши или пользоваться меню Finder по правому клику › Быстрые действия / Службы.";
+"NurTo can't read the Finder selection" = "NurTo не может прочитать выбранное в Finder";
+"To open the wheel for files selected in Finder, allow NurTo to control Finder in System Settings › Privacy & Security › Automation › NurTo › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services." = "Чтобы открывать колесо для файлов, выбранных в Finder, разрешите NurTo управлять Finder: Системные настройки › Конфиденциальность и безопасность › Автоматизация › NurTo › Finder.\n\nМожно и дальше перетаскивать файлы с нажатием клавиши или пользоваться меню Finder по правому клику › Быстрые действия / Службы.";
 "Open Automation Settings" = "Открыть настройки автоматизации";
 "Not Now" = "Не сейчас";
 "Recent" = "Недавние";
@@ -352,7 +352,7 @@
 "“%@” has no data." = "В «%@» нет данных.";
 "Quick Look took too long to render “%@”." = "Quick Look слишком долго отрисовывал «%@».";
 "Quick Look couldn't render “%@”: %@" = "Quick Look не смог отрисовать «%@»: %@";
-"macOS can't preview “%@”, so Petalwheel can't convert it." = "macOS не умеет показывать «%@», поэтому Petalwheel не может его конвертировать.";
+"macOS can't preview “%@”, so NurTo can't convert it." = "macOS не умеет показывать «%@», поэтому NurTo не может его конвертировать.";
 "Nothing to render: the document has no pages." = "Нечего отрисовывать: в документе нет страниц.";
 "Couldn't read the rendered slides." = "Не удалось прочитать отрисованные слайды.";
 "Rendering “%@” timed out." = "Отрисовка «%@» заняла слишком много времени.";
@@ -451,7 +451,7 @@
 "Keep a history of recent operations" = "Хранить историю операций";
 "Recent results appear in the menu bar under Recent." = "Недавние результаты – в строке меню, пункт «Недавние».";
 "Right-click files in Finder › Quick Actions or Services. If an item is missing, turn it on under Keyboard › Keyboard Shortcuts › Services › Files and Folders." = "Правый клик по файлам в Finder › Быстрые действия или Службы. Если пункта нет, включите его: Клавиатура › Сочетания клавиш › Службы › Файлы и папки.";
-"Services are available when running the bundled Petalwheel.app." = "Службы доступны в собранном Petalwheel.app.";
+"Services are available when running the bundled NurTo.app." = "Службы доступны в собранном NurTo.app.";
 "Not registered" = "Не зарегистрировано";
 "Off in System Settings" = "Выключено в Системных настройках";
 "On" = "Вкл.";
@@ -470,11 +470,11 @@
 "Shortcut" = "Сочетание клавиш";
 "Open Automation Settings…" = "Настройки автоматизации…";
 "Global Shortcut" = "Глобальное сочетание";
-"Select files in Finder and press the shortcut. The first time, macOS asks to let Petalwheel control Finder." = "Выберите файлы в Finder и нажмите сочетание. В первый раз macOS попросит разрешить Petalwheel управлять Finder.";
+"Select files in Finder and press the shortcut. The first time, macOS asks to let NurTo control Finder." = "Выберите файлы в Finder и нажмите сочетание. В первый раз macOS попросит разрешить NurTo управлять Finder.";
 "No watch folders yet. New files dropped into a watched folder are converted automatically." = "Папок пока нет. Новые файлы в отслеживаемой папке конвертируются автоматически.";
 "Add Folder…" = "Добавить папку…";
 "Watch Folders" = "Отслеживаемые папки";
-"Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Petalwheel's own outputs are ignored." = "Обрабатываются только файлы, добавленные после начала отслеживания, когда они не меняются 2 секунды. Результаты сохраняются рядом с исходными, собственные файлы Petalwheel пропускаются.";
+"Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; NurTo's own outputs are ignored." = "Обрабатываются только файлы, добавленные после начала отслеживания, когда они не меняются 2 секунды. Результаты сохраняются рядом с исходными, собственные файлы NurTo пропускаются.";
 "Action" = "Действие";
 "Originals" = "Исходные";
 "Click, then press a key with ⌘, ⌥ or ⌃. Escape cancels." = "Нажмите, затем клавишу с ⌘, ⌥ или ⌃. Escape – отмена.";
@@ -515,17 +515,17 @@
 "Spacing" = "Отступ";
 "Loudness" = "Громкость";
 "Silence below" = "Тишина ниже";
-"Petalwheel Settings" = "Настройки Petalwheel";
-"Available when running from Petalwheel.app" = "Доступно при запуске из Petalwheel.app";
-"Petalwheel opens when you log in" = "Petalwheel открывается при входе в систему";
+"NurTo Settings" = "Настройки NurTo";
+"Available when running from NurTo.app" = "Доступно при запуске из NurTo.app";
+"NurTo opens when you log in" = "NurTo открывается при входе в систему";
 "Needs approval in System Settings → General → Login Items" = "Нужно разрешение: Системные настройки → Основные → Объекты входа";
 "Off" = "Выкл.";
 "Not available for this copy of the app" = "Недоступно для этой копии программы";
 "Unknown" = "Неизвестно";
-"Launch at login only works from the bundled Petalwheel.app (build it with scripts/build-app.sh)." = "Автозапуск работает только в собранном Petalwheel.app (соберите его через scripts/build-app.sh).";
+"Launch at login only works from the bundled NurTo.app (build it with scripts/build-app.sh)." = "Автозапуск работает только в собранном NurTo.app (соберите его через scripts/build-app.sh).";
 "language.system" = "Как в системе";
-"Restart Petalwheel now?" = "Перезапустить Petalwheel сейчас?";
-"The new language is used after Petalwheel restarts." = "Новый язык включится после перезапуска Petalwheel.";
+"Restart NurTo now?" = "Перезапустить NurTo сейчас?";
+"The new language is used after NurTo restarts." = "Новый язык включится после перезапуска NurTo.";
 "Restart Now" = "Перезапустить";
 "Later" = "Позже";
 "Smallest files, visibly lower quality." = "Самые маленькие файлы, качество заметно ниже.";
@@ -537,7 +537,7 @@
 "WebP export" = "экспорт в WebP";
 "not found" = "не найден";
 "No licenses folder" = "Нет папки с лицензиями";
-"This copy of Petalwheel doesn't include the bundled helpers, so there are no third-party licenses to show." = "В эту копию Petalwheel не встроены вспомогательные программы, поэтому сторонних лицензий нет.";
+"This copy of NurTo doesn't include the bundled helpers, so there are no third-party licenses to show." = "В эту копию NurTo не встроены вспомогательные программы, поэтому сторонних лицензий нет.";
 "OK" = "OK";
 "Made by" = "Сделано";
 "credits.and" = "и";
@@ -557,7 +557,7 @@
 "Default quality" = "Качество по умолчанию";
 "Keep EXIF, dates and location in converted files when the format allows it." = "Сохранять EXIF, даты и геопозицию, если формат это позволяет.";
 "Converted files are saved next to the originals." = "Готовые файлы сохраняются рядом с исходными.";
-"Petalwheel" = "Petalwheel";
+"NurTo" = "NurTo";
 "Drag, tap a key, drop on a petal. Files convert right where they are." = "Перетащите, нажмите клавишу, бросьте на лепесток. Файлы конвертируются прямо на месте.";
 "Helpers" = "Вспомогательные программы";
 "Install missing helpers:" = "Установить недостающие:";
@@ -578,7 +578,7 @@
 "Apply" = "Применить";
 "No options for this tool." = "У этого инструмента нет настроек.";
 "KB" = "КБ";
-"Petalwheel will aim for files at or below this size." = "Petalwheel постарается уложиться в этот размер.";
+"NurTo will aim for files at or below this size." = "NurTo постарается уложиться в этот размер.";
 "Drop shadow" = "Тень";
 "Columns" = "Столбцы";
 "Use 1:23.5 or seconds; leave End empty to keep until the end." = "Используйте 1:23.5 или секунды; оставьте конец пустым, чтобы взять до конца.";
@@ -590,7 +590,7 @@
 "Anything quieter than this is treated as silence." = "Всё, что тише, считается тишиной.";
 "Target loudness" = "Целевая громкость";
 "Silence threshold" = "Порог тишины";
-"Welcome to Petalwheel" = "Добро пожаловать в Petalwheel";
+"Welcome to NurTo" = "Добро пожаловать в NurTo";
 "Start dragging files in Finder" = "Начните перетаскивать файлы в Finder";
 "Pick one file or a whole selection and begin a drag." = "Возьмите один файл или сразу несколько.";
 "Tap the key while dragging, pick a category" = "Нажмите клавишу и выберите категорию";
@@ -729,10 +729,10 @@
 "Password (optional)" = "Пароль (необязательно)";
 "No password" = "Без пароля";
 "Password" = "Пароль";
-"Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or Petalwheel." = "Шифрование AES-256. Проводник Windows такие архивы не открывает – нужен 7-Zip или Petalwheel.";
+"Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or NurTo." = "Шифрование AES-256. Проводник Windows такие архивы не открывает – нужен 7-Zip или NurTo.";
 "A compressed disk image that opens on any Mac." = "Сжатый образ диска, открывается на любом Mac.";
 "A disc image that opens on Mac, Windows and Linux." = "Образ диска, открывается на Mac, Windows и Linux.";
-"Smallest files. Opens with 7-Zip, The Unarchiver or Petalwheel." = "Самый компактный. Открывается в 7-Zip, The Unarchiver или Petalwheel.";
+"Smallest files. Opens with 7-Zip, The Unarchiver or NurTo." = "Самый компактный. Открывается в 7-Zip, The Unarchiver или NurTo.";
 "Only zip archives can have a password." = "Пароль можно задать только для ZIP.";
 "Each file is compressed on its own, next to the original. gz opens everywhere, xz and zst are smaller." = "Каждый файл сжимается отдельно и сохраняется рядом с оригиналом. gz открывается везде, xz и zst сжимают сильнее.";
 "This archive is password-protected. Enter its password." = "Архив защищён паролем. Введите пароль.";
@@ -744,9 +744,9 @@
 "Part %d of “%@” is missing." = "Не хватает части %d архива «%@».";
 "The first part of “%@” (.rar) is missing." = "Не хватает первой части архива «%@» (.rar).";
 "The last part of “%@” (.zip) is missing." = "Не хватает последней части архива «%@» (.zip).";
-"Petalwheel can't create %@ archives." = "Petalwheel не умеет создавать архивы %@.";
+"NurTo can't create %@ archives." = "NurTo не умеет создавать архивы %@.";
 "The password for “%@” is wrong." = "Неверный пароль для «%@».";
-"This archive is password-protected in a way Petalwheel can't open yet." = "Этот архив защищён паролем так, что Petalwheel пока не может его открыть.";
+"This archive is password-protected in a way NurTo can't open yet." = "Этот архив защищён паролем так, что NurTo пока не может его открыть.";
 "“%@” is password-protected. Pass the password with --password." = "«%@» защищён паролем. Укажите его через --password.";
 "“%@” holds one compressed file:" = "В «%@» один сжатый файл:";
 "“%@”: %@, %@ unpacked" = "«%@»: %@, %@ в распакованном виде";
@@ -757,10 +757,10 @@
 "“%@” is damaged or incomplete: %@" = "«%@» повреждён или скачан не полностью: %@";
 "“%@” is damaged: %@" = "«%@» повреждён: %@";
 "“%@” isn't a file." = "«%@» – не файл.";
-"“%@” isn't an archive Petalwheel can read, or it is damaged." = "Petalwheel не может прочитать «%@»: это не архив или он повреждён.";
+"“%@” isn't an archive NurTo can read, or it is damaged." = "NurTo не может прочитать «%@»: это не архив или он повреждён.";
 "“%@” shows a license agreement first. Open it in Finder once, then try again." = "«%@» сначала показывает лицензионное соглашение. Откройте его один раз в Finder и попробуйте снова.";
 "Couldn't open the disk image “%@”: %@" = "Не удалось открыть образ диска «%@»: %@";
-"“%@” uses a compression method Petalwheel can't read yet: %@" = "В «%@» используется метод сжатия, который Petalwheel пока не умеет читать: %@";
+"“%@” uses a compression method NurTo can't read yet: %@" = "В «%@» используется метод сжатия, который NurTo пока не умеет читать: %@";
 
 /* New formats */
 "Data" = "Данные";

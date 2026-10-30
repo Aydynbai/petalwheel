@@ -85,7 +85,7 @@ enum FileTool: String, CaseIterable, Identifiable {
     // video
     case trimMedia, muteVideo, changeVideoSpeed, cropVideo, joinVideos, videoSnapshots, splitVideo
     // audio
-    case normalizeAudio, audioChannels, trimSilence, audioToVideo
+    case normalizeAudio, levelAudio, audioChannels, trimSilence, audioToVideo
     // archives
     case extractArchive, createArchive, listArchive, testArchive, compressSingle
     // interactive editors
@@ -107,11 +107,11 @@ typealias EditorCompletion = (EditorExport?) -> Void
 enum VideoCompressionMode: String, CaseIterable, Identifiable, Codable {
     case fast, quality
     var id: String { rawValue }
-    var title: String { self == .fast ? "Тез сығу" : "Сапаға басымдық" }
+    var title: String { self == .fast ? "Fast" : "Quality" }
     var explanation: String {
         self == .fast
-            ? "Mac аппараттық HEVC кодтауы. Жылдам нәтиже."
-            : "HEVC бағдарламалық кодтауы. Баяуырақ, сапа мен көлемге басымдық."
+            ? "Hardware HEVC"
+            : "Software HEVC"
     }
 }
 
@@ -205,7 +205,7 @@ enum FanMode: String, CaseIterable {
 enum FanCategory: String, CaseIterable {
     case convert, optimize, edit, combine, extract, share
     /// User presets ("my recipes"); shown only when a preset applies.
-    case favorites
+    case favorites, more
 }
 
 /// A petal in the radial fan.

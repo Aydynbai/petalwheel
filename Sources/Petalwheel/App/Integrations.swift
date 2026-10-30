@@ -29,10 +29,10 @@ enum Integrations {
         // 2. Global hotkey.
         GlobalHotkey.shared.onPress = { handleHotkey() }
         GlobalHotkey.shared.start()
-        // Test hook: `defaults write studio.kipper.Petalwheel integrationsDebug -bool YES`, then post
-        // the distributed notification "studio.kipper.Petalwheel.simulateHotkey" to act as if the hotkey was pressed.
+        // Test hook: `defaults write app.nurto.mac integrationsDebug -bool YES`, then post
+        // the distributed notification "app.nurto.mac.simulateHotkey" to act as if the hotkey was pressed.
         if UserDefaults.standard.bool(forKey: "integrationsDebug") {
-            DistributedNotificationCenter.default().addObserver(forName: Notification.Name("studio.kipper.Petalwheel.simulateHotkey"),
+            DistributedNotificationCenter.default().addObserver(forName: Notification.Name("app.nurto.mac.simulateHotkey"),
                                                                 object: nil, queue: .main) { _ in
                 MainActor.assumeIsolated { handleHotkey() }
             }

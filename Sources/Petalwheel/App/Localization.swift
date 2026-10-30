@@ -1,7 +1,7 @@
 import Foundation
 
 // Localization helpers. Strings live in Resources/{en,ru}.lproj/Localizable.strings and are copied into
-// Petalwheel.app/Contents/Resources by scripts/build-app.sh. The English text is the key, so a missing
+// NurTo.app/Contents/Resources by scripts/build-app.sh. The English text is the key, so a missing
 // translation falls back to English. SwiftUI `Text("literal")` looks the literal up by itself; everything
 // built from a String (AppKit titles, computed titles, interpolations) goes through `L` / `Lp`.
 

@@ -1,4 +1,4 @@
-/* Petalwheel – English. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
+/* NurTo – English. Keys are the English text (see scripts/check-l10n.py). Plurals: "key#one/few/many/other". */
 
 "AirDrop isn't available on this Mac right now." = "AirDrop isn't available on this Mac right now.";
 "Copied %@" = "Copied %@";
@@ -12,20 +12,20 @@
 "Show Float" = "Show Float";
 "How It Works" = "How It Works";
 "Settings…" = "Settings…";
-"Quit Petalwheel" = "Quit Petalwheel";
+"Quit NurTo" = "Quit NurTo";
 "Choose" = "Choose";
 "A helper" = "A helper";
 "this folder" = "this folder";
-"Petalwheel: Open in Wheel" = "Petalwheel: Open in Wheel";
-"Petalwheel: Convert to JPG" = "Petalwheel: Convert to JPG";
-"Petalwheel: Compress" = "Petalwheel: Compress";
-"Petalwheel: Convert to MP4" = "Petalwheel: Convert to MP4";
-"Petalwheel: no files were passed to the service." = "Petalwheel: no files were passed to the service.";
+"NurTo: Open in Wheel" = "NurTo: Open in Wheel";
+"NurTo: Convert to JPG" = "NurTo: Convert to JPG";
+"NurTo: Compress" = "NurTo: Compress";
+"NurTo: Convert to MP4" = "NurTo: Convert to MP4";
+"NurTo: no files were passed to the service." = "NurTo: no files were passed to the service.";
 "Space" = "Space";
 "%@ is already used by another app. Pick another shortcut." = "%@ is already used by another app. Pick another shortcut.";
 "Couldn't register %@ (error %d)." = "Couldn't register %@ (error %d).";
-"Petalwheel can't read the Finder selection" = "Petalwheel can't read the Finder selection";
-"To open the wheel for files selected in Finder, allow Petalwheel to control Finder in System Settings › Privacy & Security › Automation › Petalwheel › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services." = "To open the wheel for files selected in Finder, allow Petalwheel to control Finder in System Settings › Privacy & Security › Automation › Petalwheel › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services.";
+"NurTo can't read the Finder selection" = "NurTo can't read the Finder selection";
+"To open the wheel for files selected in Finder, allow NurTo to control Finder in System Settings › Privacy & Security › Automation › NurTo › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services." = "To open the wheel for files selected in Finder, allow NurTo to control Finder in System Settings › Privacy & Security › Automation › NurTo › Finder.\n\nYou can still drag files and tap the trigger key, or use Finder's right-click › Quick Actions / Services.";
 "Open Automation Settings" = "Open Automation Settings";
 "Not Now" = "Not Now";
 "Recent" = "Recent";
@@ -352,7 +352,7 @@
 "“%@” has no data." = "“%@” has no data.";
 "Quick Look took too long to render “%@”." = "Quick Look took too long to render “%@”.";
 "Quick Look couldn't render “%@”: %@" = "Quick Look couldn't render “%@”: %@";
-"macOS can't preview “%@”, so Petalwheel can't convert it." = "macOS can't preview “%@”, so Petalwheel can't convert it.";
+"macOS can't preview “%@”, so NurTo can't convert it." = "macOS can't preview “%@”, so NurTo can't convert it.";
 "Nothing to render: the document has no pages." = "Nothing to render: the document has no pages.";
 "Couldn't read the rendered slides." = "Couldn't read the rendered slides.";
 "Rendering “%@” timed out." = "Rendering “%@” timed out.";
@@ -451,7 +451,7 @@
 "Keep a history of recent operations" = "Keep a history of recent operations";
 "Recent results appear in the menu bar under Recent." = "Recent results appear in the menu bar under Recent.";
 "Right-click files in Finder › Quick Actions or Services. If an item is missing, turn it on under Keyboard › Keyboard Shortcuts › Services › Files and Folders." = "Right-click files in Finder › Quick Actions or Services. If an item is missing, turn it on under Keyboard › Keyboard Shortcuts › Services › Files and Folders.";
-"Services are available when running the bundled Petalwheel.app." = "Services are available when running the bundled Petalwheel.app.";
+"Services are available when running the bundled NurTo.app." = "Services are available when running the bundled NurTo.app.";
 "Not registered" = "Not registered";
 "Off in System Settings" = "Off in System Settings";
 "On" = "On";
@@ -470,11 +470,11 @@
 "Shortcut" = "Shortcut";
 "Open Automation Settings…" = "Open Automation Settings…";
 "Global Shortcut" = "Global Shortcut";
-"Select files in Finder and press the shortcut. The first time, macOS asks to let Petalwheel control Finder." = "Select files in Finder and press the shortcut. The first time, macOS asks to let Petalwheel control Finder.";
+"Select files in Finder and press the shortcut. The first time, macOS asks to let NurTo control Finder." = "Select files in Finder and press the shortcut. The first time, macOS asks to let NurTo control Finder.";
 "No watch folders yet. New files dropped into a watched folder are converted automatically." = "No watch folders yet. New files dropped into a watched folder are converted automatically.";
 "Add Folder…" = "Add Folder…";
 "Watch Folders" = "Watch Folders";
-"Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Petalwheel's own outputs are ignored." = "Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Petalwheel's own outputs are ignored.";
+"Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; NurTo's own outputs are ignored." = "Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; NurTo's own outputs are ignored.";
 "Action" = "Action";
 "Originals" = "Originals";
 "Click, then press a key with ⌘, ⌥ or ⌃. Escape cancels." = "Click, then press a key with ⌘, ⌥ or ⌃. Escape cancels.";
@@ -515,17 +515,17 @@
 "Spacing" = "Spacing";
 "Loudness" = "Loudness";
 "Silence below" = "Silence below";
-"Petalwheel Settings" = "Petalwheel Settings";
-"Available when running from Petalwheel.app" = "Available when running from Petalwheel.app";
-"Petalwheel opens when you log in" = "Petalwheel opens when you log in";
+"NurTo Settings" = "NurTo Settings";
+"Available when running from NurTo.app" = "Available when running from NurTo.app";
+"NurTo opens when you log in" = "NurTo opens when you log in";
 "Needs approval in System Settings → General → Login Items" = "Needs approval in System Settings → General → Login Items";
 "Off" = "Off";
 "Not available for this copy of the app" = "Not available for this copy of the app";
 "Unknown" = "Unknown";
-"Launch at login only works from the bundled Petalwheel.app (build it with scripts/build-app.sh)." = "Launch at login only works from the bundled Petalwheel.app (build it with scripts/build-app.sh).";
+"Launch at login only works from the bundled NurTo.app (build it with scripts/build-app.sh)." = "Launch at login only works from the bundled NurTo.app (build it with scripts/build-app.sh).";
 "language.system" = "System";
-"Restart Petalwheel now?" = "Restart Petalwheel now?";
-"The new language is used after Petalwheel restarts." = "The new language is used after Petalwheel restarts.";
+"Restart NurTo now?" = "Restart NurTo now?";
+"The new language is used after NurTo restarts." = "The new language is used after NurTo restarts.";
 "Restart Now" = "Restart Now";
 "Later" = "Later";
 "Smallest files, visibly lower quality." = "Smallest files, visibly lower quality.";
@@ -537,7 +537,7 @@
 "WebP export" = "WebP export";
 "not found" = "not found";
 "No licenses folder" = "No licenses folder";
-"This copy of Petalwheel doesn't include the bundled helpers, so there are no third-party licenses to show." = "This copy of Petalwheel doesn't include the bundled helpers, so there are no third-party licenses to show.";
+"This copy of NurTo doesn't include the bundled helpers, so there are no third-party licenses to show." = "This copy of NurTo doesn't include the bundled helpers, so there are no third-party licenses to show.";
 "OK" = "OK";
 "Made by" = "Made by";
 "credits.and" = "&";
@@ -557,7 +557,7 @@
 "Default quality" = "Default quality";
 "Keep EXIF, dates and location in converted files when the format allows it." = "Keep EXIF, dates and location in converted files when the format allows it.";
 "Converted files are saved next to the originals." = "Converted files are saved next to the originals.";
-"Petalwheel" = "Petalwheel";
+"NurTo" = "NurTo";
 "Drag, tap a key, drop on a petal. Files convert right where they are." = "Drag, tap a key, drop on a petal. Files convert right where they are.";
 "Helpers" = "Helpers";
 "Install missing helpers:" = "Install missing helpers:";
@@ -578,7 +578,7 @@
 "Apply" = "Apply";
 "No options for this tool." = "No options for this tool.";
 "KB" = "KB";
-"Petalwheel will aim for files at or below this size." = "Petalwheel will aim for files at or below this size.";
+"NurTo will aim for files at or below this size." = "NurTo will aim for files at or below this size.";
 "Drop shadow" = "Drop shadow";
 "Columns" = "Columns";
 "Use 1:23.5 or seconds; leave End empty to keep until the end." = "Use 1:23.5 or seconds; leave End empty to keep until the end.";
@@ -590,7 +590,7 @@
 "Anything quieter than this is treated as silence." = "Anything quieter than this is treated as silence.";
 "Target loudness" = "Target loudness";
 "Silence threshold" = "Silence threshold";
-"Welcome to Petalwheel" = "Welcome to Petalwheel";
+"Welcome to NurTo" = "Welcome to NurTo";
 "Start dragging files in Finder" = "Start dragging files in Finder";
 "Pick one file or a whole selection and begin a drag." = "Pick one file or a whole selection and begin a drag.";
 "Tap the key while dragging, pick a category" = "Tap the key while dragging, pick a category";
@@ -698,10 +698,10 @@
 "Password (optional)" = "Password (optional)";
 "No password" = "No password";
 "Password" = "Password";
-"Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or Petalwheel." = "Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or Petalwheel.";
+"Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or NurTo." = "Encrypted with AES-256. Windows Explorer can't open such zips: use 7-Zip or NurTo.";
 "A compressed disk image that opens on any Mac." = "A compressed disk image that opens on any Mac.";
 "A disc image that opens on Mac, Windows and Linux." = "A disc image that opens on Mac, Windows and Linux.";
-"Smallest files. Opens with 7-Zip, The Unarchiver or Petalwheel." = "Smallest files. Opens with 7-Zip, The Unarchiver or Petalwheel.";
+"Smallest files. Opens with 7-Zip, The Unarchiver or NurTo." = "Smallest files. Opens with 7-Zip, The Unarchiver or NurTo.";
 "Only zip archives can have a password." = "Only zip archives can have a password.";
 "Each file is compressed on its own, next to the original. gz opens everywhere, xz and zst are smaller." = "Each file is compressed on its own, next to the original. gz opens everywhere, xz and zst are smaller.";
 "This archive is password-protected. Enter its password." = "This archive is password-protected. Enter its password.";
@@ -713,9 +713,9 @@
 "Part %d of “%@” is missing." = "Part %d of “%@” is missing.";
 "The first part of “%@” (.rar) is missing." = "The first part of “%@” (.rar) is missing.";
 "The last part of “%@” (.zip) is missing." = "The last part of “%@” (.zip) is missing.";
-"Petalwheel can't create %@ archives." = "Petalwheel can't create %@ archives.";
+"NurTo can't create %@ archives." = "NurTo can't create %@ archives.";
 "The password for “%@” is wrong." = "The password for “%@” is wrong.";
-"This archive is password-protected in a way Petalwheel can't open yet." = "This archive is password-protected in a way Petalwheel can't open yet.";
+"This archive is password-protected in a way NurTo can't open yet." = "This archive is password-protected in a way NurTo can't open yet.";
 "“%@” is password-protected. Pass the password with --password." = "“%@” is password-protected. Pass the password with --password.";
 "“%@” holds one compressed file:" = "“%@” holds one compressed file:";
 "“%@”: %@, %@ unpacked" = "“%@”: %@, %@ unpacked";
@@ -726,10 +726,10 @@
 "“%@” is damaged or incomplete: %@" = "“%@” is damaged or incomplete: %@";
 "“%@” is damaged: %@" = "“%@” is damaged: %@";
 "“%@” isn't a file." = "“%@” isn't a file.";
-"“%@” isn't an archive Petalwheel can read, or it is damaged." = "“%@” isn't an archive Petalwheel can read, or it is damaged.";
+"“%@” isn't an archive NurTo can read, or it is damaged." = "“%@” isn't an archive NurTo can read, or it is damaged.";
 "“%@” shows a license agreement first. Open it in Finder once, then try again." = "“%@” shows a license agreement first. Open it in Finder once, then try again.";
 "Couldn't open the disk image “%@”: %@" = "Couldn't open the disk image “%@”: %@";
-"“%@” uses a compression method Petalwheel can't read yet: %@" = "“%@” uses a compression method Petalwheel can't read yet: %@";
+"“%@” uses a compression method NurTo can't read yet: %@" = "“%@” uses a compression method NurTo can't read yet: %@";
 
 /* New formats */
 "Data" = "Data";

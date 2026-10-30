@@ -7,7 +7,7 @@ import CoreServices
 /// - Only files that appear after watching starts are processed (top level only, no subfolders).
 /// - A file is ready when its size and modification date haven't changed for `stableInterval`,
 ///   and it isn't a partial download (.download, .crdownload, .part, …) or hidden.
-/// - Petalwheel's own outputs are ignored: names with a "(compressed)"-style suffix, and anything
+/// - NurTo's own outputs are ignored: names with a "(compressed)"-style suffix, and anything
 ///   named after a file this folder processed recently ("photo.png" → "photo.jpg", "photo-1.png", "photo part 2.mp4").
 /// - Files the action can't handle (e.g. a JPG in a "Convert to JPG" folder) are skipped.
 @MainActor
@@ -103,7 +103,7 @@ final class WatchFolderMonitor {
         let flags = UInt32(kFSEventStreamCreateFlagFileEvents | kFSEventStreamCreateFlagNoDefer)
         guard let s = FSEventStreamCreate(nil, callback, &context, Array(existing) as CFArray,
                                           FSEventStreamEventId(kFSEventStreamEventIdSinceNow), 0.3, flags) else {
-            NSLog("Petalwheel: FSEventStreamCreate failed")
+            NSLog("NurTo: FSEventStreamCreate failed")
             return
         }
         FSEventStreamSetDispatchQueue(s, DispatchQueue.main)
@@ -154,7 +154,7 @@ final class WatchFolderMonitor {
                 state.candidates = [:]
                 state.pendingOutputs = [:]
                 onStatus?(folder.id) { $0.missing = true; $0.lastMessage = L("Folder is missing") }
-                NSLog("Petalwheel: watch folder missing: %@", folder.path)
+                NSLog("NurTo: watch folder missing: %@", folder.path)
             }
             return
         }
@@ -240,7 +240,7 @@ final class WatchFolderMonitor {
                                              original: url, at: now))
         }
         let names = ready.map(\.lastPathComponent).joined(separator: ", ")
-        NSLog("Petalwheel: watch folder %@ → %@: %@", folder.name, folder.action.storageValue, names)
+        NSLog("NurTo: watch folder %@ → %@: %@", folder.name, folder.action.storageValue, names)
         onStatus?(folder.id) {
             $0.processed += ready.count
             $0.lastMessage = "\(folder.action.title): \(ready.count == 1 ? ready[0].lastPathComponent : Lp("%d files", ready.count))"
@@ -283,7 +283,7 @@ final class WatchFolderMonitor {
                 try fm.trashItem(at: original, resultingItemURL: nil)
             }
         } catch {
-            NSLog("Petalwheel: couldn't move original %@: %@", original.path, error.localizedDescription)
+            NSLog("NurTo: couldn't move original %@: %@", original.path, error.localizedDescription)
             onStatus?(folder.id) { $0.lastMessage = L("Couldn't move %@", original.lastPathComponent) }
         }
     }

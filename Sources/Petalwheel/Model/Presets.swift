@@ -304,7 +304,7 @@ struct UserPreset: Codable, Identifiable, Equatable {
 
 // MARK: - Store
 
-/// Shared Application Support folder (`~/Library/Application Support/Petalwheel`).
+/// Shared Application Support folder (`~/Library/Application Support/NurTo`).
 enum KQSupportDirectory {
     /// Overridable for tests (harness points it at a scratch folder).
     static var overrideURL: URL?
@@ -313,7 +313,7 @@ enum KQSupportDirectory {
         if let overrideURL { return overrideURL }
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support")
-        return base.appendingPathComponent("Petalwheel", isDirectory: true)
+        return base.appendingPathComponent("NurTo", isDirectory: true)
     }
 
     static func file(_ name: String) -> URL { url.appendingPathComponent(name) }
@@ -334,7 +334,7 @@ enum KQSupportDirectory {
     }
 }
 
-/// User presets persisted in Application Support/Petalwheel/presets.json.
+/// User presets persisted in Application Support/NurTo/presets.json.
 final class PresetStore: ObservableObject {
     static let shared = PresetStore()
     static let fileName = "presets.json"
@@ -364,7 +364,7 @@ final class PresetStore: ObservableObject {
         do {
             try KQSupportDirectory.writeJSON(FileFormatV1(presets: presets), to: Self.fileName)
         } catch {
-            NSLog("Petalwheel: couldn't save presets: \(error.localizedDescription)")
+            NSLog("NurTo: couldn't save presets: \(error.localizedDescription)")
         }
     }
 

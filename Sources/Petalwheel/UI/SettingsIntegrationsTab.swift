@@ -5,13 +5,13 @@ import SwiftUI
 @MainActor
 final class IntegrationsSettingsModel: ObservableObject {
     @Published var finderPermission: FinderSelection.Permission = .unknown
-    @Published var servicesState: [PetalwheelService: Bool?] = [:]
+    @Published var servicesState: [NurToService: Bool?] = [:]
     private var keyMonitor: Any?
 
     func refresh() {
         FinderSelection.permission { [weak self] p in self?.finderPermission = p }
-        var states: [PetalwheelService: Bool?] = [:]
-        for s in PetalwheelService.allCases { states[s] = FinderServicesStatus.userEnabled(s) }
+        var states: [NurToService: Bool?] = [:]
+        for s in NurToService.allCases { states[s] = FinderServicesStatus.userEnabled(s) }
         servicesState = states
     }
 
@@ -65,7 +65,7 @@ struct IntegrationsSettingsView: View {
 
     private var servicesSection: some View {
         Section {
-            ForEach(PetalwheelService.allCases) { service in
+            ForEach(NurToService.allCases) { service in
                 HStack(spacing: 8) {
                     Image(systemName: service.symbol)
                         .foregroundStyle(KQTheme.accentText)
@@ -78,7 +78,7 @@ struct IntegrationsSettingsView: View {
             HStack {
                 Text(FinderServicesStatus.declaredInBundle
                      ? L("Right-click files in Finder › Quick Actions or Services. If an item is missing, turn it on under Keyboard › Keyboard Shortcuts › Services › Files and Folders.")
-                     : L("Services are available when running the bundled Petalwheel.app."))
+                     : L("Services are available when running the bundled NurTo.app."))
                     .font(.system(size: 11)).foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 8)
@@ -90,7 +90,7 @@ struct IntegrationsSettingsView: View {
         }
     }
 
-    private func serviceStatus(_ service: PetalwheelService) -> (String, Color) {
+    private func serviceStatus(_ service: NurToService) -> (String, Color) {
         guard FinderServicesStatus.declaredInBundle else { return (L("Not registered"), .secondary) }
         switch model.servicesState[service] ?? nil {
         case .some(false): return (L("Off in System Settings"), KQTheme.warning)
@@ -143,7 +143,7 @@ struct IntegrationsSettingsView: View {
         } header: {
             Text("Global Shortcut")
         } footer: {
-            Text("Select files in Finder and press the shortcut. The first time, macOS asks to let Petalwheel control Finder.")
+            Text("Select files in Finder and press the shortcut. The first time, macOS asks to let NurTo control Finder.")
                 .font(.system(size: 11)).foregroundStyle(.secondary)
         }
     }
@@ -180,7 +180,7 @@ struct IntegrationsSettingsView: View {
         } header: {
             Text("Watch Folders")
         } footer: {
-            Text("Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; Petalwheel's own outputs are ignored.")
+            Text("Only files added after watching starts are processed, once they stop changing for 2 seconds. Results are saved next to the originals; NurTo's own outputs are ignored.")
                 .font(.system(size: 11)).foregroundStyle(.secondary)
         }
     }

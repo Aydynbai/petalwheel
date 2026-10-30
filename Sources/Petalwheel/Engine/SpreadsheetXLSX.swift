@@ -14,7 +14,7 @@ enum SpreadsheetXLSX {
         do {
             try await ProcessRunner.run(unzip, ["-qq", "-o", url.path, "-d", dir.path])
         } catch {
-            throw PetalwheelError(l: "“%@” isn't a valid xlsx file (couldn't unzip it).", url.lastPathComponent)
+            throw NurToError(l: "“%@” isn't a valid xlsx file (couldn't unzip it).", url.lastPathComponent)
         }
         return try read(unpacked: dir, name: url.lastPathComponent)
     }
@@ -22,7 +22,7 @@ enum SpreadsheetXLSX {
     static func read(unpacked dir: URL, name: String) throws -> [SpreadsheetSheet] {
         let workbookURL = dir.appendingPathComponent("xl/workbook.xml")
         guard let workbookData = try? Data(contentsOf: workbookURL) else {
-            throw PetalwheelError(l: "“%@” has no workbook (xl/workbook.xml). Is it really an xlsx file?", name)
+            throw NurToError(l: "“%@” has no workbook (xl/workbook.xml). Is it really an xlsx file?", name)
         }
         let workbook = XMLCollector(data: workbookData)
         let date1904 = workbook.elements.contains { $0.name == "workbookPr" && ($0.attributes["date1904"] == "1" || $0.attributes["date1904"] == "true") }
@@ -58,7 +58,7 @@ enum SpreadsheetXLSX {
             sheet.trim()
             sheets.append(sheet)
         }
-        if sheets.isEmpty { throw PetalwheelError(l: "“%@” contains no worksheets.", name) }
+        if sheets.isEmpty { throw NurToError(l: "“%@” contains no worksheets.", name) }
         return sheets
     }
 
@@ -103,14 +103,14 @@ enum SpreadsheetXLSX {
         try write(dir, "docProps/core.xml", """
         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
         <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <dc:creator>Petalwheel</dc:creator>
+        <dc:creator>NurTo</dc:creator>
         <dcterms:created xsi:type="dcterms:W3CDTF">\(now)</dcterms:created>
         <dcterms:modified xsi:type="dcterms:W3CDTF">\(now)</dcterms:modified>
         </cp:coreProperties>
         """)
         try write(dir, "docProps/app.xml", """
         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-        <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Petalwheel</Application></Properties>
+        <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>NurTo</Application></Properties>
         """)
 
         var sheetEntries = ""

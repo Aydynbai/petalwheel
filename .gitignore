@@ -2,3 +2,7 @@
 build/
 *.app
 .DS_Store
+
+# Generated NurTo icon assets (recreated by scripts/make-icon.swift)
+/Resources/NurTo.icns
+/Resources/NurTo-1024.png

@@ -7,10 +7,10 @@ import Quartz
 enum PDFTools {
     static func open(_ url: URL) throws -> PDFDocument {
         guard let doc = PDFDocument(url: url) else {
-            throw PetalwheelError(l: "Could not open the PDF %@.", url.lastPathComponent)
+            throw NurToError(l: "Could not open the PDF %@.", url.lastPathComponent)
         }
         if doc.isLocked {
-            throw PetalwheelError(l: "%@ is password-protected.", url.lastPathComponent)
+            throw NurToError(l: "%@ is password-protected.", url.lastPathComponent)
         }
         return doc
     }
@@ -23,7 +23,7 @@ enum PDFTools {
         let hPt = rotated ? bounds.width : bounds.height
         let w = max(1, Int((wPt * scale).rounded())), h = max(1, Int((hPt * scale).rounded()))
         guard w * h <= 400_000_000, let ctx = ImageCodec.makeContext(width: w, height: h, opaque: opaque) else {
-            throw PetalwheelError(l: "The PDF page is too large to render.")
+            throw NurToError(l: "The PDF page is too large to render.")
         }
         if opaque {
             ctx.setFillColor(CGColor(gray: 1, alpha: 1))
@@ -32,7 +32,7 @@ enum PDFTools {
         ctx.interpolationQuality = .high
         ctx.scaleBy(x: scale, y: scale)
         page.draw(with: .cropBox, to: ctx)
-        guard let img = ctx.makeImage() else { throw PetalwheelError(l: "Could not render the PDF page.") }
+        guard let img = ctx.makeImage() else { throw NurToError(l: "Could not render the PDF page.") }
         return img
     }
 
@@ -41,7 +41,7 @@ enum PDFTools {
                             progress: @escaping ProgressHandler) async throws -> [URL] {
         let doc = try open(source)
         let count = doc.pageCount
-        guard count > 0 else { throw PetalwheelError(l: "%@ has no pages.", source.lastPathComponent) }
+        guard count > 0 else { throw NurToError(l: "%@ has no pages.", source.lastPathComponent) }
         let name = ImageCodec.baseName(source)
         var outputs: [URL] = []
         if count == 1, let page = doc.page(at: 0) {
@@ -86,7 +86,7 @@ enum PDFTools {
             progress(Double(i + 1) / Double(inputs.count) * 0.9)
         }
         let out = OutputNaming.url(named: "Merged", ext: "pdf", in: inputs[0].deletingLastPathComponent())
-        guard result.write(to: out) else { throw PetalwheelError(l: "Could not write %@.", out.lastPathComponent) }
+        guard result.write(to: out) else { throw NurToError(l: "Could not write %@.", out.lastPathComponent) }
         progress(1)
         return out
     }
@@ -94,7 +94,7 @@ enum PDFTools {
     static func split(_ source: URL, progress: @escaping ProgressHandler) throws -> [URL] {
         let doc = try open(source)
         let count = doc.pageCount
-        guard count > 1 else { throw PetalwheelError(l: "%@ has only one page.", source.lastPathComponent) }
+        guard count > 1 else { throw NurToError(l: "%@ has only one page.", source.lastPathComponent) }
         let name = ImageCodec.baseName(source)
         let folder = try ImageCodec.uniqueFolder(near: source, name: "\(name) pages")
         let digits = String(count).count
@@ -106,7 +106,7 @@ enum PDFTools {
             single.insert(page, at: 0)
             let num = String(repeating: "0", count: max(0, digits - String(i + 1).count)) + String(i + 1)
             let out = OutputNaming.url(named: "\(name)-\(num)", ext: "pdf", in: folder)
-            guard single.write(to: out) else { throw PetalwheelError(l: "Could not write %@.", out.lastPathComponent) }
+            guard single.write(to: out) else { throw NurToError(l: "Could not write %@.", out.lastPathComponent) }
             outputs.append(out)
             progress(Double(i + 1) / Double(count))
         }
@@ -199,7 +199,7 @@ enum PDFTools {
             PDFDocumentAttribute.keywordsAttribute: [String](),
         ]
         let out = OutputNaming.url(for: source, ext: "pdf", suffix: "clean")
-        guard doc.write(to: out) else { throw PetalwheelError(l: "Could not write %@.", out.lastPathComponent) }
+        guard doc.write(to: out) else { throw NurToError(l: "Could not write %@.", out.lastPathComponent) }
         return out
     }
 

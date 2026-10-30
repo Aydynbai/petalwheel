@@ -80,11 +80,11 @@ final class JobCoordinator {
                                                engines: [ConversionEngine],
                                                progress: @escaping ProgressHandler) async throws -> [URL] {
         guard let source = FileFormat.detect(url) else {
-            throw PetalwheelError(l: "Unsupported file type: %@", url.lastPathComponent)
+            throw NurToError(l: "Unsupported file type: %@", url.lastPathComponent)
         }
-        if source == target { throw PetalwheelError(l: "%@ is already %@", url.lastPathComponent, target.title) }
+        if source == target { throw NurToError(l: "%@ is already %@", url.lastPathComponent, target.title) }
         guard let engine = engines.first(where: { $0.canConvert(from: source, to: target) }) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@", source.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@", source.title, target.title)
         }
         return try await engine.convert(url, from: source, to: target, options: options, progress: progress)
     }

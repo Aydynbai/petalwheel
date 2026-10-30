@@ -19,10 +19,10 @@ struct RawImageEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         if (target == .heic || target == .avif) && !ImageCodec.canEncode(target) {
-            throw PetalwheelError(l: "This Mac can't encode %@ images.", target.title)
+            throw NurToError(l: "This Mac can't encode %@ images.", target.title)
         }
         progress(0.05)
         let loaded = try Self.load(source, format: from)
@@ -61,13 +61,13 @@ struct RawImageEngine: ConversionEngine {
         return ids.contains(type)
     }
 
-    /// Decodes any image Petalwheel reads, upright, with its metadata: RAW through CIRAWFilter, ICO/ICNS
+    /// Decodes any image NurTo reads, upright, with its metadata: RAW through CIRAWFilter, ICO/ICNS
     /// at their largest size, everything else through ImageCodec.
     static func load(_ url: URL, format: FileFormat) throws -> LoadedImage {
         if format.isCameraRaw { return try developRAW(url) }
         if format == .ico || format == .icns { return try IconEngine.loadLargest(url) }
         if !canDecode(format) {
-            throw PetalwheelError(l: "This Mac can't read %@ images.", format.title)
+            throw NurToError(l: "This Mac can't read %@ images.", format.title)
         }
         return try ImageCodec.load(url, format: format)
     }
@@ -94,7 +94,7 @@ struct RawImageEngine: ConversionEngine {
         do {
             return try ImageCodec.load(url)
         } catch {
-            throw PetalwheelError(l: "Couldn't develop the RAW photo “%@”. This camera may not be supported by macOS.",
+            throw NurToError(l: "Couldn't develop the RAW photo “%@”. This camera may not be supported by macOS.",
                                   url.lastPathComponent)
         }
     }

@@ -40,7 +40,7 @@ struct HistoryEntry: Codable, Identifiable, Equatable {
     }
 }
 
-/// The last `limit` operations, persisted as Application Support/Petalwheel/history.json.
+/// The last `limit` operations, persisted as Application Support/NurTo/history.json.
 final class HistoryStore: ObservableObject {
     static let shared = HistoryStore()
     static let fileName = "history.json"
@@ -84,7 +84,7 @@ final class HistoryStore: ObservableObject {
         do {
             try KQSupportDirectory.writeJSON(FileV1(entries: entries), to: Self.fileName)
         } catch {
-            NSLog("Petalwheel: couldn't save history: \(error.localizedDescription)")
+            NSLog("NurTo: couldn't save history: \(error.localizedDescription)")
         }
     }
 }

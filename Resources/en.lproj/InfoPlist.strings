@@ -1,6 +1,6 @@
-/* Petalwheel – Info.plist (English) */
+/* NurTo – Info.plist (English) */
 
-"NSAppleEventsUsageDescription" = "Petalwheel reads the files selected in Finder when you press its global shortcut, so it can open the conversion wheel for them.";
+"NSAppleEventsUsageDescription" = "NurTo reads the files selected in Finder when you press its global shortcut, so it can open the conversion wheel for them.";
 "NSHumanReadableCopyright" = "© 2026 kipperstudio";
-"CFBundleDisplayName" = "Petalwheel";
-"CFBundleName" = "Petalwheel";
+"CFBundleDisplayName" = "NurTo";
+"CFBundleName" = "NurTo";

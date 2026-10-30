@@ -19,7 +19,7 @@ struct EpubEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         let temp = try OutputNaming.tempDirectory()
         defer { try? FileManager.default.removeItem(at: temp) }
@@ -98,7 +98,7 @@ struct EpubEngine: ConversionEngine {
             let copy = work.appendingPathComponent(title).appendingPathExtension(input.pathExtension)
             try FileManager.default.copyItem(at: input, to: copy)
             let produced = try await DocumentEngine().convert(copy, from: format, to: .html, options: ConversionOptions()) { p in progress(0.05 + 0.4 * p) }
-            guard let out = produced.first else { throw PetalwheelError(l: "Couldn't read “%@”.", source.lastPathComponent) }
+            guard let out = produced.first else { throw NurToError(l: "Couldn't read “%@”.", source.lastPathComponent) }
             html = try DocumentTextDecoder.decode(contentsOf: out)
             baseURL = nil
         }

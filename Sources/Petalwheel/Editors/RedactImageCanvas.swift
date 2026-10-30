@@ -88,7 +88,7 @@ enum RedactImageRenderer {
         if opaque { result = result.settingAlphaOne(in: extent) }
         guard let cg = ciContext.createCGImage(result, from: extent, format: .RGBA8,
                                                colorSpace: ImageCanvasIO.colorSpace(of: image)) else {
-            throw PetalwheelError(l: "Could not render the redacted image.")
+            throw NurToError(l: "Could not render the redacted image.")
         }
         return cg
     }

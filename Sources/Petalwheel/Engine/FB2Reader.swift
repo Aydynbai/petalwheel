@@ -34,7 +34,7 @@ enum FB2Reader {
             let files = FileManager.default.enumerator(at: dir, includingPropertiesForKeys: nil)?
                 .compactMap { $0 as? URL }.filter { $0.pathExtension.lowercased() == "fb2" } ?? []
             guard let inner = files.sorted(by: { $0.path < $1.path }).first else {
-                throw PetalwheelError(l: "“%@” doesn't contain an FB2 book.", url.lastPathComponent)
+                throw NurToError(l: "“%@” doesn't contain an FB2 book.", url.lastPathComponent)
             }
             data = try Data(contentsOf: inner)
         }
@@ -46,14 +46,14 @@ enum FB2Reader {
         do {
             return try XMLDocument(xmlString: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + text, options: [])
         } catch {
-            throw PetalwheelError(l: "Couldn't read the FB2 book “%@”: %@", url.lastPathComponent, error.localizedDescription)
+            throw NurToError(l: "Couldn't read the FB2 book “%@”: %@", url.lastPathComponent, error.localizedDescription)
         }
     }
 
     static func read(_ url: URL, temp: URL, images: ImageMode) async throws -> FB2Book {
         let doc = try await document(url, temp: temp)
         guard let root = doc.rootElement(), name(root) == "FictionBook" else {
-            throw PetalwheelError(l: "“%@” isn't an FB2 book.", url.lastPathComponent)
+            throw NurToError(l: "“%@” isn't an FB2 book.", url.lastPathComponent)
         }
         var r = Renderer(images: images)
         r.loadBinaries(root)
@@ -143,7 +143,7 @@ enum FB2Reader {
 
             let bodies = children(root).filter { name($0) == "body" }
             guard let main = bodies.first(where: { attribute($0, "name") == nil }) ?? bodies.first else {
-                throw PetalwheelError(l: "The document has no content.")
+                throw NurToError(l: "The document has no content.")
             }
             for body in bodies where body !== main {
                 for s in children(body) where name(s) == "section" {

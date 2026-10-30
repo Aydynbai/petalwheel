@@ -41,10 +41,10 @@ struct FanLayout {
         }
     }
 
-    static let centerRadius: CGFloat = 54
-    static let gap: CGFloat = 5            // straight gap between neighbouring petals, in points
-    static let ringSpacing: CGFloat = 5
-    static let cornerRadius: CGFloat = 7
+    static let centerRadius: CGFloat = 60
+    static let gap: CGFloat = 1.5            // straight gap between neighbouring petals, in points
+    static let ringSpacing: CGFloat = 2
+    static let cornerRadius: CGFloat = 1
     static let highlightGrow: CGFloat = 5
     static let maxInnerRingCount = 10
 
@@ -58,8 +58,8 @@ struct FanLayout {
         centerRadius = Self.centerRadius
         guard count > 0 else { rings = []; petals = []; return }
 
-        let thickness: CGFloat = hasSymbols ? 60 : 50
-        let minArc: CGFloat = hasSymbols ? 64 : 54     // minimum arc length per petal at mid radius
+        let thickness: CGFloat = hasSymbols ? 72 : 60
+        let minArc: CGFloat = hasSymbols ? 76 : 64     // minimum arc length per petal at mid radius
         let firstInner = centerRadius + 8
 
         func ringFor(inner minInner: CGFloat, count n: Int) -> Ring {

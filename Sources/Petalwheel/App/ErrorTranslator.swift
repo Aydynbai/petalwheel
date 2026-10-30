@@ -49,7 +49,7 @@ enum ErrorStrings {
     static var copy: String { t("hud.copy", "Copy") }
 }
 
-/// Maps raw errors (ProcessError with ffmpeg stderr, NSError from ImageIO/PDFKit/Foundation, PetalwheelError)
+/// Maps raw errors (ProcessError with ffmpeg stderr, NSError from ImageIO/PDFKit/Foundation, NurToError)
 /// to short human messages.
 enum ErrorTranslator {
     /// - Parameters:
@@ -94,7 +94,7 @@ enum ErrorTranslator {
             }
         }
 
-        // Text patterns (ffmpeg stderr, PetalwheelError messages, NSError descriptions).
+        // Text patterns (ffmpeg stderr, NurToError messages, NSError descriptions).
         if text.contains("no space left on device") || text.contains("disk full") || text.contains("not enough space")
             || text.contains("out of space") {
             return make(.diskFull, ErrorStrings.diskFull)
@@ -149,14 +149,14 @@ enum ErrorTranslator {
         return make(.generic, shorten(firstLine))
     }
 
-    /// Full technical text: ProcessError stderr, NSError domain/code chain, PetalwheelError message.
+    /// Full technical text: ProcessError stderr, NSError domain/code chain, NurToError message.
     static func technicalDetail(_ error: Error) -> String {
         if let p = error as? ProcessError {
             let err = p.stderr.trimmingCharacters(in: .whitespacesAndNewlines)
             let tail = err.split(separator: "\n", omittingEmptySubsequences: false).suffix(40).joined(separator: "\n")
             return "\(p.tool) exited with status \(p.status)\n\(tail)"
         }
-        if let k = error as? PetalwheelError { return k.message }
+        if let k = error as? NurToError { return k.message }
         if error is CancellationError { return "CancellationError" }
         var lines: [String] = []
         for ns in nsErrorChain(error) {
@@ -171,7 +171,7 @@ enum ErrorTranslator {
     // MARK: Helpers
 
     private static func nsErrorChain(_ error: Error) -> [NSError] {
-        if error is ProcessError || error is PetalwheelError || error is CancellationError { return [] }
+        if error is ProcessError || error is NurToError || error is CancellationError { return [] }
         var chain: [NSError] = []
         var current: NSError? = error as NSError
         while let e = current, chain.count < 6 {

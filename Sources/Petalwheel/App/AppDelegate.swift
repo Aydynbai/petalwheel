@@ -15,8 +15,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self?.coordinator.handle(item, urls: urls)
         }
         monitor.onTrigger = { [weak self] mode, point, urls in
-            self?.showFan(mode: mode, urls: urls, at: point, interaction: .drag)
+            self?.fan.show(mode: mode, items: FanCatalog.items(for: mode, urls: urls), urls: urls, at: point, interaction: .click, awaitInitialRelease: NSEvent.pressedMouseButtons & 1 != 0, closeOnModifierRelease: true)
         }
+        monitor.onModifierReleased = { [weak self] in self?.fan.modifierReleased() }
         monitor.onDragEnded = { [weak self] in
             self?.fan.dragDidEnd()
         }
@@ -25,8 +26,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self?.showFan(mode: .categories, urls: urls, at: NSEvent.mouseLocation, interaction: .click)
         }, coordinator: coordinator)
 
-        if !AppSettings.shared.hasCompletedWelcome {
-            WelcomeWindowController.shared.show()
+        // Explicit local UI entry point for testing and Finder-independent access.
+        let args = CommandLine.arguments
+        if let i = args.firstIndex(of: "--compress-window"), i + 1 < args.count {
+            let url = URL(fileURLWithPath: args[i + 1])
+            coordinator.runTool(.compress, urls: [url])
         }
     }
 
@@ -40,7 +44,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func setUpStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
-            let image = NSImage(systemSymbolName: "circle.hexagongrid.circle", accessibilityDescription: "Petalwheel")
+            let image = NSImage(systemSymbolName: "circle.hexagongrid.circle", accessibilityDescription: "NurTo")
             image?.isTemplate = true
             button.image = image
         }
@@ -53,18 +57,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
         let s = AppSettings.shared
-        let header = NSMenuItem(title: L("Drag files, then tap %@", s.triggerKey.title), action: nil, keyEquivalent: "")
+        let header = NSMenuItem(title: "Hold \(s.triggerKey.symbol) · 2.5 s", action: nil, keyEquivalent: "")
         header.isEnabled = false
         menu.addItem(header)
         menu.addItem(.separator())
-        menu.addItem(item(L("Open Files in Wheel…"), #selector(chooseForConversion), "o"))
+        menu.addItem(item("Choose Files", #selector(chooseForConversion), "o"))
         menu.addItem(item(L("Show Float"), #selector(showFloat), "f"))
         menu.addItem(historyMenu.makeRecentItem())
         menu.addItem(.separator())
         menu.addItem(item(L("How It Works"), #selector(showWelcome), ""))
         menu.addItem(item(L("Settings…"), #selector(showSettings), ","))
         menu.addItem(.separator())
-        menu.addItem(item(L("Quit Petalwheel"), #selector(quit), "q"))
+        menu.addItem(item(L("Quit NurTo"), #selector(quit), "q"))
     }
 
     private func item(_ title: String, _ action: Selector, _ key: String) -> NSMenuItem {
@@ -89,12 +93,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        return false
+    }
     @objc private func showFloat() { FloatShelfController.shared.show() }
     @objc private func showWelcome() { WelcomeWindowController.shared.show() }
     @objc private func showSettings() { SettingsWindowController.shared.show() }
     @objc private func quit() { NSApp.terminate(nil) }
 
-    /// Files dropped on the app icon / opened via `open -a Petalwheel file`.
+    /// Files dropped on the app icon / opened via `open -a NurTo file`.
     func application(_ application: NSApplication, open urls: [URL]) {
         showFan(mode: .categories, urls: urls, at: NSEvent.mouseLocation, interaction: .click)
     }

@@ -9,6 +9,11 @@ enum ToolOptionsPanel {
 
     /// Presents a floating panel with the options relevant to `tool`. completion(nil) = cancelled.
     static func present(tool: FileTool, inputs: [URL], initial: ToolOptions, completion: @escaping (ToolOptions?) -> Void) {
+        if tool == .compress, !inputs.isEmpty,
+           inputs.allSatisfy({ FileFormat.detect($0)?.group == .video && FileFormat.detect($0) != .gif }) {
+            NurToCompressionPanel.present(inputs: inputs, initial: initial, completion: completion)
+            return
+        }
         let controller = ToolOptionsPanelController(tool: tool, inputs: inputs, initial: initial)
         controller.onDone = { [weak controller] result in
             completion(result)
@@ -44,6 +49,7 @@ final class ToolOptionsModel: ObservableObject {
         self.tool = tool
         self.inputs = inputs
         var prepared = initial
+        prepared.videoCompressionMode = nil
         if tool == .compress && inputs.allSatisfy({ FileFormat.detect($0)?.group == .video && FileFormat.detect($0) != .gif }) {
             prepared.videoCompressionMode = initial.videoCompressionMode ?? .fast
         }
@@ -340,12 +346,12 @@ struct ToolOptionsView: View {
                     set: { model.options.videoCompressionMode = $0 }
                 )) {
                     ForEach(VideoCompressionMode.allCases) { Text($0.title).tag($0) }
-                } label: { Text(verbatim: "Видео сығу режимі") }
+                } label: { Text(verbatim: "Video compression") }
                 .pickerStyle(.segmented)
                 .labelsHidden()
                 Text(verbatim: (model.options.videoCompressionMode ?? .fast).explanation)
                     .font(.system(size: 12)).foregroundStyle(.secondary)
-                Text(verbatim: "Өлшемі мен кадр жиілігі сақталады. Дыбыс қайта кодталмайды. Сапа жоғалуы мүмкін; түпнұсқа сақталады. HDR/10-bit әзірге қолдау таппайды.")
+                Text(verbatim: "Original kept. 8-bit SDR only.")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
             } else {
                 OptionRow("Quality") {
@@ -373,7 +379,7 @@ struct ToolOptionsView: View {
                         .frame(width: 100)
                         Spacer()
                     }
-                    Text("Petalwheel will aim for files at or below this size.")
+                    Text("NurTo will aim for files at or below this size.")
                         .font(.system(size: 11)).foregroundStyle(.secondary)
                 }
             }

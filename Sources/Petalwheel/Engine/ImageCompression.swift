@@ -7,11 +7,11 @@ enum ImageCompression {
     /// Returns the compressed file, or nil if it couldn't beat the original size.
     static func compress(_ url: URL, options: ToolOptions, progress: @escaping ProgressHandler) async throws -> URL? {
         guard let format = FileFormat.detect(url), format.isRasterImage else {
-            throw PetalwheelError(l: "Can't compress %@.", url.lastPathComponent)
+            throw NurToError(l: "Can't compress %@.", url.lastPathComponent)
         }
         if format == .webp { _ = try ExternalTools.shared.require(ExternalTools.shared.cwebp, "cwebp") }
         if [.heic, .avif].contains(format) && !ImageCodec.canEncode(format) {
-            throw PetalwheelError(l: "This Mac can't encode %@ images.", format.title)
+            throw NurToError(l: "This Mac can't encode %@ images.", format.title)
         }
         let original = ImageCodec.fileSize(url)
         let loaded = try ImageCodec.load(url, format: format)

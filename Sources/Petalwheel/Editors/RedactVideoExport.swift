@@ -173,7 +173,7 @@ enum RedactVideoExport {
     /// Full ffmpeg argument list (without the standard flags FFmpeg.run adds).
     static func arguments(_ job: Job, output: URL, copyAudio: Bool) throws -> [String] {
         guard let vIdx = job.info.videoIndex else {
-            throw PetalwheelError(l: "“%@” has no video track.", job.source.lastPathComponent)
+            throw NurToError(l: "“%@” has no video track.", job.source.lastPathComponent)
         }
         let target = outputFormat(for: job.source)
         let graph = filterGraph(regions: job.regions, videoIndex: vIdx,

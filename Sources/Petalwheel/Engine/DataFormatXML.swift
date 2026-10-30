@@ -16,9 +16,9 @@ enum DataXML {
         do {
             doc = try XMLDocument(data: data, options: [.nodePreserveCDATA])
         } catch {
-            throw PetalwheelError(l: "Couldn't read the XML: %@", error.localizedDescription)
+            throw NurToError(l: "Couldn't read the XML: %@", error.localizedDescription)
         }
-        guard let root = doc.rootElement() else { throw PetalwheelError(l: "The document has no content.") }
+        guard let root = doc.rootElement() else { throw NurToError(l: "The document has no content.") }
         return .object([(root.name ?? "root", element(root))])
     }
 

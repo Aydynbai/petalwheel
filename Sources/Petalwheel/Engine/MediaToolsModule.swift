@@ -4,7 +4,7 @@ import Foundation
 struct MediaToolsModule: ToolModule {
     private static let handled: Set<FileTool> = [
         .compress, .removeMetadata, .trimMedia, .muteVideo, .changeVideoSpeed, .cropVideo, .joinVideos,
-        .videoSnapshots, .splitVideo, .normalizeAudio, .audioChannels, .trimSilence, .audioToVideo,
+        .videoSnapshots, .splitVideo, .levelAudio, .normalizeAudio, .audioChannels, .trimSilence, .audioToVideo,
     ]
 
     func canRun(_ tool: FileTool, format: FileFormat?) -> Bool {
@@ -15,7 +15,7 @@ struct MediaToolsModule: ToolModule {
 
     func run(_ tool: FileTool, inputs: [URL], options: ToolOptions,
              progress: @escaping ProgressHandler) async throws -> ToolResult {
-        guard !inputs.isEmpty else { throw PetalwheelError(l: "No files to process.") }
+        guard !inputs.isEmpty else { throw NurToError(l: "No files to process.") }
         if tool == .joinVideos {
             return try await joinVideos(inputs, options: options, progress: progress)
         }
@@ -46,11 +46,12 @@ struct MediaToolsModule: ToolModule {
         case .cropVideo: return try await crop(job, options: options, progress: progress)
         case .videoSnapshots: return try await snapshots(job, options: options, progress: progress)
         case .splitVideo: return try await split(job, options: options, progress: progress)
+        case .levelAudio: return try await levelAudio(job, progress: progress)
         case .normalizeAudio: return try await normalize(job, options: options, progress: progress)
         case .audioChannels: return try await channels(job, options: options, progress: progress)
         case .trimSilence: return try await trimSilence(job, options: options, progress: progress)
         case .audioToVideo: return try await visualize(job, progress: progress)
-        default: throw PetalwheelError(l: "%@ isn’t available for “%@”.", tool.title, url.lastPathComponent)
+        default: throw NurToError(l: "%@ isn’t available for “%@”.", tool.title, url.lastPathComponent)
         }
     }
 
@@ -89,11 +90,11 @@ struct MediaToolsModule: ToolModule {
         }
 
         func requireAudio() throws {
-            guard info.hasAudio else { throw PetalwheelError(l: "“%@” has no audio track.", name) }
+            guard info.hasAudio else { throw NurToError(l: "“%@” has no audio track.", name) }
         }
 
         func requireVideo() throws {
-            guard info.hasVideo else { throw PetalwheelError(l: "“%@” has no video track.", name) }
+            guard info.hasVideo else { throw NurToError(l: "“%@” has no video track.", name) }
         }
     }
 
@@ -169,7 +170,7 @@ struct MediaToolsModule: ToolModule {
                 kbps = Int(Double(kb) * 8.192 / info.duration * 0.97)
                 guard kbps >= 24 else {
                     let minKB = Int((24 * info.duration / 8.192 / 0.97).rounded(.up))
-                    throw PetalwheelError(l: "%d KB is too small for “%@”. Try at least %d KB.", kb, job.name, minKB)
+                    throw NurToError(l: "%d KB is too small for “%@”. Try at least %d KB.", kb, job.name, minKB)
                 }
             } else if info.audioBitrateKbps > 0, keep.contains(source ?? .wav) {
                 kbps = min(kbps, max(24, info.audioBitrateKbps * 3 / 4))
@@ -205,7 +206,7 @@ struct MediaToolsModule: ToolModule {
         let videoKbps = Int(totalKbps) - audioKbps
         guard videoKbps >= 40 else {
             let minKB = Int((Double(40 + audioKbps) * info.duration / 8.192 / 0.96).rounded(.up))
-            throw PetalwheelError(l: "%d KB is too small for the %d-second video “%@”. Try at least %d KB.", targetKB, Int(info.duration.rounded()), job.name, minKB)
+            throw NurToError(l: "%d KB is too small for the %d-second video “%@”. Try at least %d KB.", targetKB, Int(info.duration.rounded()), job.name, minKB)
         }
         var spec = base
         spec.crfOverride = nil
@@ -249,7 +250,7 @@ struct MediaToolsModule: ToolModule {
         var args = ["-i", job.url.path]
         if let v = info.videoIndex { args += ["-map", "0:\(v)"] }
         for a in info.audioIndices { args += ["-map", "0:\(a)"] }
-        guard info.hasVideo || info.hasAudio else { throw PetalwheelError(l: "“%@” has no audio or video.", job.name) }
+        guard info.hasVideo || info.hasAudio else { throw NurToError(l: "“%@” has no audio or video.", job.name) }
         let fmt = FileFormat.detect(job.url)
         if fmt == .mkv || fmt == .mp4 || fmt == .mov { args += ["-map", "0:s?"] }
         args += ["-c", "copy", "-map_metadata", "-1", "-map_chapters", "-1", "-fflags", "+bitexact"]
@@ -271,7 +272,7 @@ struct MediaToolsModule: ToolModule {
         let start = max(0, options.trimStart)
         let end = min(options.trimEnd ?? d, d > 0 ? d : .greatestFiniteMagnitude)
         guard end - start > 0.05 else {
-            throw PetalwheelError(l: "The trim range is empty for “%@” (%@s – %@s).", job.name, Self.seconds(start), Self.seconds(end))
+            throw NurToError(l: "The trim range is empty for “%@” (%@s – %@s).", job.name, Self.seconds(start), Self.seconds(end))
         }
         let target = job.sameFormat
         var spec = job.spec(target)
@@ -287,7 +288,7 @@ struct MediaToolsModule: ToolModule {
         try job.requireVideo()
         let d = job.info.duration
         let parts = min(max(options.splitParts, 2), 100)
-        guard d > Double(parts) * 0.2 else { throw PetalwheelError(l: "“%@” is too short to split into %d parts.", job.name, parts) }
+        guard d > Double(parts) * 0.2 else { throw NurToError(l: "“%@” is too short to split into %d parts.", job.name, parts) }
         let len = d / Double(parts)
         let target = job.sameFormat
         var spec = job.spec(target)
@@ -326,7 +327,7 @@ struct MediaToolsModule: ToolModule {
     private func changeSpeed(_ job: Job, options: ToolOptions, progress: @escaping ProgressHandler) async throws -> ToolResult {
         try job.requireVideo()
         let speed = min(max(options.speed, 0.25), 4)
-        guard abs(speed - 1) > 0.001 else { throw PetalwheelError(l: "Choose a speed other than 1×.") }
+        guard abs(speed - 1) > 0.001 else { throw NurToError(l: "Choose a speed other than 1×.") }
         let target = job.sameFormat
         var spec = job.spec(target)
         spec.quality = .high
@@ -394,11 +395,11 @@ struct MediaToolsModule: ToolModule {
     // MARK: - Join
 
     private func joinVideos(_ inputs: [URL], options: ToolOptions, progress: @escaping ProgressHandler) async throws -> ToolResult {
-        guard inputs.count >= 2 else { throw PetalwheelError(l: "Choose at least two videos to join.") }
+        guard inputs.count >= 2 else { throw NurToError(l: "Choose at least two videos to join.") }
         var infos: [MediaInfo] = []
         for url in inputs {
             let info = try await MediaProbe.probe(url)
-            guard info.hasVideo else { throw PetalwheelError(l: "“%@” has no video track.", url.lastPathComponent) }
+            guard info.hasVideo else { throw NurToError(l: "“%@” has no video track.", url.lastPathComponent) }
             infos.append(info)
         }
         let first = infos[0]
@@ -455,6 +456,27 @@ struct MediaToolsModule: ToolModule {
         spec.quality = .high
         if job.info.hasVideo { spec.copyVideo = true }
         return spec
+    }
+
+    /// Dynamic level control within a recording, followed by measured loudness normalization.
+    private func levelAudio(_ job: Job, progress: @escaping ProgressHandler) async throws -> ToolResult {
+        try job.requireAudio()
+        let dynamics = "acompressor=threshold=0.125:ratio=3:attack=10:release=150:makeup=1,dynaudnorm=f=250:g=15:p=0.9:m=10:r=0.2:n=true"
+        let norm = "loudnorm=I=-16:TP=-1.5:LRA=7"
+        let stderr = try await FFmpeg.run(["-i", job.url.path, "-map", "0:\(job.info.audioIndices[0])", "-vn", "-sn", "-af",
+            dynamics + "," + norm + ":print_format=json", "-f", "null", "-"], duration: job.info.duration,
+            loglevel: "info", progress: progress, span: 0...0.4)
+        var measured = norm
+        if let m = Self.loudnormMeasurement(stderr) {
+            measured += ":measured_I=\(m["input_i"]!):measured_TP=\(m["input_tp"]!):measured_LRA=\(m["input_lra"]!)"
+                + ":measured_thresh=\(m["input_thresh"]!):offset=\(m["target_offset"]!):linear=true"
+        }
+        var spec = audioEditSpec(job)
+        let rate = min(job.info.sampleRate > 0 ? job.info.sampleRate : 48000, 48000)
+        spec.audioFilters = [dynamics, measured + ":print_format=none", "aresample=\(rate)"]
+        let out = try await encode(job, spec: spec, to: job.output(job.sameFormat, suffix: "leveled"),
+            duration: job.info.duration, progress: progress, span: 0.4...1)
+        return ToolResult(outputs: [out])
     }
 
     private func normalize(_ job: Job, options: ToolOptions, progress: @escaping ProgressHandler) async throws -> ToolResult {
@@ -521,7 +543,7 @@ struct MediaToolsModule: ToolModule {
             end = min(info.duration, last.start + 0.15)
         }
         if let only = silences.first, silences.count == 1, only.start <= 0.05, only.end >= info.duration - 0.05 {
-            throw PetalwheelError(l: "“%@” is silent below %@ dB – nothing would be left.", job.name, db)
+            throw NurToError(l: "“%@” is silent below %@ dB – nothing would be left.", job.name, db)
         }
         let target = job.sameFormat
         var spec = job.spec(target)
@@ -543,7 +565,7 @@ struct MediaToolsModule: ToolModule {
             return ToolResult(messages: [L("No silence at the start or end of “%@”.", job.name)])
         }
         guard end - start > 0.1 else {
-            throw PetalwheelError(l: "“%@” is silent below %@ dB – nothing would be left.", job.name, db)
+            throw NurToError(l: "“%@” is silent below %@ dB – nothing would be left.", job.name, db)
         }
         let out = try await encode(job, spec: spec, to: job.output(target, suffix: "trimmed"),
                                    inputOptions: ["-ss", Self.seconds(start), "-t", Self.seconds(end - start)],

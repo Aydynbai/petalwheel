@@ -22,6 +22,7 @@ extension FileTool {
         case .joinVideos: return L("Join")
         case .videoSnapshots: return L("Snapshots")
         case .splitVideo: return L("Split")
+        case .levelAudio: return "Level Audio"
         case .normalizeAudio: return L("Normalize")
         case .audioChannels: return L("Channels")
         case .trimSilence: return L("Cut Silence")
@@ -64,6 +65,7 @@ extension FileTool {
         case .joinVideos: return "film.stack"
         case .videoSnapshots: return "camera"
         case .splitVideo: return "rectangle.split.3x1"
+        case .levelAudio: return "waveform.path"
         case .normalizeAudio: return "waveform.badge.plus"
         case .audioChannels: return "speaker.wave.2"
         case .trimSilence: return "waveform.badge.minus"
@@ -130,7 +132,7 @@ extension FileTool {
         case .mergePDF, .splitPDF: return format == .pdf
         case .trimMedia: return (g == .video || g == .audio) && ffmpeg
         case .muteVideo, .changeVideoSpeed, .cropVideo, .joinVideos, .videoSnapshots, .splitVideo: return movie && ffmpeg
-        case .normalizeAudio, .audioChannels, .trimSilence: return (g == .audio || movie) && ffmpeg
+        case .levelAudio, .normalizeAudio, .audioChannels, .trimSilence: return (g == .audio || movie) && ffmpeg
         case .audioToVideo: return g == .audio && ffmpeg
         case .extractArchive: return g == .archives
         case .createArchive: return true
@@ -191,6 +193,7 @@ extension FanCategory {
         case .extract: return L("Extract")
         case .share: return L("Share & Files")
         case .favorites: return L("Presets")
+        case .more: return "More"
         }
     }
 
@@ -203,14 +206,15 @@ extension FanCategory {
         case .extract: return "text.viewfinder"
         case .share: return "square.and.arrow.up"
         case .favorites: return "star"
+        case .more: return "ellipsis"
         }
     }
 
     /// Tools belonging to each category, in display order.
     var tools: [FileTool] {
         switch self {
-        case .convert, .share, .favorites: return []
-        case .optimize: return [.compress, .removeMetadata, .normalizeAudio, .trimSilence]
+        case .convert, .share, .favorites, .more: return []
+        case .optimize: return [.compress, .levelAudio, .removeMetadata, .normalizeAudio, .trimSilence]
         case .edit: return [.annotateImage, .adjustImage, .cropImage, .frameImage, .removeBackground, .redactImage,
                             .blurFaces, .trimMedia, .redactVideo, .bleepAudio, .changeVideoSpeed, .cropVideo,
                             .muteVideo, .audioChannels, .organizePDF]
@@ -224,12 +228,31 @@ extension FanCategory {
 enum FanCatalog {
     /// Category petals that have at least one item for these files.
     static func categories(for urls: [URL]) -> [FanItem] {
-        FanCategory.allCases.filter { !items(in: $0, urls: urls).isEmpty }.map {
-            FanItem(kind: .category($0), title: $0.title, symbol: $0.symbol)
+        let available = Set(FileTool.available(for: urls))
+        var quick: [FanItem] = []
+        if available.contains(.compress) {
+            quick.append(FanItem(kind: .tool(.compress), title: "Compress", symbol: "arrow.down.right.and.arrow.up.left"))
         }
+        if !items(in: .convert, urls: urls).isEmpty {
+            quick.append(FanItem(kind: .category(.convert), title: "Convert", symbol: "arrow.triangle.2.circlepath"))
+        }
+        if available.contains(.levelAudio) {
+            quick.append(FanItem(kind: .tool(.levelAudio), title: "Level Audio", symbol: "waveform.path"))
+        }
+        let primary: FileTool? = [.trimMedia, .cropImage, .organizePDF].first(where: available.contains)
+        if let primary {
+            quick.append(FanItem(kind: .tool(primary), title: primary == .organizePDF ? "Edit" : "Trim", symbol: primary == .trimMedia ? "scissors" : primary.symbol))
+        }
+        quick.append(FanItem(kind: .category(.more), title: "More", symbol: "ellipsis"))
+        return quick
     }
 
     static func items(in category: FanCategory, urls: [URL]) -> [FanItem] {
+        if category == .more {
+            return FanCategory.allCases.filter { $0 != .more && !items(in: $0, urls: urls).isEmpty }.map {
+                FanItem(kind: .category($0), title: $0.title, symbol: $0.symbol)
+            }
+        }
         // Folders in the selection: offer what applies to the files inside them.
         if let folderItems = FolderCatalog.items(in: category, urls: urls) { return folderItems }
         switch category {

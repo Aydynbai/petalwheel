@@ -24,10 +24,22 @@ with tempfile.TemporaryDirectory(prefix='petalwheel-modes-') as tmp:
   assert hashlib.sha256(source.read_bytes()).hexdigest()==original_hash
   assert output.stat().st_size<source.stat().st_size
   print(mode+': HEVC, dimensions, duration, copied PCM audio and original integrity PASS',flush=True)
+ # Preview uses the same encoder, leaves the source untouched, and produces a playable short clip.
+ for mode in ('fast','quality'):
+  p=subprocess.run([binary,'--preview',mode,str(source)],capture_output=True,text=True,check=True)
+  preview=Path(p.stdout.strip())
+  pv=probe(preview)
+  assert 0<float(pv['format']['duration'])<=2.2
+  assert next(x for x in pv['streams'] if x['codec_type']=='video')['codec_name']=='hevc'
+  assert hashlib.sha256(source.read_bytes()).hexdigest()==original_hash
+  import shutil
+  assert preview.parent.name.startswith('petalwheel-')
+  shutil.rmtree(preview.parent)
+  print(mode+': playable preview and source integrity PASS',flush=True)
  # A 10-bit input must fail rather than silently reduce bit depth.
  ten=d/'ten-bit.mov'
  run('ffmpeg','-v','error','-f','lavfi','-i','testsrc2=size=320x180:rate=1:duration=1','-c:v','libx265','-pix_fmt','yuv420p10le','-x265-params','log-level=error:pools=1',str(ten))
  p=subprocess.run([binary,'--tool','compress','--video-mode','fast',str(ten)],capture_output=True,text=True)
- assert p.returncode!=0 and 'HDR/10-bit' in p.stderr
+ assert p.returncode!=0 and '10-bit' in p.stderr
  assert not list(d.glob('ten-bit (fast).*'))
  print('10-bit refusal without output PASS')

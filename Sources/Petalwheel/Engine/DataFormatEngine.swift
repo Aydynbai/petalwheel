@@ -15,7 +15,7 @@ struct DataFormatEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         progress(0.05)
         let value = try await Self.load(source, format: from)
@@ -41,19 +41,19 @@ struct DataFormatEngine: ConversionEngine {
         case .json:
             let text = try DocumentTextDecoder.decode(contentsOf: url)
             do { return try DataJSON.parse(text) } catch let e as DataJSON.ParseError {
-                throw PetalwheelError(l: "Couldn't read “%@” (line %d): %@", name, e.line, e.message)
+                throw NurToError(l: "Couldn't read “%@” (line %d): %@", name, e.line, e.message)
             }
         case .yaml:
             let text = try DocumentTextDecoder.decode(contentsOf: url)
             do { return try DataYAML.parse(text) } catch let e as DataYAML.ParseError {
-                throw PetalwheelError(l: "Couldn't read “%@” (line %d): %@", name, e.line, e.message)
+                throw NurToError(l: "Couldn't read “%@” (line %d): %@", name, e.line, e.message)
             }
         case .xml:
             return try DataXML.parse(try Data(contentsOf: url))
         case .plist:
             let data = try Data(contentsOf: url)
             guard let object = try? PropertyListSerialization.propertyList(from: data, format: nil) else {
-                throw PetalwheelError(l: "“%@” isn't a valid property list.", name)
+                throw NurToError(l: "“%@” isn't a valid property list.", name)
             }
             return fromPropertyList(object)
         case .csv, .tsv, .xlsx:
@@ -62,7 +62,7 @@ struct DataFormatEngine: ConversionEngine {
             if tables.count == 1 { return tables[0] }
             return .object(zip(sheets, tables).map { ($0.name, $1) })
         default:
-            throw PetalwheelError(l: "Can't convert %@ to %@.", format.title, FileFormat.json.title)
+            throw NurToError(l: "Can't convert %@ to %@.", format.title, FileFormat.json.title)
         }
     }
 
@@ -77,11 +77,11 @@ struct DataFormatEngine: ConversionEngine {
             do {
                 return try PropertyListSerialization.data(fromPropertyList: toPropertyList(value), format: .xml, options: 0)
             } catch {
-                throw PetalwheelError(l: "Couldn't write the property list: %@", error.localizedDescription)
+                throw NurToError(l: "Couldn't write the property list: %@", error.localizedDescription)
             }
         case .csv, .tsv:
             guard let rows = table(value) else {
-                throw PetalwheelError(l: "This data can't be laid out as a table. CSV and TSV need a list of records (an array of objects).")
+                throw NurToError(l: "This data can't be laid out as a table. CSV and TSV need a list of records (an array of objects).")
             }
             // "\r\n" is one Character in Swift, so CSV quoting checks wouldn't see the line break: use "\n".
             let cells = rows.map { $0.map { $0.replacingOccurrences(of: "\r\n", with: "\n") } }
@@ -91,7 +91,7 @@ struct DataFormatEngine: ConversionEngine {
             data.append(Data(text.utf8))
             return data
         default:
-            throw PetalwheelError(l: "Can't convert %@ to %@.", FileFormat.json.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", FileFormat.json.title, target.title)
         }
     }
 

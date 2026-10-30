@@ -10,7 +10,7 @@ enum ImageMetadata {
 
     static func strip(_ url: URL) async throws -> URL {
         guard let format = FileFormat.detect(url), format.isRasterImage else {
-            throw PetalwheelError(l: "Can't remove metadata from %@.", url.lastPathComponent)
+            throw NurToError(l: "Can't remove metadata from %@.", url.lastPathComponent)
         }
         let out = OutputNaming.url(for: url, ext: format.fileExtension, suffix: "clean")
         // Lossless path for JPEG / PNG / TIFF / HEIC: copy the image data, replace the metadata.

@@ -15,7 +15,7 @@ struct ArchiveToolsModule: ToolModule {
 
     func run(_ tool: FileTool, inputs: [URL], options: ToolOptions,
              progress: @escaping ProgressHandler) async throws -> ToolResult {
-        guard !inputs.isEmpty else { throw PetalwheelError(l: "Nothing to process.") }
+        guard !inputs.isEmpty else { throw NurToError(l: "Nothing to process.") }
         switch tool {
         case .extractArchive, .listArchive, .testArchive, .compressSingle:
             var result = ToolResult()
@@ -41,13 +41,13 @@ struct ArchiveToolsModule: ToolModule {
             progress(1)
             return ToolResult(outputs: [out])
         default:
-            throw PetalwheelError(l: "%@ isn't an archive tool.", tool.title)
+            throw NurToError(l: "%@ isn't an archive tool.", tool.title)
         }
     }
 
     private func archiveFormat(_ url: URL) throws -> FileFormat {
         guard let format = FileFormat.detect(url), format.group == .archives else {
-            throw PetalwheelError(l: "“%@” isn't a supported archive.", url.lastPathComponent)
+            throw NurToError(l: "“%@” isn't a supported archive.", url.lastPathComponent)
         }
         return format
     }
@@ -77,7 +77,7 @@ struct ArchiveToolsModule: ToolModule {
 
         let base = ArchiveSupport.baseName(of: archive)
         let items = try ArchiveSupport.topLevelItems(staging)
-        if items.isEmpty { throw PetalwheelError(l: "“%@” is empty.", archive.lastPathComponent) }
+        if items.isEmpty { throw NurToError(l: "“%@” is empty.", archive.lastPathComponent) }
 
         // A single top-level item (a folder, or the file of a plain .gz) goes next to the archive as-is.
         if items.count == 1 {
@@ -140,7 +140,7 @@ struct ArchiveToolsModule: ToolModule {
 
     private func compressSingle(_ file: URL, options: ToolOptions, progress: @escaping ProgressHandler) async throws -> URL {
         guard FileManager.default.fileExists(atPath: file.path), !ArchiveSupport.isDirectory(file) else {
-            throw PetalwheelError(l: "“%@” isn't a file.", file.lastPathComponent)
+            throw NurToError(l: "“%@” isn't a file.", file.lastPathComponent)
         }
         let format = ArchiveSingleFile.writableFormats.contains(options.archiveFormat) ? options.archiveFormat : .gz
         progress(0.05)
@@ -161,7 +161,7 @@ struct ArchiveToolsModule: ToolModule {
     private func create(_ inputs: [URL], options: ToolOptions, progress: @escaping ProgressHandler) async throws -> URL {
         let fm = FileManager.default
         for url in inputs where !fm.fileExists(atPath: url.path) {
-            throw PetalwheelError(l: "“%@” no longer exists.", url.lastPathComponent)
+            throw NurToError(l: "“%@” no longer exists.", url.lastPathComponent)
         }
         let format = ArchiveSupport.createFormats.contains(options.archiveFormat) ? options.archiveFormat : .zip
         let password = format == .zip ? options.archivePassword.flatMap { $0.isEmpty ? nil : $0 } : nil

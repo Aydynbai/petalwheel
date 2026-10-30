@@ -44,10 +44,10 @@ enum MediaProbe {
             out = try await ProcessRunner.run(ffprobe, ["-v", "error", "-print_format", "json",
                                                         "-show_format", "-show_streams", url.path]).stdout
         } catch let e as ProcessError {
-            throw PetalwheelError(l: "“%@” can’t be read as audio or video.\n%@", url.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
+            throw NurToError(l: "“%@” can’t be read as audio or video.\n%@", url.lastPathComponent, e.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
         }
         guard let root = try? JSONSerialization.jsonObject(with: Data(out.utf8)) as? [String: Any] else {
-            throw PetalwheelError(l: "“%@” can’t be read as audio or video.", url.lastPathComponent)
+            throw NurToError(l: "“%@” can’t be read as audio or video.", url.lastPathComponent)
         }
         return parse(root)
     }
@@ -152,7 +152,7 @@ enum FFmpeg {
             var error = first
             for fallback in (allowEncoderFallback ? MediaEncoding.encoderFallbacks(full) : []) {
                 try Task.checkCancellation()
-                NSLog("Petalwheel: VideoToolbox encode failed, retrying with %@: %@",
+                NSLog("NurTo: VideoToolbox encode failed, retrying with %@: %@",
                       MediaEncoding.videoEncoder(in: fallback) ?? "?",
                       error.stderr.trimmingCharacters(in: .whitespacesAndNewlines))
                 progress?(span.lowerBound)
@@ -229,7 +229,7 @@ enum MediaOutput {
             try await body(temp)
             try Task.checkCancellation()
             guard FileManager.default.fileExists(atPath: temp.path) else {
-                throw PetalwheelError(l: "ffmpeg produced no output for “%@”.", final.lastPathComponent)
+                throw NurToError(l: "ffmpeg produced no output for “%@”.", final.lastPathComponent)
             }
             return try moveIntoPlace(temp, final)
         } catch {
@@ -341,7 +341,7 @@ enum MediaEncoding {
         let t = s.target
         if audioTargets.contains(t) {
             guard let aIdx = info.audioIndices.first else {
-                throw PetalwheelError(l: "“%@” has no audio track.", s.sourceName)
+                throw NurToError(l: "“%@” has no audio track.", s.sourceName)
             }
             a += ["-map", "0:\(aIdx)"]
             let artwork = s.keepArtwork && (t == .mp3 || t == .m4a) ? info.attachedPicIndex : nil
@@ -357,7 +357,7 @@ enum MediaEncoding {
             if t == .m4a { a += ["-movflags", "+faststart"] }
         } else if videoTargets.contains(t) {
             guard let vIdx = info.videoIndex else {
-                throw PetalwheelError(l: "“%@” has no video track.", s.sourceName)
+                throw NurToError(l: "“%@” has no video track.", s.sourceName)
             }
             a += ["-map", "0:\(vIdx)"]
             let includeAudio = !s.dropAudio && info.hasAudio
@@ -380,7 +380,7 @@ enum MediaEncoding {
             a += ["-sn", "-dn"]
             if t == .mp4 || t == .mov { a += ["-movflags", "+faststart"] }
         } else if t == .gif {
-            guard let vIdx = info.videoIndex else { throw PetalwheelError(l: "“%@” has no video track.", s.sourceName) }
+            guard let vIdx = info.videoIndex else { throw NurToError(l: "“%@” has no video track.", s.sourceName) }
             var chain = s.videoFilters
             chain.append("fps=\(max(1, s.gifFrameRate))")
             // Limit the long side (width for landscape, height for portrait) to gifMaxWidth.
@@ -390,12 +390,12 @@ enum MediaEncoding {
                 + ",split[k0][k1];[k0]palettegen=stats_mode=diff[kp];[k1][kp]paletteuse=dither=sierra2_4a[kout]"
             a += ["-filter_complex", graph, "-map", "[kout]", "-an", "-sn", "-loop", "0"]
         } else if t == .png || t == .jpg {
-            guard let vIdx = info.videoIndex else { throw PetalwheelError(l: "“%@” has no video track.", s.sourceName) }
+            guard let vIdx = info.videoIndex else { throw NurToError(l: "“%@” has no video track.", s.sourceName) }
             a += ["-map", "0:\(vIdx)", "-frames:v", "1", "-update", "1"]
             if !s.videoFilters.isEmpty { a += ["-vf", s.videoFilters.joined(separator: ",")] }
             if t == .jpg { a += ["-c:v", "mjpeg", "-q:v", "2", "-pix_fmt", "yuvj444p"] } else { a += ["-c:v", "png"] }
         } else {
-            throw PetalwheelError(l: "Can’t write %@ files with ffmpeg.", t.title)
+            throw NurToError(l: "Can’t write %@ files with ffmpeg.", t.title)
         }
         a += metadataArgs(preserve: s.preserveMetadata)
         return a

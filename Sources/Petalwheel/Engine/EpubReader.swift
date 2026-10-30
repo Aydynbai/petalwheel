@@ -22,10 +22,10 @@ enum EpubReader {
             try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
             do {
                 try await ArchiveSupport.extract(epub, format: .zip, into: root)
-            } catch let e as PetalwheelError {
+            } catch let e as NurToError {
                 throw e
             } catch {
-                throw PetalwheelError(l: "“%@” isn't a valid EPUB (it can't be unzipped).", epub.lastPathComponent)
+                throw NurToError(l: "“%@” isn't a valid EPUB (it can't be unzipped).", epub.lastPathComponent)
             }
             try ArchiveSupport.verifyContained(root)
         }
@@ -35,13 +35,13 @@ enum EpubReader {
     static func read(root: URL, name: String) throws -> EpubBook {
         let container = root.appendingPathComponent("META-INF/container.xml")
         guard let containerData = try? Data(contentsOf: container) else {
-            throw PetalwheelError(l: "“%@” isn't a valid EPUB (META-INF/container.xml is missing).", name)
+            throw NurToError(l: "“%@” isn't a valid EPUB (META-INF/container.xml is missing).", name)
         }
         let rootfile = EpubXMLCollector.parse(containerData).first { $0.name == "rootfile" && $0.attributes["full-path"] != nil }
         guard let opfPath = rootfile?.attributes["full-path"],
               let opfURL = OfficeSupport.containedFile(opfPath, in: root),
               let opfData = try? Data(contentsOf: opfURL) else {
-            throw PetalwheelError(l: "“%@” isn't a valid EPUB (the package document is missing).", name)
+            throw NurToError(l: "“%@” isn't a valid EPUB (the package document is missing).", name)
         }
         let opfDir = opfURL.deletingLastPathComponent()
         let elements = EpubXMLCollector.parse(opfData)
@@ -60,7 +60,7 @@ enum EpubReader {
             guard type.contains("html") || ["xhtml", "html", "htm"].contains(ext) else { continue }
             if FileManager.default.fileExists(atPath: item.url.path) { chapters.append(item.url) }
         }
-        guard !chapters.isEmpty else { throw PetalwheelError(l: "“%@” has no readable chapters.", name) }
+        guard !chapters.isEmpty else { throw NurToError(l: "“%@” has no readable chapters.", name) }
 
         func text(_ local: String) -> String? {
             elements.first { $0.name == local && !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }?

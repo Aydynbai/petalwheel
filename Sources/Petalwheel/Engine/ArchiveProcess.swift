@@ -28,7 +28,7 @@ enum ArchiveProcess {
         case .none: process.standardInput = FileHandle.nullDevice
         case .files, .data:
             let p = Pipe()
-            // A reader that exits early must not kill Petalwheel with SIGPIPE.
+            // A reader that exits early must not kill NurTo with SIGPIPE.
             _ = fcntl(p.fileHandleForWriting.fileDescriptor, F_SETNOSIGPIPE, 1)
             process.standardInput = p
             inPipe = p

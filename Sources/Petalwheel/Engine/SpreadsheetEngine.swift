@@ -14,7 +14,7 @@ struct SpreadsheetEngine: ConversionEngine {
     func convert(_ source: URL, from: FileFormat, to target: FileFormat,
                  options: ConversionOptions, progress: @escaping ProgressHandler) async throws -> [URL] {
         guard canConvert(from: from, to: target) else {
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
         progress(0.05)
         let baseName = source.deletingPathExtension().lastPathComponent
@@ -54,7 +54,7 @@ struct SpreadsheetEngine: ConversionEngine {
             progress(1)
             return [out]
         default:
-            throw PetalwheelError(l: "Can't convert %@ to %@.", from.title, target.title)
+            throw NurToError(l: "Can't convert %@ to %@.", from.title, target.title)
         }
     }
 
@@ -70,7 +70,7 @@ struct SpreadsheetEngine: ConversionEngine {
             sheet.trim()
             return [sheet]
         default:
-            throw PetalwheelError(l: "%@ isn't a spreadsheet format.", format.title)
+            throw NurToError(l: "%@ isn't a spreadsheet format.", format.title)
         }
     }
 

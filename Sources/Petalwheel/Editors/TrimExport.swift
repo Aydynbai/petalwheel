@@ -12,7 +12,7 @@ struct TrimExportPlan {
     let separate: Bool
 
     func export(progress: @escaping ProgressHandler) async throws -> [URL] {
-        guard !segments.isEmpty else { throw PetalwheelError(l: "Nothing is left to export: every part was removed.") }
+        guard !segments.isEmpty else { throw NurToError(l: "Nothing is left to export: every part was removed.") }
         progress(0)
         let target = TimelineOutput.target(for: source, info: info)
         let ext = TimelineOutput.ext(for: source, target: target)
@@ -73,7 +73,7 @@ struct TrimExportPlan {
         let useVideo = !audioOut && info.hasVideo
         let aIdx = info.audioIndices.first
         let useAudio = aIdx != nil && target != .gif
-        guard useVideo || useAudio else { throw PetalwheelError(l: "“%@” has no audio or video to trim.", source.lastPathComponent) }
+        guard useVideo || useAudio else { throw NurToError(l: "“%@” has no audio or video to trim.", source.lastPathComponent) }
 
         var graph = ""
         var inputs = ""

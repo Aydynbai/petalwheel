@@ -1,8 +1,8 @@
 import AppKit
 
-/// The Finder Services Petalwheel registers (NSServices in Info.plist, see scripts/build-app.sh).
+/// The Finder Services NurTo registers (NSServices in Info.plist, see scripts/build-app.sh).
 /// `message` must match the NSMessage key and the @objc selector prefix below.
-enum PetalwheelService: String, CaseIterable, Identifiable {
+enum NurToService: String, CaseIterable, Identifiable {
     case openInWheel, convertToJPG, compress, convertToMP4
 
     var id: String { rawValue }
@@ -10,20 +10,20 @@ enum PetalwheelService: String, CaseIterable, Identifiable {
 
     var menuTitle: String {
         switch self {
-        case .openInWheel: return "Petalwheel: Open in Wheel"
-        case .convertToJPG: return "Petalwheel: Convert to JPG"
-        case .compress: return "Petalwheel: Compress"
-        case .convertToMP4: return "Petalwheel: Convert to MP4"
+        case .openInWheel: return "NurTo: Open in Wheel"
+        case .convertToJPG: return "NurTo: Convert to JPG"
+        case .compress: return "NurTo: Compress"
+        case .convertToMP4: return "NurTo: Convert to MP4"
         }
     }
 
-    /// Title shown in Petalwheel's own UI (the Services menu itself is localized by ServicesMenu.strings).
+    /// Title shown in NurTo's own UI (the Services menu itself is localized by ServicesMenu.strings).
     var localizedTitle: String {
         switch self {
-        case .openInWheel: return L("Petalwheel: Open in Wheel")
-        case .convertToJPG: return L("Petalwheel: Convert to JPG")
-        case .compress: return L("Petalwheel: Compress")
-        case .convertToMP4: return L("Petalwheel: Convert to MP4")
+        case .openInWheel: return L("NurTo: Open in Wheel")
+        case .convertToJPG: return L("NurTo: Convert to JPG")
+        case .compress: return L("NurTo: Compress")
+        case .convertToMP4: return L("NurTo: Convert to MP4")
         }
     }
 
@@ -38,7 +38,7 @@ enum PetalwheelService: String, CaseIterable, Identifiable {
 
     /// Key pbs uses in its NSServicesStatus preference for this service.
     var statusKey: String {
-        "\(Bundle.main.bundleIdentifier ?? "studio.kipper.Petalwheel") - \(menuTitle) - \(message)"
+        "\(Bundle.main.bundleIdentifier ?? "app.nurto.mac") - \(menuTitle) - \(message)"
     }
 }
 
@@ -65,12 +65,12 @@ final class FinderServicesProvider: NSObject {
         perform(.convertToMP4, pboard, error)
     }
 
-    private func perform(_ service: PetalwheelService, _ pboard: NSPasteboard,
+    private func perform(_ service: NurToService, _ pboard: NSPasteboard,
                          _ error: AutoreleasingUnsafeMutablePointer<NSString?>) {
         let urls = Self.fileURLs(from: pboard)
-        NSLog("Petalwheel: service %@ invoked with %ld file(s)", service.message, urls.count)
+        NSLog("NurTo: service %@ invoked with %ld file(s)", service.message, urls.count)
         guard !urls.isEmpty else {
-            error.pointee = L("Petalwheel: no files were passed to the service.") as NSString
+            error.pointee = L("NurTo: no files were passed to the service.") as NSString
             return
         }
         // Let the Services menu close before the wheel / HUD takes over.
@@ -110,7 +110,7 @@ enum FinderServicesStatus {
     }
 
     /// nil = user never changed it (on by default, thanks to NSRequiredContext); otherwise the context-menu switch.
-    static func userEnabled(_ service: PetalwheelService) -> Bool? {
+    static func userEnabled(_ service: NurToService) -> Bool? {
         guard let all = UserDefaults(suiteName: "pbs")?.dictionary(forKey: "NSServicesStatus"),
               let entry = all[service.statusKey] as? [String: Any] else { return nil }
         if let v = entry["enabled_context_menu"] as? Bool { return v }

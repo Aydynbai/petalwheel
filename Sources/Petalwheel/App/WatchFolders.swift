@@ -137,7 +137,7 @@ struct WatchFolderStatus: Equatable {
 
 // MARK: - Store
 
-/// Persists watch folders to ~/Library/Application Support/Petalwheel/watch-folders.json and drives the monitor.
+/// Persists watch folders to ~/Library/Application Support/NurTo/watch-folders.json and drives the monitor.
 @MainActor
 final class WatchFolderStore: ObservableObject {
     static let shared = WatchFolderStore()
@@ -150,7 +150,7 @@ final class WatchFolderStore: ObservableObject {
 
     static var fileURL: URL {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return base.appendingPathComponent("Petalwheel", isDirectory: true).appendingPathComponent("watch-folders.json")
+        return base.appendingPathComponent("NurTo", isDirectory: true).appendingPathComponent("watch-folders.json")
     }
 
     private struct FileContents: Codable {
@@ -172,7 +172,7 @@ final class WatchFolderStore: ObservableObject {
         }
         self.monitor = monitor
         monitor.configure(folders)
-        NSLog("Petalwheel: watching %ld folder(s) from %@", folders.filter(\.enabled).count, Self.fileURL.path)
+        NSLog("NurTo: watching %ld folder(s) from %@", folders.filter(\.enabled).count, Self.fileURL.path)
     }
 
     // MARK: Editing
@@ -228,7 +228,7 @@ final class WatchFolderStore: ObservableObject {
             folders = try JSONDecoder().decode(FileContents.self, from: data).folders
         } catch {
             loadError = L("Couldn't read watch-folders.json: %@", error.localizedDescription)
-            NSLog("Petalwheel: %@", loadError ?? "")
+            NSLog("NurTo: %@", loadError ?? "")
         }
     }
 
@@ -240,7 +240,7 @@ final class WatchFolderStore: ObservableObject {
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
             try encoder.encode(FileContents(folders: folders)).write(to: Self.fileURL, options: .atomic)
         } catch {
-            NSLog("Petalwheel: saving watch folders failed: %@", error.localizedDescription)
+            NSLog("NurTo: saving watch folders failed: %@", error.localizedDescription)
         }
     }
 }

@@ -22,7 +22,7 @@ final class FanPanel: NSPanel {
         becomesKeyOnlyIfNeeded = true
         animationBehavior = .none
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .transient, .ignoresCycle]
-        appearance = NSAppearance(named: .darkAqua)
+        appearance = NSAppearance(named: .aqua)
     }
 
     override func cancelOperation(_ sender: Any?) {
@@ -43,6 +43,9 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
     private(set) var isVisible = false
 
     private var panel: FanPanel?
+    private var capturePanel: NSPanel?
+    private var awaitingInitialRelease = false
+    private var heldSession = false
     private var fanView: FanView?
     private var items: [FanItem] = []
     private var urls: [URL] = []
@@ -55,10 +58,9 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
     private var rootMode: FanMode = .categories
     private var rootItems: [FanItem] = []
     private var openCategory: FanCategory?
+    private var categoryTrail: [FanCategory] = []
     private var anchor: NSPoint = .zero
     private var dwellWork: DispatchWorkItem?
-    private static let categoryDwell: TimeInterval = 0.32
-    private static let backDwell: TimeInterval = 0.45
     private lazy var tick: NSSound? = {
         let s = NSSound(named: NSSound.Name("Tink"))?.copy() as? NSSound
         s?.volume = 0.18
@@ -70,21 +72,24 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
     override init() { super.init() }
 
     /// Shows the fan centred at `screenPoint` (global AppKit screen coordinates, bottom-left origin).
-    func show(mode: FanMode, items: [FanItem], urls: [URL], at screenPoint: NSPoint, interaction: FanInteraction) {
+    func show(mode: FanMode, items: [FanItem], urls: [URL], at screenPoint: NSPoint, interaction: FanInteraction, awaitInitialRelease: Bool = false, closeOnModifierRelease: Bool = false) {
         if isVisible { teardown(notify: false, animated: false) }
         generation += 1
         self.urls = urls
         self.interaction = interaction
+        awaitingInitialRelease = awaitInitialRelease
+        heldSession = closeOnModifierRelease
         dropInProgress = false
         rootMode = mode
         rootItems = items
         openCategory = nil
+        categoryTrail = []
         anchor = screenPoint
 
         let panel = self.panel ?? FanPanel()
         self.panel = panel
         panel.delegate = self
-        panel.allowsKey = interaction == .click
+        panel.allowsKey = interaction == .click && !awaitingInitialRelease
         present(mode: mode, items: items, hint: nil, canGoBack: false, appearing: true)
     }
 
@@ -117,7 +122,8 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
 
         fan.frame = root.bounds
         fan.autoresizingMask = [.width, .height]
-        fan.clickEnabled = interaction == .click
+        fan.clickEnabled = interaction == .click && !awaitingInitialRelease
+        fan.captureDrops = interaction == .click
         fan.fileCount = urls.count
         fan.hintOverride = hint
         fan.tint = openCategory?.fanColor
@@ -129,13 +135,13 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
         shadow.wantsLayer = true
         shadow.layer?.shadowPath = shape
         shadow.layer?.shadowColor = NSColor.black.cgColor
-        shadow.layer?.shadowOpacity = 0.32
+        shadow.layer?.shadowOpacity = 0.12
         shadow.layer?.shadowRadius = 12
         shadow.layer?.shadowOffset = CGSize(width: 0, height: -4)
         root.addSubview(shadow)
 
         let blur = NSVisualEffectView(frame: root.bounds)
-        blur.material = .hudWindow
+        blur.material = .popover
         blur.blendingMode = .behindWindow
         blur.state = .active
         blur.maskImage = Self.maskImage(shape: shape, size: size)
@@ -169,6 +175,7 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
         panel.setFrame(frame, display: false)
         content.layoutSubtreeIfNeeded()
 
+        if appearing, awaitingInitialRelease, let screen { showCapture(on: screen) }
         let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         guard appearing else {
             // In-place swap: a short "zoom" so the change of level reads clearly.
@@ -194,7 +201,7 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
         // Appear
         isVisible = true
         panel.alphaValue = 0
-        if interaction == .click {
+        if interaction == .click && !awaitingInitialRelease {
             panel.makeKeyAndOrderFront(nil)
         } else {
             panel.orderFrontRegardless()
@@ -238,6 +245,21 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
 
     /// The drag session ended (mouse released) without dropping on the fan.
     func dragDidEnd() {
+        if isVisible && awaitingInitialRelease {
+            awaitingInitialRelease = false
+            fanView?.clickEnabled = true
+            panel?.allowsKey = true
+            let gen = generation
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) { [weak self] in
+                guard let self, self.generation == gen else { return }
+                self.capturePanel?.orderOut(nil)
+                if self.isVisible {
+                    NSApp.activate(ignoringOtherApps: true)
+                    self.panel?.makeKeyAndOrderFront(nil)
+                }
+            }
+            return
+        }
         guard isVisible, interaction == .drag, !dropInProgress else { return }
         if fanView?.highlighted != nil {
             // The mouse was released over a petal: the drop message may still be on its way.
@@ -255,6 +277,8 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
         }
     }
 
+    func modifierReleased() { if heldSession { dismiss() } }
+
     func dismiss() {
         guard isVisible else { return }
         teardown(notify: true, animated: true)
@@ -266,7 +290,7 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
 
     func windowDidResignKey(_ notification: Notification) {
         // Clicking another app's window in click mode.
-        if isVisible, interaction == .click, !dropInProgress { dismiss() }
+        if isVisible, interaction == .click, !dropInProgress, !awaitingInitialRelease { dismiss() }
     }
 
     // MARK: - Private
@@ -294,6 +318,7 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
     }
 
     private func open(_ category: FanCategory) {
+        categoryTrail.append(category)
         openCategory = category
         let items = FanCatalog.items(in: category, urls: urls)
         let mode: FanMode = category == .convert ? .conversions : (category == .share ? .actions : .tools)
@@ -303,37 +328,28 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
 
     private func goBack() {
         guard isVisible, openCategory != nil else { return }
-        openCategory = nil
-        present(mode: rootMode, items: rootItems, hint: nil, canGoBack: false, appearing: false)
+        if !categoryTrail.isEmpty { categoryTrail.removeLast() }
+        if let parent = categoryTrail.last {
+            openCategory = parent
+            let mode: FanMode = parent == .convert ? .conversions : (parent == .share ? .actions : .tools)
+            present(mode: mode, items: FanCatalog.items(in: parent, urls: urls), hint: "‹ " + parent.title, canGoBack: true, appearing: false)
+        } else {
+            openCategory = nil
+            present(mode: rootMode, items: rootItems, hint: nil, canGoBack: false, appearing: false)
+        }
         highlightFeedback()
     }
 
     private func centerHoverChanged(_ inside: Bool) {
+        // Hover is visual only. Back requires a deliberate click.
         dwellWork?.cancel()
-        guard inside, openCategory != nil, interaction == .drag else { return }
-        let gen = generation
-        let work = DispatchWorkItem { [weak self] in
-            guard let self, self.generation == gen, self.fanView?.isCenterHovered == true else { return }
-            self.goBack()
-        }
-        dwellWork = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + Self.backDwell, execute: work)
     }
 
     private func highlightChanged(_ index: Int?) {
+        // A category opens only on click/drop. Replacing the menu must never auto-open
+        // another category that happens to appear underneath the stationary pointer.
         dwellWork?.cancel()
-        // Dragging over a category petal opens it after a short dwell.
-        if let index, index < items.count, case .category(let category) = items[index].kind, interaction == .drag {
-            let gen = generation
-            let work = DispatchWorkItem { [weak self] in
-                guard let self, self.generation == gen, self.isVisible, self.fanView?.highlighted == index else { return }
-                self.open(category)
-            }
-            dwellWork = work
-            DispatchQueue.main.asyncAfter(deadline: .now() + Self.categoryDwell, execute: work)
-        }
-        guard index != nil else { return }
-        highlightFeedback()
+        if index != nil { highlightFeedback() }
     }
 
     private func highlightFeedback() {
@@ -344,7 +360,23 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
         NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
     }
 
+    /// Invisible only during the original OS drag, so releasing cannot move the file
+    /// onto an unrelated desktop target. It never changes or blurs the desktop.
+    private func showCapture(on screen: NSScreen) {
+        let back = capturePanel ?? NSPanel(contentRect: screen.frame, styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+        back.setFrame(screen.frame, display: false)
+        back.isOpaque = false; back.backgroundColor = .clear; back.hasShadow = false
+        back.level = NSWindow.Level(rawValue: NSWindow.Level.popUpMenu.rawValue - 1)
+        back.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
+        back.hidesOnDeactivate = false
+        back.contentView = NurToDragCaptureView(frame: NSRect(origin: .zero, size: screen.frame.size))
+        back.orderFrontRegardless(); capturePanel = back
+    }
+
     private func teardown(notify: Bool, animated: Bool) {
+        capturePanel?.orderOut(nil)
+        awaitingInitialRelease = false
+        heldSession = false
         isVisible = false
         dwellWork?.cancel()
         pendingDismiss?.cancel()
@@ -448,4 +480,14 @@ final class FanOverlayController: NSObject, FanPanelDelegate {
         image.resizingMode = .stretch
         return image
     }
+}
+
+/// Consumes the captured drag without copying/moving the source or triggering an action.
+private final class NurToDragCaptureView: NSView {
+    override init(frame: NSRect) { super.init(frame: frame); registerForDraggedTypes([.fileURL]) }
+    required init?(coder: NSCoder) { fatalError("init(coder:)") }
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation { .copy }
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation { .copy }
+    override func prepareForDragOperation(_ sender: NSDraggingInfo) -> Bool { true }
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool { true }
 }
