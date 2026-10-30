@@ -3,10 +3,10 @@ import os
 
 let gestureLog = Logger(subsystem: "app.nurto.mac", category: "gesture")
 
-/// A hold is deliberate: no open before 1.3 s, one request per hold, release closes.
+/// A hold is deliberate: no open before 0.6 s, one request per hold, release closes.
 struct WheelHoldGate {
     enum Event: Equatable { case none, open, close }
-    static let delay: TimeInterval = 1.3
+    static let delay: TimeInterval = 0.6
     private var began: TimeInterval?
     private(set) var requested = false
     private(set) var session = UUID()

@@ -189,7 +189,7 @@ struct GeneralSettingsView: View {
                     }
                 }
             } header: {
-                Text(verbatim: "Hold to open · 1.3 s")
+                Text(verbatim: "Hold to open · 0.6 s")
             } footer: {
                 Text(verbatim: "Click to choose. Release to close.")
                     .font(.system(size: 11)).foregroundStyle(.secondary)

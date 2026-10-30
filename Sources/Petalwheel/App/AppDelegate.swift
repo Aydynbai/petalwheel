@@ -57,7 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
         let s = AppSettings.shared
-        let header = NSMenuItem(title: "Hold \(s.triggerKey.symbol) · 1.3 s", action: nil, keyEquivalent: "")
+        let header = NSMenuItem(title: "Hold \(s.triggerKey.symbol) · 0.6 s", action: nil, keyEquivalent: "")
         header.isEnabled = false
         menu.addItem(header)
         menu.addItem(.separator())
