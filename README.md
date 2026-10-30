@@ -1,6 +1,6 @@
 # NurTo
 
-Offline file tools at your cursor. Select a file (or drag it), hold **Ctrl for 2.5 seconds**, then click to choose while holding Ctrl.
+Offline file tools at your cursor. Select a file (or drag it), hold **Ctrl for 1.3 seconds**, then click to choose while holding Ctrl.
 
 A personal fork of [Petalwheel](https://github.com/TheAlexRay/petalwheel) (formerly Kumquat).
 

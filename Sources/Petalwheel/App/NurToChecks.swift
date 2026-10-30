@@ -39,13 +39,13 @@ enum NurToChecks {
         guard MainActor.assumeIsolated({ clickHandoffCheck() }) else { return fail("Releasing the captured drag must not click a function") }
         var gate = WheelHoldGate()
         guard gate.update(down: true, now: 0) == .none,
-              gate.update(down: true, now: 2.49) == .none,
-              gate.update(down: true, now: 2.5) == .open,
+              gate.update(down: true, now: 1.29) == .none,
+              gate.update(down: true, now: 1.3) == .open,
               gate.update(down: true, now: 5) == .none,
               gate.update(down: false, now: 5.1) == .close,
               gate.update(down: false, now: 5.2) == .none,
               gate.update(down: true, now: 6) == .none,
-              gate.update(down: false, now: 7) == .none else { return fail("2.5-second hold/release") }
+              gate.update(down: false, now: 7) == .none else { return fail("1.3-second hold/release") }
         print("PASS: media-state isolation, target size, video selection, preset compatibility, 4–5 quick actions, More navigation")
         return 0
     }

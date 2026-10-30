@@ -46,7 +46,7 @@ struct WelcomeView: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 step(1, title: "Select a file", detail: nil)
-                step(2, title: "Hold the key for 2.5 seconds",
+                step(2, title: "Hold the key for 1.3 seconds",
                      detail: nil, keys: true)
                 step(3, title: "Click to choose. Release to close.", detail: nil)
             }

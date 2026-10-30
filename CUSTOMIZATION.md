@@ -7,7 +7,7 @@ Personal fork of Petalwheel/Kumquat. Work on `nur/custom`; retain upstream copyr
 The Ctrl-triggered radial wheel is the primary interface. No dashboard, full-screen visual overlay, lengthy explanatory UI or automatic comparison result window.
 English labels, a white translucent glass wheel, an unchanged desktop backdrop, thin sector divisions and a blue selection border. The wheel is about 13% wider than the upstream wheel for the same five symbol items.
 Contextual actions: Compress, Convert, Level Audio, Trim/Edit, More. All original tools remain under More.
-Navigation is deliberate: Hold Ctrl for 2.5 seconds with a dragged file or Finder selection to open the wheel. The wheel closes when Ctrl is released, without auto-selecting anything. Releasing only the mouse after the initial drag does not select a function. Hover only highlights; deliberate clicks open a category/function, and center-click goes back one level. There are no hover navigation timers. A deterministic gate test covers the exact 2.5-second threshold, one open per hold, early release and close-on-release.
+Navigation is deliberate: Hold Ctrl for 1.3 seconds with a dragged file or Finder selection to open the wheel. The wheel closes when Ctrl is released, without auto-selecting anything. Releasing only the mouse after the initial drag does not select a function. Hover only highlights; deliberate clicks open a category/function, and center-click goes back one level. There are no hover navigation timers. A deterministic gate test covers the exact 1.3-second threshold, one open per hold, early release and close-on-release.
 
 ## Implemented
 
