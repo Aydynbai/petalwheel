@@ -20,11 +20,22 @@ enum CommandLineMode {
             return 0
         }
         guard args.count >= 4 else {
-            fputs("usage: Petalwheel --convert <format> <files…> | --tool <tool> [--password P] [--archive-format F] <files…> | --list\n", stderr)
+            fputs("usage: Petalwheel --convert <format> <files…> | --tool <tool> [--video-mode fast|quality] [--password P] [--archive-format F] <files…> | --list\n", stderr)
             return 2
         }
         var rest = Array(args.dropFirst(3))
-        let toolOptions = parseArchiveFlags(&rest)   // archives: --password / --archive-format
+        var videoMode: VideoCompressionMode?
+        if let i = rest.firstIndex(of: "--video-mode") {
+            guard args[1] == "--tool", args[2] == "compress", i + 1 < rest.count,
+                  let mode = VideoCompressionMode(rawValue: rest[i + 1]) else {
+                fputs("--video-mode requires compress and fast or quality\n", stderr)
+                return 2
+            }
+            videoMode = mode
+            rest.removeSubrange(i...i + 1)
+        }
+        var toolOptions = parseArchiveFlags(&rest)
+        toolOptions.videoCompressionMode = videoMode
         guard !rest.isEmpty else { fputs("No files given.\n", stderr); return 2 }
         let urls = rest.map { URL(fileURLWithPath: $0).standardizedFileURL }
         var status: Int32 = 0

@@ -113,6 +113,9 @@ struct MediaToolsModule: ToolModule {
     // MARK: - Compress
 
     private func compress(_ job: Job, options: ToolOptions, progress: @escaping ProgressHandler) async throws -> ToolResult {
+        if let mode = options.videoCompressionMode, FileFormat.detect(job.url)?.group == .video {
+            return try await VideoCompression.run(job.url, info: job.info, mode: mode, progress: progress)
+        }
         let info = job.info
         let source = FileFormat.detect(job.url)
         let inputSize = MediaOutput.fileSize(job.url)

@@ -104,7 +104,20 @@ typealias EditorExport = (@escaping ProgressHandler) async throws -> [URL]
 typealias EditorCompletion = (EditorExport?) -> Void
 
 /// All tool parameters in one bag. Each tool reads what it needs.
+enum VideoCompressionMode: String, CaseIterable, Identifiable, Codable {
+    case fast, quality
+    var id: String { rawValue }
+    var title: String { self == .fast ? "Тез сығу" : "Сапаға басымдық" }
+    var explanation: String {
+        self == .fast
+            ? "Mac аппараттық HEVC кодтауы. Жылдам нәтиже."
+            : "HEVC бағдарламалық кодтауы. Баяуырақ, сапа мен көлемге басымдық."
+    }
+}
+
 struct ToolOptions {
+    // nil preserves legacy presets and non-video compression behaviour.
+    var videoCompressionMode: VideoCompressionMode? = nil
     var quality: Quality = .balanced
     /// Compress to target size in KB (nil = use quality preset).
     var targetSizeKB: Int? = nil

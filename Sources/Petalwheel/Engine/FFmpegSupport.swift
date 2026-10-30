@@ -19,6 +19,8 @@ struct MediaInfo {
     var fps: Double = 0
     var videoBitrateKbps = 0
     var pixelFormat: String?
+    var colorTransfer: String?
+    var audioCodecs: [String] = []
 
     var audioIndices: [Int] = []
     var audioCodec: String?
@@ -73,6 +75,7 @@ enum MediaProbe {
                 info.videoIndex = index
                 info.videoCodec = s["codec_name"] as? String
                 info.pixelFormat = s["pix_fmt"] as? String
+                info.colorTransfer = s["color_transfer"] as? String
                 var w = s["width"] as? Int ?? 0, h = s["height"] as? Int ?? 0
                 var rot = 0
                 if let tags = s["tags"] as? [String: Any], let r = double(tags["rotate"]) { rot = Int(r) }
@@ -93,6 +96,7 @@ enum MediaProbe {
                 info.videoBitrateKbps = Int((double(s["bit_rate"]) ?? 0) / 1000)
             } else if type == "audio" {
                 info.audioIndices.append(index)
+                info.audioCodecs.append(s["codec_name"] as? String ?? "unknown")
                 guard info.audioIndices.count == 1 else { continue }
                 info.audioCodec = s["codec_name"] as? String
                 info.sampleRate = Int(double(s["sample_rate"]) ?? 0)
@@ -133,7 +137,7 @@ enum FFmpeg {
     /// Runs ffmpeg with the standard flags and reports progress against `duration` seconds,
     /// mapped into `span` of the overall 0...1 range. Returns stderr (useful with loglevel "info").
     @discardableResult
-    static func run(_ args: [String], duration: Double, loglevel: String = "error",
+    static func run(_ args: [String], duration: Double, loglevel: String = "error", allowEncoderFallback: Bool = true,
                     progress: ProgressHandler? = nil, span: ClosedRange<Double> = 0...1) async throws -> String {
         let ffmpeg = try ExternalTools.shared.require(ExternalTools.shared.ffmpeg, "ffmpeg")
         try Task.checkCancellation()
@@ -146,7 +150,7 @@ enum FFmpeg {
             // A hardware (VideoToolbox) encode can fail on sizes or formats the session rejects
             // (e.g. H.264 above 4096 px), or when no encoder session is available: walk the fallback chain.
             var error = first
-            for fallback in MediaEncoding.encoderFallbacks(full) {
+            for fallback in (allowEncoderFallback ? MediaEncoding.encoderFallbacks(full) : []) {
                 try Task.checkCancellation()
                 NSLog("Petalwheel: VideoToolbox encode failed, retrying with %@: %@",
                       MediaEncoding.videoEncoder(in: fallback) ?? "?",

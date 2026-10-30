@@ -43,7 +43,11 @@ final class ToolOptionsModel: ObservableObject {
     init(tool: FileTool, inputs: [URL], initial: ToolOptions) {
         self.tool = tool
         self.inputs = inputs
-        self.options = initial
+        var prepared = initial
+        if tool == .compress && inputs.allSatisfy({ FileFormat.detect($0)?.group == .video && FileFormat.detect($0) != .gif }) {
+            prepared.videoCompressionMode = initial.videoCompressionMode ?? .fast
+        }
+        self.options = prepared
         if let kb = initial.targetSizeKB, kb > 0 {
             useTargetSize = true
             if kb >= 1024 && kb % 1024 == 0 {
@@ -77,7 +81,7 @@ final class ToolOptionsModel: ObservableObject {
     var validationError: String? {
         switch tool {
         case .compress:
-            if useTargetSize && targetSizeKB == nil { return L("Enter a target size greater than zero.") }
+            if options.videoCompressionMode == nil && useTargetSize && targetSizeKB == nil { return L("Enter a target size greater than zero.") }
         case .trimMedia:
             guard let s = trimStart else { return L("Start time isn't valid. Use 1:23.5 or seconds.") }
             let endEmpty = trimEndText.trimmingCharacters(in: .whitespaces).isEmpty
@@ -99,7 +103,7 @@ final class ToolOptionsModel: ObservableObject {
         var o = options
         switch tool {
         case .compress:
-            o.targetSizeKB = targetSizeKB
+            o.targetSizeKB = o.videoCompressionMode == nil ? targetSizeKB : nil
         case .trimMedia:
             o.trimStart = max(0, trimStart ?? 0)
             var end = trimEnd
@@ -330,33 +334,48 @@ struct ToolOptionsView: View {
 
     private var compressControls: some View {
         VStack(alignment: .leading, spacing: KQTheme.spacing) {
-            OptionRow("Quality") {
-                Picker("", selection: $model.options.quality) {
-                    ForEach(Quality.allCases) { Text($0.title).tag($0) }
-                }
+            if model.options.videoCompressionMode != nil {
+                Picker(selection: Binding(
+                    get: { model.options.videoCompressionMode ?? .fast },
+                    set: { model.options.videoCompressionMode = $0 }
+                )) {
+                    ForEach(VideoCompressionMode.allCases) { Text($0.title).tag($0) }
+                } label: { Text(verbatim: "Видео сығу режимі") }
                 .pickerStyle(.segmented)
                 .labelsHidden()
-                .disabled(model.useTargetSize)
-            }
-            Toggle("Target size", isOn: $model.useTargetSize.animation(.easeOut(duration: 0.15)))
-                .toggleStyle(.switch)
-                .controlSize(.small)
-            if model.useTargetSize {
-                HStack(spacing: 8) {
-                    TextField("Size", text: $model.targetSizeText)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 90)
-                    Picker("", selection: $model.targetUnitMB) {
-                        Text("KB").tag(false)
-                        Text("MB").tag(true)
+                Text(verbatim: (model.options.videoCompressionMode ?? .fast).explanation)
+                    .font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(verbatim: "Өлшемі мен кадр жиілігі сақталады. Дыбыс қайта кодталмайды. Сапа жоғалуы мүмкін; түпнұсқа сақталады. HDR/10-bit әзірге қолдау таппайды.")
+                    .font(.system(size: 11)).foregroundStyle(.secondary)
+            } else {
+                OptionRow("Quality") {
+                    Picker("", selection: $model.options.quality) {
+                        ForEach(Quality.allCases) { Text($0.title).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     .labelsHidden()
-                    .frame(width: 100)
-                    Spacer()
+                    .disabled(model.useTargetSize)
                 }
-                Text("Petalwheel will aim for files at or below this size.")
-                    .font(.system(size: 11)).foregroundStyle(.secondary)
+                Toggle("Target size", isOn: $model.useTargetSize.animation(.easeOut(duration: 0.15)))
+                    .toggleStyle(.switch)
+                    .controlSize(.small)
+                if model.useTargetSize {
+                    HStack(spacing: 8) {
+                        TextField("Size", text: $model.targetSizeText)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 90)
+                        Picker("", selection: $model.targetUnitMB) {
+                            Text("KB").tag(false)
+                            Text("MB").tag(true)
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
+                        .frame(width: 100)
+                        Spacer()
+                    }
+                    Text("Petalwheel will aim for files at or below this size.")
+                        .font(.system(size: 11)).foregroundStyle(.secondary)
+                }
             }
         }
     }

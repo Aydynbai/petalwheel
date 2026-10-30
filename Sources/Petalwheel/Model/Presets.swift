@@ -50,6 +50,7 @@ struct CodableConversionOptions: Codable, Equatable {
 
 /// Codable mirror of `ToolOptions` (which holds an `NSColor` and enums without Codable).
 struct CodableToolOptions: Codable, Equatable {
+    var videoCompressionMode: String?
     var quality: String
     var targetSizeKB: Int?
     var aspect: String
@@ -74,6 +75,7 @@ struct CodableToolOptions: Codable, Equatable {
     var archiveLevel: Int?
 
     init(_ o: ToolOptions = ToolOptions()) {
+        videoCompressionMode = o.videoCompressionMode?.rawValue
         quality = o.quality.rawValue
         targetSizeKB = o.targetSizeKB
         aspect = o.aspect.rawValue
@@ -99,6 +101,7 @@ struct CodableToolOptions: Codable, Equatable {
 
     var options: ToolOptions {
         var o = ToolOptions()
+        o.videoCompressionMode = videoCompressionMode.flatMap(VideoCompressionMode.init(rawValue:))
         o.quality = Quality(rawValue: quality) ?? o.quality
         o.targetSizeKB = targetSizeKB
         o.aspect = AspectRatio(rawValue: aspect) ?? o.aspect
@@ -128,6 +131,7 @@ struct CodableToolOptions: Codable, Equatable {
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         let d = CodableToolOptions()
+        videoCompressionMode = try c.decodeIfPresent(String.self, forKey: .videoCompressionMode)
         quality = try c.decodeIfPresent(String.self, forKey: .quality) ?? d.quality
         targetSizeKB = try c.decodeIfPresent(Int.self, forKey: .targetSizeKB)
         aspect = try c.decodeIfPresent(String.self, forKey: .aspect) ?? d.aspect
@@ -209,7 +213,9 @@ struct UserPreset: Codable, Identifiable, Equatable {
             let o = tool.options
             switch t {
             case .compress:
-                if let kb = o.targetSizeKB {
+                if let mode = o.videoCompressionMode {
+                    parts.append(mode.title)
+                } else if let kb = o.targetSizeKB {
                     parts.append(kb >= 1024 && kb % 1024 == 0 ? "≤ \(kb / 1024) MB" : "≤ \(kb) KB")
                 } else { parts.append(o.quality.title) }
             case .cropImage, .cropVideo: parts.append(o.aspect.rawValue)
